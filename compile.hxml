@@ -1,0 +1,4 @@
+-main Haxmel
+-neko haxmel.n
+-lib opengl
+-lib physaxe
