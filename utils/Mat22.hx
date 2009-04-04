@@ -133,8 +133,8 @@ class Mat22
      * Returns: A new matrix containing the result of the addition
      */
     public inline function add(B:Mat22) {
-        var C = new Mat22(new Vec2(0,0), new Vec2(0,0));
-        C.set(col1.add(B.col1), col2.add(B.col2));
-        return C;
+        var c1 = col1.add(B.col1);
+        var c2 = col2.add(B.col2);
+        return new Mat22(c1, c2);
     }
 }

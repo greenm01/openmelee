@@ -44,35 +44,41 @@ class Mpr
     public function new() {
     }
 
-    inline function insidePortal(v1:Vec2, v2:Vec2) {
+    function insidePortal(v1:Vec2, v2:Vec2) {
         // Perp-dot product
         var dir = v1.x * v2.y - v1.y * v2.x;
-        if (dir > EPSILON) return Vector(v1.x-v2.x, v1.y-v2.y).rotateLeft90;
-        else return Vector(v1.x-v2.x, v1.y-v2.y).rotateRight90;
+        var v = new Vec2(v1.x-v2.x, v1.y-v2.y);
+        if (dir > EPSILON) {
+            return v.rotateLeft90();
+        }
+        return v.rotateRight90();
     }
 
-    inline function outsidePortal(v1:Vec2, v2:Vec2) {
+    function outsidePortal(v1:Vec2, v2:Vec2) {
         // Perp-dot product
         var dir = v1.x * v2.y - v1.y * v2.x;
-        if (dir < EPSILON) return Vector(v1.x-v2.x, v1.y-v2.y).rotateLeft90;
-        else return Vector(v1.x-v2.x, v1.y-v2.y).rotateRight90;
+        var v = new Vec2(v1.x-v2.x, v1.y-v2.y);
+        if (dir < EPSILON) {
+            return v.rotateLeft90();
+        }
+        return v.rotateRight90();
     }
 
-    inline function originInTriangle(a:Vec2, b:Vec2, c:Vec2) {
+    function originInTriangle(a:Vec2, b:Vec2, c:Vec2) {
         var ab = b.sub(a);
         var bc = c.sub(b);
         var ca = a.sub(c);
-        var pab = Util.cross(-a.neg(), ab);
-        var pbc = Util.cross(-b.neg(), bc);
-        var sameSign : Bool = (((pab > 0) - (pab < 0)) == ((pbc > 0) - (pbc < 0)));
+        var pab = Util.cross(a.neg(), ab);
+        var pbc = Util.cross(b.neg(), bc);
+        var sameSign : Bool = ((pab < 0) == (pbc < 0));
         if (!sameSign) return false;
-        var pca = cross(-c.neg(), ca);
-        sameSign = (((pab > 0) - (pab < 0)) == ((pca > 0) - (pca < 0)));
+        var pca = Util.cross(c.neg(), ca);
+        sameSign = ((pab < 0) == (pbc < 0));
         if (!sameSign) return false;
         return true;
     }
 
-    inline function intersectPortal(v0:Vec2, v1:Vec2, v2:Vec2) {
+    function intersectPortal(v0:Vec2, v1:Vec2, v2:Vec2) {
         var a = new Vec2(0,0);
         var b = v0.clone();
         var c = v1.clone();
@@ -102,8 +108,8 @@ class Mpr
         if (v0.isZero()) v0 = new Vec2(0.00001, 0);
 
         // v1 = support in direction of origin
-        var n = v0.neg();
-        var v11 = shape1.support(-n);
+        var n  = v0.neg();
+        var v11 = shape1.support(n.neg());
         var v12 = shape2.support(n);
         var v1 = v12.sub(v11);
 
@@ -114,20 +120,20 @@ class Mpr
         if (Util.dot(v1,n) <= 0) return false;
 
         // Find a candidate portal
-        n = outsidePortal(v1,v0);
-        var v21 = shape1.support(-n);
+        n = outsidePortal(v1, v0);
+        var v21 = shape1.support(n.neg());
         var v22 = shape2.support(n);
         var v2 = v22.sub(v21);
 
-        if(sA[length-1] != v21) sA[sA.length] = v21;
-        if(sB[length-1] != v22) sB[sB.length] = v22;
+        if(sA[sA.length-1] != v21) sA[sA.length] = v21;
+        if(sB[sB.length-1] != v22) sB[sB.length] = v22;
 
         // origin outside v2 support plane ==> miss
         if (Util.dot(v2,n) <= 0) return false;
 
         // Phase two: Portal refinement
         var maxIterations = 0;
-        while (1) {
+        while (true) {
             // Find normal direction
             if(!intersectPortal(v0,v2,v1)) {
                 n = insidePortal(v2,v1);
@@ -136,14 +142,14 @@ class Mpr
                 n = outsidePortal(v2,v1);
             }
             // Obtain the next support point
-            var v31 = shape1.support(-n);
+            var v31 = shape1.support(n.neg());
             var v32 = shape2.support(n);
             var v3 = v32.sub(v31);
-            if(sA[length-1] != v21) sA[sA.length] = v31;
-            if(sB[length-1] != v22) sB[sB.length] = v32;
+            if(sA[sA.length-1] != v21) sA[sA.length] = v31;
+            if(sB[sB.length-1] != v22) sB[sB.length] = v32;
             if (Util.dot(v3,n) <= 0) {
                 var ab = v3.sub(v2);
-                var t = -Util.dot(v2,ab)/dot(ab,ab);
+                var t = -Util.dot(v2,ab)/Util.dot(ab,ab);
                 returnNormal = v2.add(ab.mul(t));
                 return false;
             }

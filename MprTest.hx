@@ -292,9 +292,9 @@ class System
     public var penetrate : Bool;
 
     // CSO
-    public var sA : FastList<Vec2>;           
-    public var sB : FastList<Vec2>;                        
-    public var sAB : FastList<Vec2>;
+    public var sA : Array<Vec2>;           
+    public var sB : Array<Vec2>;                        
+    public var sAB : Array<Vec2>;
 
     public var point1 : Vec2;
     public var point2 : Vec2;
@@ -305,9 +305,9 @@ class System
     public function new() {
         
         rb = new Array();
-        sA = new FastList();
-        sB = new FastList();
-        sAB = new FastList();
+        sA = new Array();
+        sB = new Array();
+        sAB = new Array();
         mpr = new Mpr();
         chainHull = new ChainHull();
         
@@ -326,9 +326,9 @@ class System
         rb[0].update(dt);
         rb[1].update(dt);
         // Clear display infromation
-        sA = new FastList();
-        sB = new FastList();
-        sAB = new FastList();
+        sA = new Array();
+        sB = new Array();
+        sAB = new Array();
         point1 = new Vec2(0,0);
         point2 = new Vec2(0,0);
 
