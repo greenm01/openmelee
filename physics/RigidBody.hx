@@ -33,6 +33,7 @@ package physics;
 import haxe.FastList;
 
 import utils.Vec2;
+import utils.Util;
 
 enum ShapeType {
     TRIANGLE;
@@ -45,8 +46,11 @@ enum ShapeType {
 // For mpr algorithm testing
 class RigidBody
 {
+    // Poltgon scale factor
+    public static var SCALE = 5; 
+    
     var vL : FastList<Vec2>;
-    var vW : FastList<Vec2>;
+    public var vW : FastList<Vec2>;
     
     // State variables
     // Global position of center of mass
@@ -54,21 +58,21 @@ class RigidBody
     // Local position of center of mass
     public var center : Vec2;
     // Rotation position				
-    var q : Float;					
+    public var q : Float;					
 
     // Derived quantities (auxiliary variables)
     // linear velocity
-    var vel : Vec2;					
+    public var vel : Vec2;					
     // angular velocity
-    var omega : Float;				
+    public var omega : Float;				
 
-    var type : ShapeType;
-    var radius : Float;
+    public var type : ShapeType;
+    public var radius : Float;
 
     public function new(type:ShapeType) {
         pos = new Vec2(0,0);
         center = new Vec2(0,0);
-        vel = new Vel(0,0);
+        vel = new Vec2(0,0);
         this.type = type;
         shape(type);
         q = 0.0001;
@@ -118,17 +122,13 @@ class RigidBody
         transform();
     }
 
+    // Updat world coordinates
     private function transform() {
-        // Update world coordinates
-        //Polar rotation to cartesian coordinates
         var degrees = q * 180.0/Math.PI;			
-
         while (degrees > 360) degrees -= 360;
         while (degrees < -360) degrees += 360;
-
         var cd = Math.cos(degrees);
         var sd = Math.sin(degrees);
-
         vW = new FastList();
         for(v in vL) {
             var x = pos.x + SCALE*(v.x*cd + v.y*sd);
@@ -137,21 +137,17 @@ class RigidBody
         }
     }
 
-    private function support(n:Vec2) {
+    public function support(n:Vec2) {
         var r = new Vec2(0,0);
         if(type == ShapeType.CIRCLE) {
-            r = n.getNormal.mul(radius).mul(SCALE);
-            r = r.add(pos);
+            r = n.getNormal().mul(radius).mul(SCALE);
+            r.addAsn(pos);
         } else {
-            var i = vW.length-1;
-            r = vW[i--];
-            while (i>=0)
-            {
-                if ( (vW[i] - r) * n >= 0 )
-                {
-                    r = vW[i];
+            r = vW.first();
+            for(v in vW) {
+                if (Util.dot(v.sub(r), n) >= 0 ) {
+                    r = v;
                 }
-                i--;
             }
         }
         return r;

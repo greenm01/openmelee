@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package haxmel.utils;
+package utils;
 
 ///
 class Mat22 
@@ -36,16 +36,16 @@ class Mat22
     /**
      * The columns
      */
-    var col1 : Vec2, 
-    var col2 : Vec2;
+    public var col1 : Vec2; 
+    public var col2 : Vec2;
     
     public function new(c1:Vec2, c2:Vec2) {
         this.col1 = c1;
         this.col2 = c2;
     }
 
-    public inline function setAngle(angle:Float) {
-        var c = Math.cos(angle), 
+    public inline function set(angle:Float) {
+        var c = Math.cos(angle); 
         var s = Math.sin(angle);
         col1.x = c;
         col2.x = -s;
@@ -53,7 +53,7 @@ class Mat22
         col2.y = c;
     }
 
-    public inline function set(c1:Vec2, c2:Vec2) {
+    public inline function setCols(c1:Vec2, c2:Vec2) {
         col1 = c1;
         col2 = c2;
     }
@@ -119,7 +119,7 @@ class Mat22
         var a22 = col2.y;
         var det = a11 * a22 - a12 * a21;
         if(det == 0.0) throw "invert error";
-        det = 1.0f / det;
+        det = 1.0 / det;
         var x = new Vec2(0,0);
         x.x = det * (a22 * b.x - a12 * b.y);
         x.y = det * (a11 * b.y - a21 * b.x);
@@ -133,7 +133,7 @@ class Mat22
      * Returns: A new matrix containing the result of the addition
      */
     public inline function add(B:Mat22) {
-        var C = new Mat22(new Vec2(0,0), new Vec2(0,0);
+        var C = new Mat22(new Vec2(0,0), new Vec2(0,0));
         C.set(col1.add(B.col1), col2.add(B.col2));
         return C;
     }

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://www.dsource.org/projects/openmelee
- * 
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -83,10 +83,11 @@ class Ship
         shapeList = new FastList();
     }
 
-    public inline function thrust() {
+    public function thrust() {
         var force = Util.rotate(engineForce, rBody.a);
         rBody.f.x += force.x;
         rBody.f.y += force.y;
+        trace(rBody.f.x);
     }
 
     public inline function turnLeft() {

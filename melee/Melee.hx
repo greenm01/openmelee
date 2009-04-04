@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://kenai.com/projects/haxmel
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
  *
@@ -48,10 +48,7 @@ import render.Render;
 // World settings
 typedef Settings = {
     var hz : Float;
-    var velocityIterations : Int;
-    var positionIterations : Int;
-    var enableWarmStarting : Bool;
-    var enableTOI : Bool;
+    var iterations : Int;
 }
 
 class Melee 
@@ -65,7 +62,7 @@ class Melee
     var render : Render;
 
     //var ai : AI;
-    var human : Human;
+    public var human : Human;
 
     public var ship1 : Ship;
 	public var ship2 : Ship;
@@ -78,7 +75,9 @@ class Melee
 
     public function new() {
         
+        settings = {hz : 60.0, iterations : 2};
         timeStep = if(settings.hz > 0.0) 1.0 / settings.hz else 0.0;
+    
         gravity = new Vector(0, 0);
         objectList = new FastList();
 
@@ -102,14 +101,18 @@ class Melee
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            world.step(timeStep, settings.velocityIterations);
+            world.step(timeStep, settings.iterations);
             // Update screen
             render.update();
 
+            if(Math.isNaN(ship1.rBody.x)) {
+                throw "bad";
+            }
+            
             // Limit velocities
             for(o in objectList) {
-                o.limitVelocity();
-                o.updateState();
+                //o.limitVelocity();
+                //o.updateState();
             }
 
             // Apply thrust
@@ -121,15 +124,16 @@ class Melee
 
     private function initWorld() {
 	    // Define world boundaries
-		worldAABB.l = -400;
-		worldAABB.b = -250;
-		worldAABB.t = 250;
-		worldAABB.r = 400;
+	    var left = -400;
+	    var top = 250;
+	    var right = 400;
+	    var bottom = -250;
+	    worldAABB = new AABB(left, top, right, bottom);
 		var bf = new phx.col.SortedList();
 		world = new World(worldAABB, bf);
-		ship2 = new UrQuan(world);
+		world.gravity = new Vector(0,-5);
+		//ship2 = new UrQuan(world);
 		ship1 = new Orz(world);
-        ship2.rBody.a = Math.PI/4;
         //planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
             //var asteroid = new Asteroid(world);

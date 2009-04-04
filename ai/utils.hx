@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://www.dsource.org/projects/openmelee
- * 
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,

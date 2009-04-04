@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://kenai.com/projects/haxmel
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
  *
@@ -30,26 +30,32 @@
  */
 package utils;
 
-import phx.Vector;
-
 // Vector utility functions
 class Util
 {
-    public static inline function rotate(v : Vector, angle : Float) {
+    public static inline function rotate(v:Vec2, angle:Float) {
         var cos = Math.cos(angle);
         var sin = Math.sin(angle);
-        return new Vector((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x));
+        return new Vec2((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x));
     }
     
-    public static inline function cross(a : Vector, b : Vector) {
+    public static inline function cross(a:Vec2, b:Vec2) {
         return a.x * b.y - a.y * b.x;
     }
     
-    public static inline function dot(a : Vector, b : Vector) {
+    public static inline function dot(a:Vec2, b:Vec2) {
         return a.x * b.x + a.y * b.y;
     }
     
-    public static inline function clamp (a : Float, low : Float, high : Float) {
+    public static inline function clamp (a:Float, low:Float, high:Float) {
         return Math.max(low, Math.min(a, high));
+    }
+    
+    public static inline function mul22(A:Mat22, v:Vec2) {
+       return new Vec2(dot(v, A.col1), dot(v, A.col2));
+    }
+
+    public static inline function mulXF(T:XForm, v:Vec2) {
+        return mul22(T.R, v.sub(T.position));
     }
 }

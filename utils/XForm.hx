@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package haxmel.utils;
+package utils;
 
 /*
  * A transform contains translation and rotation. It is used to represent
@@ -38,9 +38,9 @@ class XForm
 {
 
      /// The position
-    position : Vec2;
+    public var position : Vec2;
     /// The rotation
-    R : Mat22;
+    public var R : Mat22;
     
     /**
      * Initialize using a position vector and a rotation matrix.

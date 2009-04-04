@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://kenai.com/projects/haxmel
- * Based on code from Box2D, by Erin Catto: http://www.box2d.org
- * 
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -90,6 +89,7 @@ class Render
         
         GLFW.setKeyFunction(function( a:Int, b:Int ) {
 			trace("key: "+a+", "+b );
+			melee.human.onKey(a, b);
 		});
         
         GLFW.setWindowCloseFunction( function() {
@@ -101,34 +101,16 @@ class Render
     
     public function update() {
         // Limit the fps
+        GLFW.pollEvents();
         GLFW.swapInterval(1);
         draw();
         GLFW.swapBuffers();
     }
 
-    static function drawCircle( circ : Circle ) {
-        var c = new Vector(circ.tC.x, circ.tC.y);
-        var r = circ.r;
-        var segs = 20;
-        var coef = 2.0 * Math.PI / segs;
-        var theta = circ.body.a;
-        GL.begin(GL.LINE_STRIP); 
-        {
-            for (n in 0...segs+1) {
-                var rads = n * coef;
-                var x = r * Math.cos(rads + theta) + c.x;
-                var y = r * Math.sin(rads + theta) + c.y;
-                GL.vertex2(x, y);
-            }
-            GL.vertex2(c.x, c.y);
-        } 
-        GL.end();
-        GL.loadIdentity();
-        GL.flush();
-	}
-
-    function drawSolidCircle(center : Vector, radius : Float, axis : Vector, color : Color)
+    function drawSolidCircle(circ : Circle, color : Color)
     {
+        var center = new Vector(circ.tC.x, circ.tC.y);
+        var radius = circ.r; 
         var k_segments = 25;
         var k_increment = 2.0 * Math.PI / k_segments;
         var theta = 0.0;
@@ -153,35 +135,19 @@ class Render
             theta += k_increment;
         }
         GL.end();
-
-        var p = center.plus(axis.mult(radius));
-        GL.begin(GL.LINES);
-        GL.vertex2(center.x, center.y);
-        GL.vertex2(p.x, p.y);
-        GL.end();
     }
 
-    function drawPolygon(glVerts : Array<Vector>, color : Color)
+    function drawSolidPolygon(p : Polygon, color : Color)
     {
-        GL.color3(color.r, color.g, color.b);
-        GL.begin(GL.LINE_LOOP);
-        {
-            for(v in glVerts) {
-                GL.vertex2(v.x, v.y);
-            }
-        }
-        GL.end();
-    }
-
-    function drawSolidPolygon(vertices : Array<Vector>, color : Color)
-    {
+        var v = p.tVerts;
         GL.enable(GL.BLEND);
         GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
         {
-            for(v in vertices) {
+            while( v != null ) {
                 GL.vertex2(v.x, v.y);
+                v = v.next;
             }
         }
         GL.end();
@@ -190,15 +156,20 @@ class Render
         GL.color4(color.r, color.g, color.b, 1.0);
         GL.begin(GL.LINE_LOOP);
         {
-            for(v in vertices) {
+            while( v != null ) {
                 GL.vertex2(v.x, v.y);
+                v = v.next;
             }
         }
         GL.end();
     }
     
     function drawShape(s : Shape, color : Color) {
-        
+        switch( s.type ) {
+            case Shape.CIRCLE: drawSolidCircle(s.circle, color);
+            case Shape.POLYGON: drawSolidPolygon(s.polygon, color);
+            //case Shape.SEGMENT: drawSegment(s.segment);
+        }
     }
    
     function draw() {

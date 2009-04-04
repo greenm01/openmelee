@@ -28,16 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package haxmel.utils;
+package utils;
 
 class Vec2
 {
-    var x : Float;
-    var y : Float;
+    public var x : Float;
+    public var y : Float;
 
     public function new(x:Float, y:Float) {
        this.x = x;
        this.y = y;
+    }
+    
+    public inline function clone() {
+        return new Vec2(x, y);
     }
     
     public inline function zero() {
@@ -45,19 +49,19 @@ class Vec2
         y = 0.0;
     }
     
+    public inline function isZero() {
+        return(x == 0 && y == 0);
+    }
+    
     public inline function set(x:Float, y:Float) {
         this.x = x;
         this.y = y;
     }
     
-    public inline function clone() {
-        return new Vec2(x, y);
-    }
-
     public inline function normalize() {
         var m = length();
-        x *= 1.0f/m;
-        y *= 1.0f/m;
+        x *= 1.0/m;
+        y *= 1.0/m;
     }
 
     public inline function getNormal() {
@@ -83,9 +87,13 @@ class Vec2
         return new Vec2(x - u.x, y - u.y);
     }
 
-    public inline function mul(s:Float)	
-    {
+    public inline function mul(s:Float)	{
         return new Vec2(x*s, y*s);
+    }
+    
+    public inline function mulAsn(s:Float) {
+        x *= s;
+        y *= s;
     }
 
     public inline function rotateLeft90() {

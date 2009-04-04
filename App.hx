@@ -1,4 +1,4 @@
-// Ported by Mason Green (zzzzrrr)
+// Ported by Mason Green 
 
 import opengl.GL;
 import opengl.GLU;
