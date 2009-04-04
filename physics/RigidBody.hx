@@ -81,28 +81,25 @@ class RigidBody
 
     private function shape(hull:ShapeType) {
         type = hull;
+        vL = new FastList();
         switch (hull)
         {
         case ShapeType.TRIANGLE:		
-            vL = new FastList();
             vL.add(new Vec2(0,1));
             vL.add(new Vec2(1,-1));
             vL.add(new Vec2(-1,-1));
         case ShapeType.QUAD:		
-            vL = new FastList();
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(1,-1));
             vL.add(new Vec2(-1,-1));
             vL.add(new Vec2(-1,1));
         case ShapeType.PENTAGON:		
-            vL = new FastList();
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(2,0));
             vL.add(new Vec2(0,-2));
             vL.add(new Vec2(-2,0));
             vL.add(new Vec2(-1,1));
         case ShapeType.HEXAGON:		
-            vL = new FastList();
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(1.5,0));
             vL.add(new Vec2(0.5,-3));
@@ -119,7 +116,9 @@ class RigidBody
         pos.x += vel.x*dt;
         pos.y += vel.y*dt;
         q += omega*dt;
-        transform();
+        if(type != ShapeType.CIRCLE) {
+            transform();
+        }
     }
 
     // Updat world coordinates

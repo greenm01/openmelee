@@ -31,6 +31,8 @@
 
 import haxe.FastList;
 
+import neko.Lib;
+
 import opengl.GL;
 import opengl.GLU;
 import opengl.GLFW;
@@ -46,17 +48,19 @@ class MprTest {
     static var system : System;
     static var close : Bool;
     
-    static var closestFeatures : Bool;
-    static var closestPoints : Bool;
+    static var closestFeatures : Bool = false;
+    static var closestPoints : Bool = true;
     
     static function drawScene() {
         GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
         drawBullsEye();
-        drawMinkowskiHull();
+        //drawMinkowskiHull();
         drawContactPoints();
         drawSimplex();
+        GL.color3(1, 0, 0);
         for( b in system.rb) {
             drawShape(b);
+            GL.color3(0, 1, 0);
         }
         GLFW.swapBuffers();
     }
@@ -91,7 +95,6 @@ class MprTest {
 	}
 
 	static function drawPoly( polygon : RigidBody) {
-        GL.color3(0, 1, 0);
         GL.begin( GL.LINE_LOOP );
         {
             for(v in polygon.vW) {
@@ -106,7 +109,6 @@ class MprTest {
     static function drawContactPoints() {
         if (system.penetrate) {
             GL.loadIdentity();
-            GL.translate(50,50,0);
             GL.color3(1,1,0);
             GL.begin(GL.POINTS);
             {
@@ -136,7 +138,7 @@ class MprTest {
                 }
             }
             GL.end();
-        }
+        } 
     }
     
     static function drawBullsEye() {
@@ -144,22 +146,21 @@ class MprTest {
         GL.lineWidth(2);
         GL.begin(GL.LINES);
         {
-            GL.vertex2(50,52.5);
-            GL.vertex2(50,47.5);
-            GL.vertex2(47.5,50);
-            GL.vertex2(52.5,50);
+            GL.vertex2(0.0,2.5);
+            GL.vertex2(0.0,-2.5);
+            GL.vertex2(2.5,0.0);
+            GL.vertex2(-2.5,0.0);
         }
         GL.end();
     }
     
     static function drawMinkowskiHull() {
+        GL.color3(1,1,1);
         GL.begin(GL.LINE_STRIP);
         {
-            var k = 0;
             for(m in system.minkHull) {
                 if (m.x != 0 && m.y != 0) {
                     GL.vertex2(m.x, m.y);
-                    k++;
                 }
             }
         }
@@ -168,7 +169,6 @@ class MprTest {
     
     static function drawSimplex() {
         GL.loadIdentity();
-        GL.translate(50,50,0);
         GL.color3(1,1,0);
         GL.begin(GL.LINE_LOOP);
         {
@@ -200,7 +200,7 @@ class MprTest {
 	    
         var screenSize = new Vec2(800, 600);
         var viewCenter : Vec2 = new Vec2(0,0);
-        var zoom = 15;
+        var zoom = 10;
 		var close = false;
 		
 		var left = -screenSize.x / zoom;
@@ -210,23 +210,29 @@ class MprTest {
 
 		GLFW.openWindow(Std.int(screenSize.x), Std.int(screenSize.y), 8,8,8, 8,8,0, GLFW.WINDOW );
 		initGL(left, right, bottom, top, viewCenter);
+		
 		GLFW.setKeyFunction(onKey);
-        
+        GLFW.setWindowCloseFunction( function() {
+			trace("window close" );
+			close = true;
+			return 1;
+		});
+		
         system = new System();
         var Hz = 60;
 
 		while(!close) {
+		    system.step(1/Hz);
+		    drawScene();
 			GLFW.pollEvents();
-            system.step(1/Hz);
-            drawScene();
-		}
+		} 
 		GLFW.terminate();
 		
 	}
 	
 	static var onKey = function(key:Int, state:Int) {
 	     // Key pressed
-		if (state == 257 || state == 1) {
+		if (state == GLFW.PRESS) {
 			switch (key) {
 			    case GLFW.KEY_ESC:
 			        close = true;
@@ -246,33 +252,44 @@ class MprTest {
                     system.rb[1].omega += 0.01;
                 case GLFW.KEY_ENTER:
                     system.rb[1].omega -= 0.01;
-                case cast("d"):
+                case 68:
+                    trace("d");
                     system.rb[0].vel.x += 5.0;
-                case cast("a"):
+                case 65:
+                    trace("a");
                     system.rb[0].vel.x -= 5.0;
-                case cast("w"):
+                case 87:
+                    trace("w");
                     system.rb[0].vel.y += 5.0;
-                case cast("s"):
+                case 83:
+                    trace("s");
                     system.rb[0].vel.y -= 5.0;
-                case cast("e"):
+                case 69:
+                    trace("e");
                     system.rb[0].omega += 0.01;
-                case cast("q"):
+                case 81:
+                    trace("q");
                     system.rb[0].omega -= 0.01;
-                case cast("c"):
+                case 67:
+                    trace("c");
                     system.rb[0].vel.x = 0.0;
                     system.rb[0].vel.y = 0.0;
                     system.rb[0].omega = 0.0;
-                case cast("p"):
+                case 80:
+                    trace("p");
                     system.rb[0].q = 0.0;
                     system.rb[1].q = 0.0;
-                case cast("]"):
+                case 93:
+                    trace("]");
                     system.spawn(ShapeType.TRIANGLE);
-                case cast("["):
+                case 91:
+                    trace("[");
                     system.spawn(ShapeType.CIRCLE);
             }
         } else {
             // Key Released
         }
+        return 1;
     }
 }
 
@@ -310,16 +327,21 @@ class System
         sAB = new Array();
         mpr = new Mpr();
         chainHull = new ChainHull();
+        returnNormal = new Vec2(0.0, 0.0);
+        penetrate = false;
         
         rb[0] = new RigidBody(ShapeType.TRIANGLE);
         rb[0].pos = new Vec2(40.0, 20.0);
         rb[0].vel = new Vec2(0.0, 0.0);
         rb[0].omega = 0.01;
 
-        rb[1] = new RigidBody(ShapeType.CIRCLE);
+        rb[1] = new RigidBody(ShapeType.QUAD);
         rb[1].pos = new Vec2(40.0, 40.0);
         rb[1].vel = new Vec2(0.1, 0.0);
         rb[1].omega = 0.01;
+        
+        point1 = new Vec2(0,0);
+        point2 = new Vec2(0,0);
     }
 
     public function step(dt:Float) {
@@ -329,9 +351,6 @@ class System
         sA = new Array();
         sB = new Array();
         sAB = new Array();
-        point1 = new Vec2(0,0);
-        point2 = new Vec2(0,0);
-
         penetrate = mpr.collide(rb[0], rb[1], returnNormal, point1, point2, sAB, sA, sB);
         minkDiff();
 
@@ -348,8 +367,7 @@ class System
         var i = 0;
         for(rb1 in rb[1].vW) {
             for(rb2 in rb[0].vW) {
-                minkSum[i].x = rb1.x - rb2.x;
-                minkSum[i++].y = rb1.y - rb2.y;
+                minkSum[i++] = new Vec2(rb1.x - rb2.x, rb1.y - rb2.y);
             }
         }
 

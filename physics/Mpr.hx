@@ -100,8 +100,8 @@ class Mpr
         // Phase one: Portal discovery
         
         // v0 = center of Minkowski sum
-        var v01 = shape1.center;
-        var v02 = shape2.center;
+        var v01 = shape1.pos;
+        var v02 = shape2.pos;
         var v0 = v02.sub(v01);
 
         // Avoid case where centers overlap -- any direction is fine in this case
@@ -160,20 +160,23 @@ class Mpr
                 var t = Util.dot(v1.neg(),ab);
                 if (t <= 0.0) {
                     t   = 0.0;
-                    returnNormal = v1;
+                    returnNormal.set(v1.x, v1.y);
                 } else {
                     var denom = Util.dot(ab,ab);
                     if (t >= denom) {
-                        returnNormal = v2;
+                        returnNormal.set(v2.x, v2.y);
                         t   = 1.0;
                     } else {
                         t  /= denom;
-                        returnNormal = v1.add(ab.mul(t));
+                        var t1 = v1.add(ab.mul(t));
+                        returnNormal.set(t1.x, t1.y);
                     }
                 }
                 var s = 1 - t;
-                point1 = v11.mul(t).add(v21.mul(t));
-                point2 = v12.mul(s).add(v22.mul(t));
+                var t1 = v11.mul(s).add(v21.mul(t));
+                var t2 = v12.mul(s).add(v22.mul(t));
+                point1.set(t1.x, t1.y);
+                point2.set(t2.x, t2.y);
                 sAB[sAB.length] = v0;
                 sAB[sAB.length] = v1;
                 sAB[sAB.length] = v2;
