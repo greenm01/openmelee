@@ -28,113 +28,83 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package utils;
-
-import tango.math.Math;
-import tango.util.collection.ArraySeq;
-
-const EPSILON = float.epsilon;
+package haxmel.utils;
 
 class Vec2
 {
-    double x = 0f, y = 0f;
+    var x : Float;
+    var y : Float;
 
-    static Vector opCall(double ax, double ay)
-    {
-        Vector u;
-        u.x = ax;
-        u.y = ay;
-        return u;
+    public function new(x:Float, y:Float) {
+       this.x = x;
+       this.y = y;
+    }
+    
+    public inline function zero() {
+        x = 0.0;
+        y = 0.0;
+    }
+    
+    public inline function set(x:Float, y:Float) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public inline function clone() {
+        return new Vec2(x, y);
     }
 
-    void normalize()
-    {
-        double m = magnitude();
+    public inline function normalize() {
+        var m = length();
         x *= 1.0f/m;
         y *= 1.0f/m;
     }
 
-    Vector getNormal()
-    {
-        double m = magnitude();
-        return Vector(x/m,y/m);
+    public inline function getNormal() {
+        var m = length();
+        return new Vec2(x/m,y/m);
     }
 
-
-    Vector opAdd(Vector u)
-    {
-        return Vector(x + u.x, y + u.y);
+    public function add(u:Vec2) {
+        return new Vec2(x + u.x, y + u.y);
     }
 
-    void opAddAssign(Vector u)
-    {
+    public function addAsn(u:Vec2) {
         x += u.x;
         y += u.y;
     }
 
-    void opSubAssign(Vector u)
-    {
+    public inline function subAsn(u:Vec2) {
         x -= u.x;
         y -= u.y;
     }
 
-    Vector opSub(Vector u)
-    {
-        return Vector(x - u.x, y - u.y);
+    public inline function sub(u:Vec2) {
+        return new Vec2(x - u.x, y - u.y);
     }
 
-    real opMul(Vector u)			// Vector Dot Product
+    public inline function mul(s:Float)	
     {
-        return(x*u.x + y*u.y);
+        return new Vec2(x*s, y*s);
     }
 
-    Vector opMul(double s)			// Scaler Multiplication
-    {
-        return Vector(x*s, y*s);
+    public inline function rotateLeft90() {
+        return new Vec2( -y, x );
     }
 
-    // Perp-dot product
-    float opXor(Vector v)
-    {
-        return x * v.y - y * v.x;
+    public inline function rotateRight90() {
+        return new Vec2( y, -x );
     }
 
-    // Perp-dot product
-    float cross(Vector v)
-    {
-        return x * v.y - y * v.x;
+    public inline function length() {
+        return Math.sqrt(x*x + y*y);
     }
 
-    Vector rotateLeft90()
-    {
-        return Vector( -y, x );
+    public inline function neg() {
+        return new Vec2(-x, -y);
     }
 
-    Vector rotateRight90()
-    {
-        return Vector( y, -x );
-    }
-
-    real magnitude()
-    {
-        if(x == 0.0f) x = EPSILON;
-        if(y == 0.0f) y = EPSILON;
-        return sqrt(x*x + y*y);
-    }
-
-    bool isZero()
-    {
-        return ( x < EPSILON && x > -EPSILON && y < EPSILON && y > -EPSILON);
-    }
-
-    // negation
-    Vector opNeg()
-    {
-        return Vector(-x, -y);
-    }
-
-    Vector rotate(Vector v)
-    {
-        return Vector(x * v.x - y * v.y, x * v.y + y * v.x);
+    public inline function rotate(v:Vec2) {
+        return new Vec2(x * v.x - y * v.y, x * v.y + y * v.x);
     }
 }
