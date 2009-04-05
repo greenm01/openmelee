@@ -35,7 +35,7 @@ import haxe.FastList;
 import utils.Vec2;
 import utils.Util;
 
-enum ShapeType {
+enum DebugShape {
     TRIANGLE;
     QUAD;
     PENTAGON;
@@ -66,10 +66,10 @@ class RigidBody
     // angular velocity
     public var omega : Float;				
 
-    public var type : ShapeType;
+    public var type : DebugShape;
     public var radius : Float;
 
-    public function new(type:ShapeType) {
+    public function new(type:DebugShape) {
         pos = new Vec2(0,0);
         center = new Vec2(0,0);
         vel = new Vec2(0,0);
@@ -79,34 +79,34 @@ class RigidBody
         transform();
     }
 
-    public function shape(hull:ShapeType) {
+    public function shape(hull:DebugShape) {
         type = hull;
         vL = new FastList();
         switch (hull)
         {
-        case ShapeType.TRIANGLE:		
+        case DebugShape.TRIANGLE:		
             vL.add(new Vec2(0,1));
             vL.add(new Vec2(1,-1));
             vL.add(new Vec2(-1,-1));
-        case ShapeType.QUAD:		
+        case DebugShape.QUAD:		
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(1,-1));
             vL.add(new Vec2(-1,-1));
             vL.add(new Vec2(-1,1));
-        case ShapeType.PENTAGON:		
+        case DebugShape.PENTAGON:		
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(2,0));
             vL.add(new Vec2(0,-2));
             vL.add(new Vec2(-2,0));
             vL.add(new Vec2(-1,1));
-        case ShapeType.HEXAGON:		
+        case DebugShape.HEXAGON:		
             vL.add(new Vec2(1,1));
             vL.add(new Vec2(1.5,0));
             vL.add(new Vec2(0.5,-3));
             vL.add(new Vec2(-0.5,-3));
             vL.add(new Vec2(-1.5,0));
             vL.add(new Vec2(-1,1));
-        case ShapeType.CIRCLE:		
+        case DebugShape.CIRCLE:		
             radius = 1.5;
             var segs = 20;
             var c = pos;
@@ -135,17 +135,16 @@ class RigidBody
         var sd = Math.sin(degrees);
         vW = new FastList();
         for(v in vL) {
-            var x = pos.x + SCALE*(v.x*cd + v.y*sd);
-            var y = pos.y + SCALE*(-v.x*sd + v.y*cd);
+            var x = pos.x + (v.x*cd + v.y*sd);
+            var y = pos.y + (-v.x*sd + v.y*cd);
             vW.add(new Vec2(x,y));
         }
     }
 
     public function support(n:Vec2) {
         var r = new Vec2(0,0);
-        if(type == ShapeType.CIRCLE) {
-            r = n.getNormal();
-            r.mul(radius*SCALE);
+        if(type == DebugShape.CIRCLE) {
+            r = n.getNormal().mul(radius);
             r.addAsn(pos);
         } else {
             r = vW.first();

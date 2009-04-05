@@ -66,7 +66,7 @@ class MprTest {
     }
 
 	static function drawShape( b : RigidBody ) {
-	    if(b.type == ShapeType.CIRCLE) {
+	    if(b.type == DebugShape.CIRCLE) {
 	        drawCircle(b);
         } else {
             drawPoly(b);
@@ -145,16 +145,20 @@ class MprTest {
         GL.lineWidth(2);
         GL.begin(GL.LINES);
         {
-            GL.vertex2(0.0,2.5);
-            GL.vertex2(0.0,-2.5);
-            GL.vertex2(2.5,0.0);
-            GL.vertex2(-2.5,0.0);
+            GL.vertex2(0.0,1.0);
+            GL.vertex2(0.0,-1.0);
+            GL.vertex2(1.0,0.0);
+            GL.vertex2(-1.0,0.0);
         }
         GL.end();
     }
     
     static function drawMinkowskiHull() {
-        GL.color3(1,1,1);
+        if(system.penetrate) {
+            GL.color3(0,0,1);
+        } else {
+            GL.color3(1,1,1);
+        }
         GL.begin(GL.LINE_STRIP);
         {
             for(m in system.minkHull) {
@@ -199,7 +203,7 @@ class MprTest {
 	    
         var screenSize = new Vec2(800, 600);
         var viewCenter : Vec2 = new Vec2(0,0);
-        var zoom = 10;
+        var zoom = 60;
 		var close = false;
 		
 		var left = -screenSize.x / zoom;
@@ -226,6 +230,9 @@ class MprTest {
 			GLFW.pollEvents();
 		} 
 		GLFW.terminate();
+		
+		system.ms *= 1e3;
+		trace("Collision ms/cycle: " + system.ms/system.index);
 		
 	}
 	
@@ -293,16 +300,16 @@ class MprTest {
     
     static function spawn(rb:RigidBody) {
         switch(rb.type) {
-            case ShapeType.TRIANGLE:
-                system.spawn(rb, ShapeType.QUAD);
-            case ShapeType.QUAD:
-                system.spawn(rb, ShapeType.PENTAGON);
-            case ShapeType.PENTAGON:
-                system.spawn(rb, ShapeType.HEXAGON);
-            case ShapeType.HEXAGON:
-                system.spawn(rb, ShapeType.CIRCLE);
-            case ShapeType.CIRCLE:
-                system.spawn(rb, ShapeType.TRIANGLE);
+            case DebugShape.TRIANGLE:
+                system.spawn(rb, DebugShape.QUAD);
+            case DebugShape.QUAD:
+                system.spawn(rb, DebugShape.PENTAGON);
+            case DebugShape.PENTAGON:
+                system.spawn(rb, DebugShape.HEXAGON);
+            case DebugShape.HEXAGON:
+                system.spawn(rb, DebugShape.CIRCLE);
+            case DebugShape.CIRCLE:
+                system.spawn(rb, DebugShape.TRIANGLE);
         }
     }
 }
@@ -332,8 +339,14 @@ class System
     public var returnNormal : Vec2;
     
     var mpr : Mpr;
-
+    
+    public var ms : Float;
+    public var index : Int;
+    
     public function new() {
+        
+        ms = 0;
+        index = 0;
         
         rb = new Array();
         sA = new Array();
@@ -344,13 +357,13 @@ class System
         returnNormal = new Vec2(0.0, 0.0);
         penetrate = false;
         
-        rb[0] = new RigidBody(ShapeType.TRIANGLE);
-        rb[0].pos = new Vec2(40.0, 20.0);
+        rb[0] = new RigidBody(DebugShape.TRIANGLE);
+        rb[0].pos = new Vec2(5.0, 5.0);
         rb[0].vel = new Vec2(0.0, 0.0);
-        rb[0].omega = 0.01;
+        rb[0].omega = -0.01;
 
-        rb[1] = new RigidBody(ShapeType.QUAD);
-        rb[1].pos = new Vec2(40.0, 40.0);
+        rb[1] = new RigidBody(DebugShape.QUAD);
+        rb[1].pos = new Vec2(5.0, -0.0);
         rb[1].vel = new Vec2(0.1, 0.0);
         rb[1].omega = 0.01;
         
@@ -367,13 +380,19 @@ class System
         sAB = new Array();
         point1.set(0,0);
         point2.set(0,0);
+        var t1 = neko.Sys.time();
         penetrate = mpr.collide(rb[0], rb[1], returnNormal, point1, point2, sAB, sA, sB);
+        var t2 = neko.Sys.time();
+        if(penetrate) {
+            ms += (t2-t1);
+            index++;
+        } 
         minkDiff();
 
     }
 
     // Change Polygon Shape
-    public function spawn(rb:RigidBody, hull:ShapeType) {
+    public function spawn(rb:RigidBody, hull:DebugShape) {
         rb.shape(hull);
     }
 
