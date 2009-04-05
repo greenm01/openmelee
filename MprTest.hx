@@ -201,6 +201,8 @@ class MprTest {
 
 	public static function main() {
 	    
+	    var hGrid = new physics.HGrid();
+	    
         var screenSize = new Vec2(800, 600);
         var viewCenter : Vec2 = new Vec2(0,0);
         var zoom = 60;
@@ -378,8 +380,8 @@ class System
         sA = new Array();
         sB = new Array();
         sAB = new Array();
-        point1.set(0,0);
-        point2.set(0,0);
+        //point1.set(0,0);
+        //point2.set(0,0);
         var t1 = neko.Sys.time();
         penetrate = mpr.collide(rb[0], rb[1], returnNormal, point1, point2, sAB, sA, sB);
         var t2 = neko.Sys.time();

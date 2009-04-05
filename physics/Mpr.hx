@@ -159,7 +159,7 @@ class Mpr
             }
             // Portal lies on the outside edge of the Minkowski Hull.
             // Return contact information
-            if(Util.dot(v3.sub(v2),n) <= SIMPLEX_EPSILON || ++maxIterations > 5) {
+            if(Util.dot(v3.sub(v2),n) <= SIMPLEX_EPSILON || ++maxIterations > 3) {
                 var ab = v2.sub(v1);
                 var t = Util.dot(v1.neg(),ab);
                 if (t <= 0.0) {

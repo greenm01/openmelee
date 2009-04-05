@@ -33,6 +33,8 @@ package utils;
 // Vector utility functions
 class Util
 {
+    public static var EPSILON = 1e-5;
+    
     public static inline function rotate(v:Vec2, angle:Float) {
         var cos = Math.cos(angle);
         var sin = Math.sin(angle);
@@ -51,11 +53,11 @@ class Util
         return Math.max(low, Math.min(a, high));
     }
     
-    public static inline function mul22(A:Mat22, v:Vec2) {
+    public static function mul22(A:Mat22, v:Vec2) {
        return new Vec2(dot(v, A.col1), dot(v, A.col2));
     }
 
-    public static inline function mulXF(T:XForm, v:Vec2) {
+    public static function mulXF(T:XForm, v:Vec2) {
         return mul22(T.R, v.sub(T.position));
     }
 }

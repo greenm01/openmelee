@@ -108,7 +108,7 @@ class RigidBody
             vL.add(new Vec2(-1,1));
         case DebugShape.CIRCLE:		
             radius = 1.5;
-            var segs = 20;
+            var segs = 10;
             var c = pos;
             var r = radius;
             var coef = 2.0*Math.PI/segs;
