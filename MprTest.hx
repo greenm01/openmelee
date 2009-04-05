@@ -54,7 +54,7 @@ class MprTest {
     static function drawScene() {
         GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
         drawBullsEye();
-        //drawMinkowskiHull();
+        drawMinkowskiHull();
         drawContactPoints();
         drawSimplex();
         GL.color3(1, 0, 0);
@@ -159,7 +159,7 @@ class MprTest {
         GL.begin(GL.LINE_STRIP);
         {
             for(m in system.minkHull) {
-                if (m.x != 0 && m.y != 0) {
+                if (m.x != 0.0 && m.y != 0.0) {
                     GL.vertex2(m.x, m.y);
                 }
             }
@@ -219,7 +219,7 @@ class MprTest {
 		});
 		
         system = new System();
-        var Hz = 60;
+        var Hz = 90;
 
 		while(!close) {
 		    system.step(1/Hz);
@@ -371,14 +371,14 @@ class System
             }
         }
 
-        minkSum.sort(function(v1, v2) {
+        minkSum.sort(function(v1:Vec2, v2:Vec2) {
             if(v1.x == v2.x && v1.y == v2.y) return 0;
-            if(v1.x < v2.x || v1.y < v2.y) return -1;
+            if(v1.x < v2.x) return -1;
             return 1;
         });
         
         // Find Minkowski Hull
         minkHull = new Array();
-        chainHull.compute(minkSum, minkHull);					            
+        chainHull.compute(minkSum, minkHull);
     }
 }

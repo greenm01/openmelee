@@ -43,15 +43,16 @@ class ChainHull
         // the output array H[] will be used as the stack
         var bot = 0;
         var top = -1;       // indices for bottom and top of the stack
-        var i = 0;          // array scan index
+        var i : Int;          // array scan index
         var n = P.length;
 
         // Get the indices of points with min x-coord and min|max y-coord
         var minmin = 0;
         var minmax = 0;
         var xmin = P[0].x;
-        for(p in P) {
-            if (p.x != xmin) break;
+        i = 1;
+        while(i < n) { 
+            if (P[i].x != xmin) break;
             i++;
         }
         minmax = i-1;
@@ -67,8 +68,9 @@ class ChainHull
         // Get the indices of points with max x-coord and min|max y-coord
         var maxmin, maxmax = n-1;
         var xmax = P[n-1].x;
-        for (p in P) {
-            if (p.x != xmax) break;
+        i = n-2;
+        while(i>=0) {
+            if (P[i].x != xmax) break;
             i--;
         }
         maxmin = i+1;
