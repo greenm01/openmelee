@@ -64,18 +64,28 @@ class Mpr
         return v.rotateRight90();
     }
 
-    function originInTriangle(a:Vec2, b:Vec2, c:Vec2) {
-        var ab = b.sub(a);
-        var bc = c.sub(b);
-        var ca = a.sub(c);
-        var pab = Util.cross(a.neg(), ab);
-        var pbc = Util.cross(b.neg(), bc);
-        var sameSign = ((pab < 0) == (pbc < 0));
-        if (!sameSign) return false;
-        var pca = Util.cross(c.neg(), ca);
-        sameSign = ((pab < 0) == (pbc < 0));
-        if (!sameSign) return false;
-        return true;
+    function originInTriangle(A:Vec2, B:Vec2, C:Vec2) {
+        
+        // Compute vectors        
+        var v0 = C.sub(A);
+        var v1 = B.sub(A);
+        var v2 = A.neg();
+
+        // Compute dot products
+        var dot00 = Util.dot(v0, v0);
+        var dot01 = Util.dot(v0, v1);
+        var dot02 = Util.dot(v0, v2);
+        var dot11 = Util.dot(v1, v1);
+        var dot12 = Util.dot(v1, v2);
+
+        // Compute barycentric coordinates
+        var invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+        var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        // Check if point is in triangle
+        return (u > 0) && (v > 0) && (u + v < 1);
+
     }
 
     function intersectPortal(v0:Vec2, v1:Vec2, v2:Vec2) {
