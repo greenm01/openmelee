@@ -38,7 +38,7 @@ import utils.Util;
 class Mpr
 {
     
-    static var SIMPLEX_EPSILON = 0.01;
+    static var SIMPLEX_EPSILON = 1e-2;
     static var EPSILON = 1e-5;
     
     public function new() {
@@ -70,7 +70,7 @@ class Mpr
         var ca = a.sub(c);
         var pab = Util.cross(a.neg(), ab);
         var pbc = Util.cross(b.neg(), bc);
-        var sameSign : Bool = ((pab < 0) == (pbc < 0));
+        var sameSign = ((pab < 0) == (pbc < 0));
         if (!sameSign) return false;
         var pca = Util.cross(c.neg(), ca);
         sameSign = ((pab < 0) == (pbc < 0));
@@ -117,7 +117,7 @@ class Mpr
         sB[sB.length] = v12;
 
         // origin outside v1 support plane ==> miss
-        if (Util.dot(v1,n) <= 0) return false;
+        if (Util.dot(v1, n) <= 0) return false;
 
         // Find a candidate portal
         n = outsidePortal(v1, v0);
@@ -129,17 +129,17 @@ class Mpr
         if(sB[sB.length-1] != v22) sB[sB.length] = v22;
 
         // origin outside v2 support plane ==> miss
-        if (Util.dot(v2,n) <= 0) return false;
+        if (Util.dot(v2, n) <= 0) return false;
 
         // Phase two: Portal refinement
         var maxIterations = 0;
         while (true) {
             // Find normal direction
-            if(!intersectPortal(v0,v2,v1)) {
+            if(!intersectPortal(v0, v2, v1)) {
                 n = insidePortal(v2,v1);
             } else {
                 // Origin ray crosses the portal
-                n = outsidePortal(v2,v1);
+                n = outsidePortal(v2, v1);
             }
             // Obtain the next support point
             var v31 = shape1.support(n.neg());
@@ -150,12 +150,13 @@ class Mpr
             if (Util.dot(v3,n) <= 0) {
                 var ab = v3.sub(v2);
                 var t = -Util.dot(v2,ab)/Util.dot(ab,ab);
-                returnNormal = v2.add(ab.mul(t));
+                var tmp = v2.add(ab.mul(t));
+                returnNormal.set(tmp.x, tmp.y);
                 return false;
             }
             // Portal lies on the outside edge of the Minkowski Hull.
             // Return contact information
-            if(Util.dot(v3.sub(v2),n) <= SIMPLEX_EPSILON || ++maxIterations > 10) {
+            if(Util.dot(v3.sub(v2),n) <= SIMPLEX_EPSILON || ++maxIterations > 5) {
                 var ab = v2.sub(v1);
                 var t = Util.dot(v1.neg(),ab);
                 if (t <= 0.0) {

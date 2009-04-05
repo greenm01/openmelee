@@ -87,7 +87,6 @@ class MprTest {
                 var y = r * Math.sin(rads + theta) + c.y;
                 GL.vertex2(x, y);
             }
-            GL.vertex2(c.x, c.y);
         } 
         GL.end();
         GL.loadIdentity();
@@ -281,15 +280,30 @@ class MprTest {
                     system.rb[1].q = 0.0;
                 case 93:
                     trace("]");
-                    system.spawn(ShapeType.TRIANGLE);
+                    spawn(system.rb[0]);
                 case 91:
                     trace("[");
-                    system.spawn(ShapeType.CIRCLE);
+                    spawn(system.rb[1]);
             }
         } else {
             // Key Released
         }
         return 1;
+    }
+    
+    static function spawn(rb:RigidBody) {
+        switch(rb.type) {
+            case ShapeType.TRIANGLE:
+                system.spawn(rb, ShapeType.QUAD);
+            case ShapeType.QUAD:
+                system.spawn(rb, ShapeType.PENTAGON);
+            case ShapeType.PENTAGON:
+                system.spawn(rb, ShapeType.HEXAGON);
+            case ShapeType.HEXAGON:
+                system.spawn(rb, ShapeType.CIRCLE);
+            case ShapeType.CIRCLE:
+                system.spawn(rb, ShapeType.TRIANGLE);
+        }
     }
 }
 
@@ -351,13 +365,16 @@ class System
         sA = new Array();
         sB = new Array();
         sAB = new Array();
+        point1.set(0,0);
+        point2.set(0,0);
         penetrate = mpr.collide(rb[0], rb[1], returnNormal, point1, point2, sAB, sA, sB);
         minkDiff();
 
     }
 
     // Change Polygon Shape
-    public function spawn(hull:ShapeType) {
+    public function spawn(rb:RigidBody, hull:ShapeType) {
+        rb.shape(hull);
     }
 
     // Calculate Minkowski Difference for display

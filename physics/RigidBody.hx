@@ -79,7 +79,7 @@ class RigidBody
         transform();
     }
 
-    private function shape(hull:ShapeType) {
+    public function shape(hull:ShapeType) {
         type = hull;
         vL = new FastList();
         switch (hull)
@@ -108,7 +108,14 @@ class RigidBody
             vL.add(new Vec2(-1,1));
         case ShapeType.CIRCLE:		
             radius = 1.5;
-            vL = null;
+            var segs = 20;
+            var c = pos;
+            var r = radius;
+            var coef = 2.0*Math.PI/segs;
+            for(n in 0...segs+1) {
+                var rads = n*coef;
+                vL.add(new Vec2(r*Math.cos(rads), r*Math.sin(rads)));
+            }
         }
     }
 
@@ -116,9 +123,7 @@ class RigidBody
         pos.x += vel.x*dt;
         pos.y += vel.y*dt;
         q += omega*dt;
-        if(type != ShapeType.CIRCLE) {
-            transform();
-        }
+        transform();
     }
 
     // Updat world coordinates
@@ -139,7 +144,8 @@ class RigidBody
     public function support(n:Vec2) {
         var r = new Vec2(0,0);
         if(type == ShapeType.CIRCLE) {
-            r = n.getNormal().mul(radius).mul(SCALE);
+            r = n.getNormal();
+            r.mul(radius*SCALE);
             r.addAsn(pos);
         } else {
             r = vW.first();
