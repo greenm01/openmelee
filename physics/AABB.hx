@@ -28,17 +28,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import melee.Melee;
+package physics;
 
-class Game
+import utils.Vec2;
+
+class AABB
 {
-    var melee : Melee;
-    
-    public function new() {
-        melee = new Melee();
+    /// the lower vertex (lower left)
+    var lowerBound : Vec2;
+	/// the upper vertex (upper right)
+    var upperBound : Vec2;
+
+    public function new(lowerBound:Vec2, upperBound:Vec2) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
     }
     
-    public function run() {
-        melee.run();
+    public function isValid() {
+        var d = upperBound.sub(lowerBound);
+        var valid = d.x >= 0.0 && d.y >= 0.0;
+        valid = valid && lowerBound.isValid() && upperBound.isValid();
+        return valid;
     }
+
 }

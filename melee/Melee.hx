@@ -32,10 +32,8 @@ package melee;
 
 import haxe.FastList;
 
-import phx.World;
-import phx.Body;
-import phx.col.AABB;
-import phx.Vector;
+import physics.AABB;
+import physics.Space;
 
 import ships.Ship;
 import ships.UrQuan;
@@ -57,7 +55,7 @@ class Melee
     public var objectList : FastList<Ship>;
     var settings : Settings;
     var timeStep : Float;
-    var gravity : Vector;
+    var gravity : Vec2;
     var allowSleep : Bool;
     var render : Render;
 
@@ -71,14 +69,14 @@ class Melee
     var running : Bool;
 
     var worldAABB : AABB;
-    public var world : World;
+    public var space : Space;
 
     public function new() {
         
         settings = {hz : 60.0, iterations : 2};
         timeStep = if(settings.hz > 0.0) 1.0 / settings.hz else 0.0;
     
-        gravity = new Vector(0, 0);
+        gravity = new Vec2(0, 0);
         objectList = new FastList();
 
         initWorld();
@@ -101,7 +99,7 @@ class Melee
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            world.step(timeStep, settings.iterations);
+            space.step(timeStep, settings.iterations);
             // Update screen
             render.update();
 
@@ -124,14 +122,11 @@ class Melee
 
     private function initWorld() {
 	    // Define world boundaries
-	    var left = -400;
-	    var top = 250;
-	    var right = 400;
-	    var bottom = -250;
-	    worldAABB = new AABB(left, top, right, bottom);
-		var bf = new phx.col.SortedList();
-		world = new World(worldAABB, bf);
-		world.gravity = new Vector(0,-5);
+        var upperBound = new Vec2(400,250);
+        var lowerBound = new Vec2(-400,-250);
+	    worldAABB = new AABB(upperBound, lowerBound);
+		world = new Space(worldAABB);
+		world.gravity = new Vec2(0,-5);
 		//ship2 = new UrQuan(world);
 		ship1 = new Orz(world);
         //planet = new Planet(world);
@@ -143,14 +138,14 @@ class Melee
 
     private function boundaryViolated(rb : Body)
 	{
-        if(rb.x > worldAABB.r) {
-            rb.x = worldAABB.l + 5;
+        if(rb.pos.x > worldAABB.r) {
+            rb.pos.x = worldAABB.l + 5;
         } else if (rb.x < worldAABB.l) {
-            rb.x = worldAABB.r - 5;
+            rb.pos.x = worldAABB.r - 5;
         } else if (rb.y > worldAABB.t) {
-            rb.y = worldAABB.b + 5;
+            rb.pos.y = worldAABB.b + 5;
         } else if(rb.y < worldAABB.b) {
-            rb.y = worldAABB.t - 5;
+            rb.pos.y = worldAABB.t - 5;
         }
 	}
 }

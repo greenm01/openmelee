@@ -32,10 +32,32 @@ package physics;
 
 class Space 
 {
-
-    public function new() {
+    var spaceAABB : AABB;
+    var broadPhase : BroadPhase;
+    var mpr : Mpr;
     
-    
+    public function new(spaceAABB:AABB) {
+        
+        this.spaceAABB = spaceAABB;
+        broadPhase = new HGrid();
+        mpr = new Mpr();
     }
-
+    
+    public function step() {
+        
+    }
+    
+    public function addBody() {
+        
+    }
+    
+    public function removeBody() {
+        
+    }
+    
+    public function addJoint() {
+    }
+    
+    public function removeJoint() {
+    }
 }

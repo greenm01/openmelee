@@ -40,15 +40,15 @@ typedef Cell = {
     var z : Int;
 }
      
- class HGrid
- {
-    
+class HGrid extends BroadPhase
+{
+
     public static var CELL_TO_CELL_RATIO = 2.0; 
     public static var SPHERE_TO_CELL_RATIO = 0.25;
     public static var MIN_CELL_SIZE = 10;
     static var NUM_BUCKETS  = 1024;
     static var HGRID_MAX_LEVELS = 32;
-   
+
     var occupiedLevelsMask : Int; 
     var objectsAtLevel : Array<Int>; 
     var objectBucket : Array<Body>; 
@@ -58,7 +58,7 @@ typedef Cell = {
      public function new() {
          
      }
-    
+
     static function hashIndex(cellPos:Cell) : Int {
         var h1 : Int = 0x8da6b343; 
         var h2 : Int = 0xd8163841; 
@@ -68,7 +68,7 @@ typedef Cell = {
         if (n < 0) n += NUM_BUCKETS;
         return n;
     }
-    
+
     public function updateBody(rb:Body) {
         var cellPos : Cell = {x:Std.int(rb.pos.x / rb.size), y:Std.int(rb.pos.y / rb.size), z:rb.level};
         var bucket : Int = hashIndex(cellPos);
@@ -78,7 +78,7 @@ typedef Cell = {
         objectsAtLevel[rb.level]++;
         occupiedLevelsMask |= (1 << rb.level);
     }
-    
+
     // Test collisions between objects in hgrid
     public function collide(bodyList:FastList<Body>) {
         

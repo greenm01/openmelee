@@ -1,6 +1,5 @@
-/*
- * Copyright (c) 2009, Mason Green (zzzzrrr)
- * http://kenai.com/projects/haxmel
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
  *
@@ -28,17 +27,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import melee.Melee;
-
-class Game
-{
-    var melee : Melee;
-    
+ package physics
+ 
+ class BroadPhase
+ {
     public function new() {
-        melee = new Melee();
-    }
     
-    public function run() {
-        melee.run();
     }
-}
+ }
