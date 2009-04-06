@@ -30,28 +30,42 @@
  */
 package physics;
 
+import haxe.FastList;
+
 class Space 
 {
-    var spaceAABB : AABB;
-    var broadPhase : BroadPhase;
-    var mpr : Mpr;
+    var m_spaceAABB : AABB;
+    var m_broadPhase : BroadPhase;
+    var m_mpr : Mpr;
+    var m_bodyList : FastList<Body>;
     
     public function new(spaceAABB:AABB) {
         
-        this.spaceAABB = spaceAABB;
-        broadPhase = new HGrid();
-        mpr = new Mpr();
+        m_spaceAABB = spaceAABB;
+        m_bodyList = new FastList();
+        m_broadPhase = new HGrid(m_bodyList);
+        m_mpr = new Mpr();
     }
     
-    public function step() {
+    public inline function step(timeStep:Float) {
+        updateBroadphase();
+        updateNarrowphase();
         
     }
     
-    public function addBody() {
+    public inline function updateBroadphase(){
+        m_broadPhase.update();
+        m_broadPhase.commit();
+    }
+    
+    public inline function updateNarrowphase() {
+    }
+    
+    public function addBody(body:Body) {
         
     }
     
-    public function removeBody() {
+    public function removeBody(body:Body) {
         
     }
     

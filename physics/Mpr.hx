@@ -33,7 +33,6 @@ package physics;
 import haxe.FastList;
 
 import utils.Vec2;
-import utils.Util;
 
 class Mpr
 {
@@ -70,12 +69,12 @@ class Mpr
         var bc = c.sub(b);
         var ca = a.sub(c);
 
-        var pab =  Util.cross(a.neg(),ab);
-        var pbc =  Util.cross(b.neg(),bc);
+        var pab =  a.neg().cross(ab);
+        var pbc =  b.neg().cross(bc);
         var sameSign = (pab < 0) == (pbc < 0);
         if (!sameSign) return false;
 
-        var pca = Util.cross(c.neg(), ca);
+        var pca = c.neg().cross(ca);
         sameSign = (pab < 0) == (pca < 0);
         if (!sameSign) return false;
         return true;
@@ -97,8 +96,7 @@ class Mpr
         return false;
     }
 
-   public function collide(shape1:RigidBody, shape2:RigidBody, returnNormal:Vec2, point1:Vec2, 
-                           point2:Vec2, sAB:Array<Vec2>, sA:Array<Vec2>, sB:Array<Vec2>) {
+   public function collide(shape1:Shape, shape2:Shape, returnNormal:Vec2, point1:Vec2, point2:Vec2) {
 
         // Phase one: Portal discovery
         
@@ -116,9 +114,6 @@ class Mpr
         var v12 = shape2.support(n);
         var v1 = v12.sub(v11);
 
-        sA[sA.length] = v11;
-        sB[sB.length] = v12;
-
         // origin outside v1 support plane ==> miss
         if (Util.dot(v1, n) <= 0) return false;
 
@@ -127,9 +122,6 @@ class Mpr
         var v21 = shape1.support(n.neg());
         var v22 = shape2.support(n);
         var v2 = v22.sub(v21);
-
-        if(sA[sA.length-1] != v21) sA[sA.length] = v21;
-        if(sB[sB.length-1] != v22) sB[sB.length] = v22;
 
         // origin outside v2 support plane ==> miss
         if (Util.dot(v2, n) <= 0) return false;
@@ -148,25 +140,23 @@ class Mpr
             var v31 = shape1.support(n.neg());
             var v32 = shape2.support(n);
             var v3 = v32.sub(v31);
-            if(sA[sA.length-1] != v21) sA[sA.length] = v31;
-            if(sB[sB.length-1] != v22) sB[sB.length] = v32;
-            if (Util.dot(v3,n) <= 0) {
+            if (v3.dot(n) <= 0) {
                 var ab = v3.sub(v2);
-                var t = -Util.dot(v2,ab)/Util.dot(ab,ab);
+                var t = -v2.dot(ab)/ab.dot(ab);
                 var tmp = v2.add(ab.mul(t));
                 returnNormal.set(tmp.x, tmp.y);
                 return false;
             }
             // Portal lies on the outside edge of the Minkowski Hull.
             // Return contact information
-            if(Util.dot(v3.sub(v2),n) <= SIMPLEX_EPSILON || ++maxIterations > 3) {
+            if(v3.sub(v2).dot(n) <= SIMPLEX_EPSILON || ++maxIterations > 3) {
                 var ab = v2.sub(v1);
-                var t = Util.dot(v1.neg(),ab);
+                var t = v1.neg().dot(ab);
                 if (t <= 0.0) {
                     t   = 0.0;
                     returnNormal.set(v1.x, v1.y);
                 } else {
-                    var denom = Util.dot(ab,ab);
+                    var denom = ab.dot(ab);
                     if (t >= denom) {
                         returnNormal.set(v2.x, v2.y);
                         t   = 1.0;
@@ -181,9 +171,6 @@ class Mpr
                 var t2 = v12.mul(s).add(v22.mul(t));
                 point1.set(t1.x, t1.y);
                 point2.set(t2.x, t2.y);
-                sAB[sAB.length] = v0;
-                sAB[sAB.length] = v1;
-                sAB[sAB.length] = v2;
                 return true;
             }
             // If origin is inside (v1,v0,v3), refine portal

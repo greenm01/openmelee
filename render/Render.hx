@@ -34,16 +34,15 @@ import opengl.GL;
 import opengl.GLU;
 import opengl.GLFW;
 
-import phx.Vector;
-import phx.World;
-import phx.Body;
-import phx.Shape;
-import phx.Polygon;
-import phx.Circle;
+import physics.Space;
+import physics.Body;
+import physics.Shape;
+import physics.Polygon;
+import physics.Circle;
 
 import melee.Melee;
 import ships.Ship;
-import utils.Util;
+import utils.Vec2;
 
 /// Color for drawing. Each value has the range [0,1].
 typedef Color = {
@@ -57,24 +56,22 @@ class Render
 
     static var MAX_CIRCLE_RES = 32;
 	var zoom : Float;
-	var viewCenter : Vector;
-    var world : World;
-    var screenSize : Vector;
-    var settings : Settings;
+	var viewCenter : Vec2;
+    var space : Space;
+    var screenSize : Vec2;
     var ship1 : Ship;
     var ship2 : Ship;
     static public var running : Bool;
     
-    public function new(melee : Melee, settings : Settings) {
+    public function new(melee : Melee) {
         
         zoom = 40;
         running = true;
-        this.settings = settings;
-        world = melee.world;
+        space = melee.space;
         ship1 = melee.ship1;
         ship2 = melee.ship2;
-        viewCenter = new Vector(10, 10);
-        screenSize = new Vector(800, 600);
+        viewCenter = new Vec2(10, 10);
+        screenSize = new Vec2(800, 600);
         
         // Open window
         var width : Int = cast(screenSize.x);
@@ -109,7 +106,7 @@ class Render
 
     function drawSolidCircle(circ : Circle, color : Color)
     {
-        var center = new Vector(circ.tC.x, circ.tC.y);
+        var center = new Vec2(circ.tC.x, circ.tC.y);
         var radius = circ.r; 
         var k_segments = 25;
         var k_increment = 2.0 * Math.PI / k_segments;
@@ -119,7 +116,7 @@ class Render
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
         for (i in 0...k_segments) {
-            var v = center.plus(new Vector(Math.cos(theta), Math.sin(theta)).mult(radius));
+            var v = center.add(new Vec2(Math.cos(theta), Math.sin(theta)).mul(radius));
             GL.vertex2(v.x, v.y);
             theta += k_increment;
         }
@@ -130,7 +127,7 @@ class Render
         GL.color4(color.r, color.g, color.b, 1.0);
         GL.begin(GL.LINE_LOOP);
         for (i in 0...k_segments) {
-            var v = center.plus(new Vector(Math.cos(theta), Math.sin(theta)).mult(radius));
+            var v = center.add(new Vec2(Math.cos(theta), Math.sin(theta)).mul(radius));
             GL.vertex2(v.x, v.y);
             theta += k_increment;
         }
@@ -175,13 +172,13 @@ class Render
     function draw() {
         
        if(ship2 != null) {
-            var point1 = new Vector(ship1.rBody.x,ship1.rBody.y);
-            var point2 = new Vector(ship2.rBody.x,ship2.rBody.y);
+            var point1 = new Vec2(ship1.rBody.x,ship1.rBody.y);
+            var point2 = new Vec2(ship2.rBody.x,ship2.rBody.y);
             var range = point1.minus(point2);
             zoom = Util.clamp(1000.0/range.length(), 2.0, 60.0);
-            viewCenter = point1.minus(range.mult(0.5));
+            viewCenter = point1.minus(range.mul(0.5));
         } else {
-             viewCenter = new Vector(ship1.rBody.x, ship1.rBody.y);
+             viewCenter = new Vec2(ship1.rBody.x, ship1.rBody.y);
              zoom = 10;
         }
         
@@ -202,7 +199,7 @@ class Render
         GL.clear(GL.COLOR_BUFFER_BIT);
 
         // Draw dynamic bodies
-        for (b in world.bodies) {
+        for (b in space.bodies) {
             for (shape in b.shapes) {
                 var s = shape;
                 var color : Color;
@@ -225,10 +222,10 @@ class Render
         var worldUpper = bp.m_worldAABB.upperBound;
         var color : Color = {r : 0.3, g : 0.9, b : 0.9};        
         var vs = new Array();
-        vs.push(new Vector(worldLower.x, worldLower.y));
-        vs.push(new Vector(worldUpper.x, worldLower.y));
-        vs.push(new Vector(worldUpper.x, worldUpper.y));
-        vs.push(new Vector(worldLower.x, worldUpper.y));
+        vs.push(new Vec2(worldLower.x, worldLower.y));
+        vs.push(new Vec2(worldUpper.x, worldLower.y));
+        vs.push(new Vec2(worldUpper.x, worldUpper.y));
+        vs.push(new Vec2(worldLower.x, worldUpper.y));
         drawPolygon(vs, color);
         */
     }

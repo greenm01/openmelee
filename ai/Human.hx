@@ -63,7 +63,7 @@ class Human
             case GLFW.KEY_DEL:
                 melee.ship2.explode();
                 melee.objectList.remove(melee.ship2);
-                melee.world.removeBody(melee.ship2.rBody);
+                melee.space.removeBody(melee.ship2.rBody);
                 melee.ship2 = null;
 			}
         // Key released
@@ -71,7 +71,7 @@ class Human
 		    if(key == GLFW.KEY_UP) {
 		         thrust = false;
 		    } else if (key == GLFW.KEY_LEFT || key == GLFW.KEY_RIGHT) {
-                ship.rBody.w = 0.0;
+                ship.rBody.angVel = 0.0;
             }
 		}
 	}

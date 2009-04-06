@@ -34,28 +34,21 @@ import haxe.FastList;
 
 import physics.AABB;
 import physics.Space;
+import physics.Body;
 
 import ships.Ship;
 import ships.UrQuan;
 import ships.Orz;
+
 import ai.Human;
 import render.Render;
-
-//import ai.AI;
-
-// World settings
-typedef Settings = {
-    var hz : Float;
-    var iterations : Int;
-}
+import utils.Vec2;
 
 class Melee 
 {
     static var NUM_ASTROIDS : Int = 12;
     public var objectList : FastList<Ship>;
-    var settings : Settings;
     var timeStep : Float;
-    var gravity : Vec2;
     var allowSleep : Bool;
     var render : Render;
 
@@ -73,18 +66,14 @@ class Melee
 
     public function new() {
         
-        settings = {hz : 60.0, iterations : 2};
-        timeStep = if(settings.hz > 0.0) 1.0 / settings.hz else 0.0;
-    
-        gravity = new Vec2(0, 0);
+        timeStep = 1.0/60;
         objectList = new FastList();
-
         initWorld();
         running = true;
 
         human = new Human(ship1, this);
         //ai = new AI(ship2, objectList);
-        render = new Render(this, settings);
+        render = new Render(this);
 
         //objectList.add(planet);
         objectList.add(ship1);
@@ -99,13 +88,9 @@ class Melee
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            space.step(timeStep, settings.iterations);
+            space.step(timeStep);
             // Update screen
             render.update();
-
-            if(Math.isNaN(ship1.rBody.x)) {
-                throw "bad";
-            }
             
             // Limit velocities
             for(o in objectList) {
@@ -125,27 +110,26 @@ class Melee
         var upperBound = new Vec2(400,250);
         var lowerBound = new Vec2(-400,-250);
 	    worldAABB = new AABB(upperBound, lowerBound);
-		world = new Space(worldAABB);
-		world.gravity = new Vec2(0,-5);
-		//ship2 = new UrQuan(world);
-		ship1 = new Orz(world);
-        //planet = new Planet(world);
+		space = new Space(worldAABB);
+		//ship2 = new UrQuan(space);
+		ship1 = new Orz(space);
+        //planet = new Planet(space);
         for(i in 0...NUM_ASTROIDS) {
-            //var asteroid = new Asteroid(world);
+            //var asteroid = new Asteroid(space);
             //objectList.add(asteroid);
         }
 	}
 
     private function boundaryViolated(rb : Body)
 	{
-        if(rb.pos.x > worldAABB.r) {
-            rb.pos.x = worldAABB.l + 5;
-        } else if (rb.x < worldAABB.l) {
-            rb.pos.x = worldAABB.r - 5;
-        } else if (rb.y > worldAABB.t) {
-            rb.pos.y = worldAABB.b + 5;
-        } else if(rb.y < worldAABB.b) {
-            rb.pos.y = worldAABB.t - 5;
+        if(rb.pos.x > worldAABB.upperBound.x) {
+            rb.pos.x = worldAABB.lowerBound.x + 5;
+        } else if (rb.pos.x < worldAABB.lowerBound.x) {
+            rb.pos.x = worldAABB.upperBound.x - 5;
+        } else if (rb.pos.y > worldAABB.upperBound.y) {
+            rb.pos.y = worldAABB.lowerBound.y + 5;
+        } else if(rb.pos.y < worldAABB.lowerBound.y) {
+            rb.pos.y = worldAABB.upperBound.y - 5;
         }
 	}
 }

@@ -32,22 +32,20 @@ package ships;
 
 import haxe.FastList;
 
-import phx.Vector;
-import phx.World;
-import phx.Shape;
-import phx.Body;
-
-import utils.Util;
+import utils.Vec2;
+import physics.Space;
+import physics.Shape;
+import physics.Body;
 
 class State 
 {
-	public var pos : Vector;
-    public var v : Vector;
-    public var up : Vector;
-    public var side : Vector;
-    public var forward : Vector;
-    public var target : Vector;
-    public var avoid : Vector;
+	public var pos : Vec2;
+    public var linVel : Vec2;
+    public var up : Vec2;
+    public var side : Vec2;
+    public var forward : Vec2;
+    public var target : Vec2;
+    public var avoid : Vec2;
 	public var speed : Float;
 	public var maxForce : Float;
     public var radius : Float;
@@ -65,58 +63,58 @@ class State
 
 class Ship
 {
-    var world : World;
+    var space : Space;
     public var rBody : Body;
     var shapeList : FastList<Shape>;
-    var engineForce : Vector;
-    var turnForce : Vector;
-    var leftTurnPoint : Vector;
-    var rightTurnPoint : Vector;
+    var engineForce : Vec2;
+    var turnForce : Vec2;
+    var leftTurnPoint : Vec2;
+    var rightTurnPoint : Vec2;
 	var state : State;
     var battery : Float;
     var crew : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
     
-    public function new(world : World) {
-        this.world = world;
+    public function new(space : Space) {
+        this.space = space;
         shapeList = new FastList();
     }
 
     public function thrust() {
-        var force = Util.rotate(engineForce, rBody.a);
-        rBody.f.x += force.x;
-        rBody.f.y += force.y;
-        trace(rBody.f.x);
+        var force = engineForce.rotate(rBody.angle);
+        rBody.force.x += force.x;
+        rBody.force.y += force.y;
+        trace(rBody.force.x);
     }
 
     public inline function turnLeft() {
-        var lp = Util.rotate(leftTurnPoint, rBody.a);
-        var tf = Util.rotate(turnForce, rBody.a);
-        rBody.t += Util.cross(lp, tf);
+        var lp = leftTurnPoint.rotate(rBody.angle);
+        var tf = turnForce.rotate(rBody.angle);
+        rBody.torque += lp.cross(tf);
     }
     
     public inline function turnRight() {
-        var rp = Util.rotate(rightTurnPoint, rBody.a);
-        var tf = Util.rotate(turnForce, rBody.a);
-        rBody.t += Util.cross(rp, tf);
+        var rp = rightTurnPoint.rotate(rBody.angle);
+        var tf = turnForce.rotate(rBody.angle);
+        rBody.torque += rp.cross(tf);
     }
     
     public inline function limitVelocity() {
-        var vx = rBody.v.x;
-        var vy = rBody.v.y;
-        var w = rBody.w;
-        rBody.v.x = Util.clamp(vx, -maxLinVel, maxLinVel);
-        rBody.v.y = Util.clamp(vy, -maxLinVel, maxLinVel);
-        rBody.w = Util.clamp(w, -maxAngVel, maxAngVel);
+        var vx = rBody.linVel.x;
+        var vy = rBody.linVel.y;
+        var w = rBody.angVel;
+        rBody.v.x = Vec2.clamp(vx, -maxLinVel, maxLinVel);
+        rBody.v.y = Vec2.clamp(vy, -maxLinVel, maxLinVel);
+        rBody.w = Vec2.clamp(w, -maxAngVel, maxAngVel);
     }
     
     public inline function updateState() {
     	state.v = rBody.v.clone();
     	state.speed = state.v.length();
-    	state.pos.x = rBody.x;
-        state.pos.y = rBody.y;
-    	state.forward = Util.rotate(engineForce, rBody.a);
+    	state.pos.x = rBody.pos.x;
+        state.pos.y = rBody.pos.y;
+    	state.forward = engineForce.rotate(rBody.a);
     }
     
     

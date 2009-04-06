@@ -35,9 +35,9 @@ import utils.Vec2;
 class AABB
 {
     /// the lower vertex (lower left)
-    var lowerBound : Vec2;
+    public var lowerBound : Vec2;
 	/// the upper vertex (upper right)
-    var upperBound : Vec2;
+    public var upperBound : Vec2;
 
     public function new(lowerBound:Vec2, upperBound:Vec2) {
         this.lowerBound = lowerBound;

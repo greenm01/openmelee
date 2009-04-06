@@ -55,8 +55,8 @@ class HGrid extends BroadPhase
     var timeStamp : Array<Int>;  
     var tick : Int;
      
-     public function new() {
-         
+     public function new(bodyList : FastList<Body>) {
+         super(bodyList);
      }
 
     static function hashIndex(cellPos:Cell) : Int {
@@ -69,24 +69,26 @@ class HGrid extends BroadPhase
         return n;
     }
 
-    public function updateBody(rb:Body) {
-        var cellPos : Cell = {x:Std.int(rb.pos.x / rb.size), y:Std.int(rb.pos.y / rb.size), z:rb.level};
-        var bucket : Int = hashIndex(cellPos);
-        rb.bucket = bucket;
-        rb.next = objectBucket[bucket];
-        objectBucket[bucket] = rb;
-        objectsAtLevel[rb.level]++;
-        occupiedLevelsMask |= (1 << rb.level);
+    public function update() {
+        for(rb in m_bodyList) {
+            var cellPos : Cell = {x:Std.int(rb.pos.x / rb.size), y:Std.int(rb.pos.y / rb.size), z:rb.level};
+            var bucket : Int = hashIndex(cellPos);
+            rb.bucket = bucket;
+            rb.next = objectBucket[bucket];
+            objectBucket[bucket] = rb;
+            objectsAtLevel[rb.level]++;
+            occupiedLevelsMask |= (1 << rb.level);
+        }
     }
 
     // Test collisions between objects in hgrid
-    public function collide(bodyList:FastList<Body>) {
+    public function commit() {
         
         var size = MIN_CELL_SIZE;
         var startLevel = 0;
         var occupiedLevelsMask = this.occupiedLevelsMask;
         
-        for(rb in bodyList) {
+        for(rb in m_bodyList) {
             
             var pos = rb.pos;
             var diameter = rb.diameter;

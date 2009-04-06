@@ -42,6 +42,13 @@ class Body
     public var xf : XForm;
     public var angle(getAngle, setAngle) : Float;
     public var pos(getPos, setPos) : Vec2;
+    public var linVel : Vec2;
+    public var angVel : Float;
+    public var force : Vec2;
+    public var torque : Float;
+    var m_mass : Float;
+    var m_I : Float;
+    var m_invMass : Float;
     
     // Broadphase (HGrid) parameters
     public var bucket : Int;
@@ -58,7 +65,9 @@ class Body
         xf = new XForm(position, R);
     }
     
-    private inline function initHGrid() {
+    public function addShape(shape:Shape) {
+        // TODO: Calculate max radius from shapes;
+        
         // Initialize HGrid information
         size = HGrid.MIN_CELL_SIZE;
         diameter = 2.0 * radius;
@@ -67,11 +76,6 @@ class Body
             size *= Std.int(HGrid.CELL_TO_CELL_RATIO);
             level++;
         }
-    }
-    
-    public function addShape(shape:Shape) {
-        // TODO: Calculate max radius from shapes;
-        initHGrid();
     }
     
     /**

@@ -1,3 +1,4 @@
+/* 
  * Copyright (c) 2009, Mason Green 
  * http://github.com/zzzzrrr/haxmel
  *
@@ -27,11 +28,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- package physics
+ package physics;
+ 
+ import haxe.FastList;
  
  class BroadPhase
  {
-    public function new() {
-    
+    var m_bodyList : FastList<Body>;
+     
+    public function new(bodyList : FastList<Body>) {
+        m_bodyList = bodyList;
     }
+    
+    public function update() {}
+    
+    public function commit() {}
  }
