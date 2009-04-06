@@ -32,9 +32,11 @@ package utils;
 
 class Vec2
 {
+    public static var EPSILON = 1e-5;
+    
     public var x : Float;
     public var y : Float;
-
+    
     public function new(x:Float, y:Float) {
        this.x = x;
        this.y = y;
@@ -69,11 +71,11 @@ class Vec2
         return new Vec2(x/m,y/m);
     }
 
-    public function add(u:Vec2) {
+    public inline function add(u:Vec2) {
         return new Vec2(x + u.x, y + u.y);
     }
 
-    public function addAsn(u:Vec2) {
+    public inline function addAsn(u:Vec2) {
         x += u.x;
         y += u.y;
     }
@@ -111,8 +113,30 @@ class Vec2
     public inline function neg() {
         return new Vec2(-x, -y);
     }
+    
+    public inline function rotate(angle:Float) {
+        var cos = Math.cos(angle);
+        var sin = Math.sin(angle);
+        return new Vec2((cos * x) - (sin * y), (cos * y) + (sin * x));
+    }
+    
+    public inline function cross(v:Vec2) {
+        return x * v.y - y * v.x;
+    }
+    
+    public inline function dot(v:Vec2) {
+        return x * v.x + y * v.y;
+    }
+    
+    public static inline function clamp (a:Float, low:Float, high:Float) {
+        return Math.max(low, Math.min(a, high));
+    }
+    
+    public static function mul22(A:Mat22, v:Vec2) {
+       return new Vec2(v.dot(A.col1), v.dot(A.col2));
+    }
 
-    public inline function rotate(v:Vec2) {
-        return new Vec2(x * v.x - y * v.y, x * v.y + y * v.x);
+    public static function mulXF(T:XForm, v:Vec2) {
+        return mul22(T.R, v.sub(T.position));
     }
 }

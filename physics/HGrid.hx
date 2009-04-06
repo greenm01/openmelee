@@ -32,7 +32,7 @@ package physics;
 
 import haxe.FastList;
 
-import utils.Util;
+import utils.Vec2;
 
 typedef Cell = {
     var x : Int;
@@ -103,7 +103,7 @@ typedef Cell = {
                 if (occupiedLevelsMask == 0) break;
                 if ((occupiedLevelsMask & 1) == 0) continue;
                 
-                var delta = rb.radius + size * SPHERE_TO_CELL_RATIO + Util.EPSILON;
+                var delta = rb.radius + size * SPHERE_TO_CELL_RATIO + Vec2.EPSILON;
                 var ooSize = 1.0 / size;
                 var x1 = Std.int(Math.floor((pos.x - delta) * ooSize));
                 var y1 = Std.int(Math.floor((pos.y - delta) * ooSize));
@@ -124,7 +124,7 @@ typedef Cell = {
                             if (p != rb) {
                                 // Circle circle check
                                 var d = pos.sub(p.pos);
-                                var dist2 = Util.dot(d, d);
+                                var dist2 = d.dot(d);
                                 var radiusSum = rb.radius + p.radius;
                                 if(dist2 <= radiusSum * radiusSum) {
                                     //callback(obj, p);

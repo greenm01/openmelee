@@ -1,7 +1,6 @@
 package physics;
 
 import utils.XForm;
-import utils.Util;
 import utils.Vec2;
 import utils.Mat22;
 
@@ -51,7 +50,7 @@ class Body
      * Returns: the corresponding local vector.
      */
     public inline function localVector(worldVector:Vec2){
-        return Util.mul22(xf.R, worldVector);
+        return Vec2.mul22(xf.R, worldVector);
     }
     
     private inline function getPos() {
@@ -80,7 +79,7 @@ class Body
     public function synchronizeTransform()
     {
         m_xf.R.set(m_angle);
-        m_xf.position = m_xf.position.sub(Util.mul22(m_xf.R, localCenter));
+        m_xf.position = m_xf.position.sub(Vec2.mul22(m_xf.R, localCenter));
     }
     
     /// The body's origin transform
