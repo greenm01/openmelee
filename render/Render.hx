@@ -104,10 +104,10 @@ class Render
         GLFW.swapBuffers();
     }
 
-    function drawSolidCircle(circ : Circle, color : Color)
+    function drawSolidCircle(circle : Circle, color : Color)
     {
-        var center = new Vec2(circ.tC.x, circ.tC.y);
-        var radius = circ.r; 
+        var center = circle.worldCenter;
+        var radius = circle.radius; 
         var k_segments = 25;
         var k_increment = 2.0 * Math.PI / k_segments;
         var theta = 0.0;
@@ -136,15 +136,13 @@ class Render
 
     function drawSolidPolygon(p : Polygon, color : Color)
     {
-        var v = p.tVerts;
         GL.enable(GL.BLEND);
         GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
         {
-            while( v != null ) {
+            for(v in p.worldVertx) {
                 GL.vertex2(v.x, v.y);
-                v = v.next;
             }
         }
         GL.end();
@@ -153,9 +151,8 @@ class Render
         GL.color4(color.r, color.g, color.b, 1.0);
         GL.begin(GL.LINE_LOOP);
         {
-            while( v != null ) {
+            for(v in p.worldVerts) {
                 GL.vertex2(v.x, v.y);
-                v = v.next;
             }
         }
         GL.end();
@@ -199,8 +196,8 @@ class Render
         GL.clear(GL.COLOR_BUFFER_BIT);
 
         // Draw dynamic bodies
-        for (b in space.bodies) {
-            for (shape in b.shapes) {
+        for (b in space.bodyList) {
+            for (shape in b.shapeList) {
                 var s = shape;
                 var color : Color;
                 if (b.isStatic) {
@@ -215,18 +212,26 @@ class Render
             }
         }
 
-        // Draw the world bounds
-        /*
-        var bp = world.broadPhase;
-        var worldLower = bp.m_worldAABB.lowerBound;
-        var worldUpper = bp.m_worldAABB.upperBound;
-        var color : Color = {r : 0.3, g : 0.9, b : 0.9};        
-        var vs = new Array();
-        vs.push(new Vec2(worldLower.x, worldLower.y));
-        vs.push(new Vec2(worldUpper.x, worldLower.y));
-        vs.push(new Vec2(worldUpper.x, worldUpper.y));
-        vs.push(new Vec2(worldLower.x, worldUpper.y));
-        drawPolygon(vs, color);
-        */
+        {
+            // Draw the world bounds
+            var worldLower = space.spaceAABB.lowerBound;
+            var worldUpper = space.spaceAABB.upperBound;
+            var color : Color = {r : 0.3, g : 0.9, b : 0.9};        
+            var vs = new Array();
+            vs.push(new Vec2(worldLower.x, worldLower.y));
+            vs.push(new Vec2(worldUpper.x, worldLower.y));
+            vs.push(new Vec2(worldUpper.x, worldUpper.y));
+            vs.push(new Vec2(worldLower.x, worldUpper.y));
+            GL.color3(color.r, color.g, color.b);
+            GL.begin( GL.LINE_LOOP );
+            {
+                for(v in vs) {
+                    GL.vertex2(v.x, v.y);
+                }
+            }
+            GL.end();
+            GL.loadIdentity();
+            GL.flush();
+        }
     }
 }

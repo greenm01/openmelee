@@ -69,7 +69,7 @@ class HGrid extends BroadPhase
         return n;
     }
 
-    public function update() {
+    public override function update() {
         for(rb in m_bodyList) {
             var cellPos : Cell = {x:Std.int(rb.pos.x / rb.size), y:Std.int(rb.pos.y / rb.size), z:rb.level};
             var bucket : Int = hashIndex(cellPos);
@@ -82,7 +82,7 @@ class HGrid extends BroadPhase
     }
 
     // Test collisions between objects in hgrid
-    public function commit() {
+    public override function commit() {
         
         var size = MIN_CELL_SIZE;
         var startLevel = 0;

@@ -43,12 +43,4 @@ class AABB
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
     }
-    
-    public function isValid() {
-        var d = upperBound.sub(lowerBound);
-        var valid = d.x >= 0.0 && d.y >= 0.0;
-        valid = valid && lowerBound.isValid() && upperBound.isValid();
-        return valid;
-    }
-
 }

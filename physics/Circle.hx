@@ -30,8 +30,44 @@
  */
 package physics;
 
+import utils.Vec2;
+
 class Circle extends Shape
 {
-    public function new() {
+    
+    var worldCenter : Vec2;
+    
+    public function new(offset:Vec2, radius:Float, density:Float) {
+        super(Shape.CIRCLE, offset, density);
+        worldCenter = new Vec2(0.0,0.0);
+        super.radius = radius;
+        computeMass();
+    }
+    
+    // Synchronize world center
+    public override inline function synchronize() {
+        worldCenter = Vec2.mulXF(body.xf, offset);
+    }
+    
+    /**
+	 * Compute the mass properties of this shape using its dimensions and density.
+     * The inertia tensor is computed about the local origin, not the centroid.
+     * Params: massData = returns the mass data for this shape.
+	 */
+    public function computeMass() {
+        massData.mass = density * Math.PI * radius * radius;
+        massData.center = offset;
+        // inertia about the local origin
+        massData.I = massData.mass * (0.5 * radius * radius + offset.dot(offset));
+    }
+    
+    /**
+     * Returns: The shape's support point (for MPR)
+     */
+    public inline override function support(d:Vec2) {
+        d.normalize();
+        var r = d.mul(radius);
+        r += worldCenter;
+        return r;
     }
 }

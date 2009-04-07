@@ -30,6 +30,8 @@
  */
 package physics;
 
+import haxe.FastList;
+
 import utils.XForm;
 import utils.Vec2;
 import utils.Mat22;
@@ -50,6 +52,8 @@ class Body
     var m_I : Float;
     var m_invMass : Float;
     
+    public var shapeList : FastList<Shape>;
+    
     // Broadphase (HGrid) parameters
     public var bucket : Int;
     public var level : Int;
@@ -63,10 +67,19 @@ class Body
         var R = new Mat22(new Vec2(0,0), new Vec2(0,0));
         R.set(ang);
         xf = new XForm(position, R);
+        shapeList = new FastList();
     }
     
-    public function addShape(shape:Shape) {
-        // TODO: Calculate max radius from shapes;
+    public function addShape(s:Shape) {
+        
+        shapeList.add(s);
+		s.body = this;
+        
+        // Update body's radius
+        var sRad = s.offset.length() + s.radius;
+        if(radius < sRad) {
+            radius = sRad;
+        }
         
         // Initialize HGrid information
         size = HGrid.MIN_CELL_SIZE;
@@ -76,6 +89,48 @@ class Body
             size *= Std.int(HGrid.CELL_TO_CELL_RATIO);
             level++;
         }
+    }
+    
+    /**
+     * Compute the mass properties from the attached shapes. You typically call
+     * this after adding all the shapes. If you add or remove shapes later, you
+     * may want to call this again. Note that this changes the center of mass
+     * position.
+     */
+    public function setMassFromShapes() {
+        // Compute mass data from shapes. Each shape has its own density.
+        m_mass = 0.0;
+        m_invMass = 0.0;
+        m_I = 0.0;
+        m_invI = 0.0;
+
+        var center = new Vec2(0.0, 0.0);
+        for (s in shapeList) {
+            s.computeMass();
+            m_mass += s.massData.mass;
+            center += s.massData.mass * s.massData.center;
+            m_I += s.massData.I;
+        }
+
+        // Compute center of mass, and shift the origin to the COM.
+        if (m_mass > 0.0) {
+            m_invMass = 1.0 / m_mass;
+            center *= m_invMass;
+        }
+
+        if (m_I > 0.0) {
+            // Center the inertia about the center of mass.
+            m_I -= m_mass * center.dot(center);
+            if(m_I < 0.0) throw "mass error";
+            m_invI = 1.0 / m_I;
+        } else {
+            m_I = 0.0;
+            m_invI = 0.0;
+        }
+
+        // Update center of mass.
+        localCenter = center;
+
     }
     
     /**
@@ -110,10 +165,18 @@ class Body
     /**
      * Update rotation and position of the body
      */
-    public function synchronizeTransform()
-    {
+    public inline function synchronizeTransform() {
         m_xf.R.set(m_angle);
         m_xf.position = m_xf.position.sub(Vec2.mul22(m_xf.R, localCenter));
+    }
+    
+    /**
+     * Update world vertices
+     */
+    public inline function synchronizeShapes() {
+        for(s in shapeList) {
+            s.synchronize();
+        }
     }
     
     /// The body's origin transform

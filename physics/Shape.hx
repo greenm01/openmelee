@@ -30,17 +30,55 @@
  */
 package physics;
 
-enum ShapeType {
-    POLYGON;
-    CIRCLE;
+import utils.Vec2;
+
+/**
+ * This holds the mass data computed for a shape.
+ */
+typedef MassData = {
+    /**
+	 * The mass of the shape, usually in kilograms.
+	 */
+    var mass : Float;
+
+    /**
+     * The position of the shape's centroid relative to the shape's origin.
+	 */
+    var center : Vec2;
+
+    /**
+     * The rotational inertia of the shape.
+     */
+    var I : Float;
 }
-    
+
 class Shape
 {
 
-    public function new() {
+    public static inline var CIRCLE = 0;
+	public static inline var SEGMENT = 1;
+	public static inline var POLYGON = 2;
+    
+    public var body : Body;
+    public var radius : Float;
+    public var massData : MassData;
+    public var density : Float;
+    // Local position in parent body
+    public var offset : Vec2;
+    public var type : Int;
+    // Axis aligned bounding box
+    var aabb : AABB;
+    
+    public function new(type:Int, offset:Vec2, density:Float) {
+        this.type = type;
+        this.offset = offset;
+        this.density = density;
+        aabb = new AABB(new Vec2(0.0,0.0), new Vec2(0.0,0.0));
+        //massData = {mass:0.0, center:new Vec2(0,0), I:0.0};
     }
 
-    public function support() {}
+    public inline function support(d:Vec2);
+    public function computeMass();
+    public inline function synchronize();
 
 }

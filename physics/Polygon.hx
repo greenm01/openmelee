@@ -30,13 +30,157 @@
  */
 package physics;
 
+import haxe.FastList;
+
 import utils.Vec2;
 
 class Polygon extends Shape 
 {
 
-    public function new(vertices:Array<Vec2>, offset:Vec2) {
-        super();
+    // Vertices in local coordinates
+    var vertices : Array<Vec2>;
+    // Vertices in world coordinates
+    var worldVerts : FastList<Vec2>;
+    var area : Float;  
+    
+    public function new(vertices:Array<Vec2>, offset:Vec2, density:Float) {
+        
+        super(Shape.POLYGON, offset, density);
+        
+        this.vertices = vertices;
+        worldVerts = new FastList();
+        for(v in vertices) {
+            worldVerts.add(new Vec2(0.0,0.0));
+        }
+                
+        updateRadius();
+        computeMass();
+    }
+    
+    function updateRadius() {
+        radius = 0.0;
+        for (v in vertices) {
+            radius = Math.max(radius, v.length());
+        }
+    }
+    
+    public function updateAABB() {
+        var worldCenter = Vec2.mulXF(body.xf, offset);
+        aabb.upperBound.x = worldCenter.x + radius;
+        aabb.upperBound.y = worldCenter.y + radius;
+        aabb.lowerBound.x = worldCenter.x - radius;
+        aabb.lowerBound.y = worldCenter.y - radius;
+    }
+    
+    // Synchronize world vertices
+    public inline override function synchronize() {
+        var i = 0;
+        for(v in worldVerts) {
+            v = Vec2.mulXF(body.xf, vertices[i++]);
+        }
+    }
+    
+    /**
+	 * Returns: The shape's support point (for MPR & GJK)
+	 */
+    public override inline function support(d:Vec2) {
+        var dLocal = Vec2.mul22(body.xf.R, d);
+        var bestIndex = 0;
+        var bestValue = vertices[0].dot(dLocal);
+        for (i in 1...vertices.length) {
+            var value = vertices[i.dot(dLocal);
+            if (value > bestValue) {
+                bestIndex = i;
+                bestValue = value;
+            }
+        }
+        return Vec2.mulXF(xf, vertices[bestIndex]);
+    }
+    
+    /**
+	 * Compute the mass properties of this shape using its dimensions and density.
+     * The inertia tensor is computed about the local origin, not the centroid.
+     * Params: massData = returns the mass data for this shape.
+	 * Implements: blaze.collision.shapes.bzShape.bzShape.computeMass
+	 */
+    public override function computeMass() {
+
+        // Polygon mass, centroid, and inertia.
+        // Let rho be the polygon density in mass per unit area.
+        // Then:
+        // mass = rho * int(dA)
+        // centroid.x = (1/mass) * rho * int(x * dA)
+        // centroid.y = (1/mass) * rho * int(y * dA)
+        // I = rho * int((x*x + y*y) * dA)
+        //
+        // We can compute these integrals by summing all the integrals
+        // for each triangle of the polygon. To evaluate the integral
+        // for a single triangle, we make a change of variables to
+        // the (u,v) coordinates of the triangle:
+        // x = x0 + e1x * u + e2x * v
+        // y = y0 + e1y * u + e2y * v
+        // where 0 <= u && 0 <= v && u + v <= 1.
+        //
+        // We integrate u from [0,1-v] and then v from [0,1].
+        // We also need to use the Jacobian of the transformation:
+        // D = bzCross(e1, e2)
+        //
+        // Simplification: triangle centroid = (1/3) * (p1 + p2 + p3)
+        //
+        // The rest of the derivation is handled by computer algebra.
+
+        if(m_vertexCount < 3) throw "not a polygon";
+
+        var center = new Vec2(0.0, 0.0);
+		area = 0.0;
+        var I = 0.0;
+
+        // pRef is the reference point for forming triangles.
+        // It's location doesn't change the result (except for rounding error).
+        var pRef = new Vec2(0.0, 0.0);
+
+        var k_inv3 = 1.0 / 3.0;
+
+        for (i in 0...vertices.length) {
+            // Triangle vertices.
+            var p1 = pRef;
+            var p2 = m_vertices[i];
+            var p3 = if(i + 1 < vertices.length) vertices[i+1] else vertices[0];
+
+            var e1 = p2.sub(p1);
+            var e2 = p3.sub(p1);
+
+            var D = e1.cross(e2);
+
+            var triangleArea = 0.5 * D;
+            area += triangleArea;
+
+            // Area weighted centroid
+            center.addAsn(p1.add(p2.add(p3)).mul(triangleArea * k_inv3));
+
+            var px = p1.x;
+            var py = p1.y;
+            var ex1 = e1.x;
+            var ey1 = e1.y;
+            var ex2 = e2.x;
+            var ey2 = e2.y;
+
+            var intx2 = k_inv3 * (0.25 * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5*px*px;
+            var inty2 = k_inv3 * (0.25 * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5*py*py;
+
+            I += D * (intx2 + inty2);
+        }
+
+        // Total mass
+        massData.mass = density * area;
+
+        // Center of mass
+        if(area < Vec2.EPSILON) throw "area too small";
+        center.mulAsn(1.0 / area);
+        massData.center = center;
+
+        // Inertia tensor relative to the local origin.
+        massData.I = density * I;
     }
 
 }

@@ -37,14 +37,14 @@ class Space
     var m_spaceAABB : AABB;
     var m_broadPhase : BroadPhase;
     var m_mpr : Mpr;
-    var m_bodyList : FastList<Body>;
+    var bodyList : FastList<Body>;
     
     public function new(spaceAABB:AABB) {
         
         m_spaceAABB = spaceAABB;
-        m_bodyList = new FastList();
-        m_broadPhase = new HGrid(m_bodyList);
+        m_broadPhase = new HGrid(bodyList);
         m_mpr = new Mpr();
+        bodyList = new FastList();
     }
     
     public inline function step(timeStep:Float) {
@@ -62,11 +62,11 @@ class Space
     }
     
     public function addBody(body:Body) {
-        
+        bodyList.add(body);
     }
     
     public function removeBody(body:Body) {
-        
+        bodyList.remove(body);
     }
     
     public function addJoint() {
