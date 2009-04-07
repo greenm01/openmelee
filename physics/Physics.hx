@@ -43,6 +43,9 @@ class Physics
     var k_maxAngularVelocity : Float;
     var k_maxAngularVelocitySquared : Float;
     
+    // Coefficient of restitution
+    var fCr : Float; 		
+    
     public function new(space:Space) {
         
         gravity = new Vec2(0.0,0.0);
@@ -52,6 +55,8 @@ class Physics
         k_maxLinearVelocity = 200.0;
         k_maxLinearVelocitySquared = k_maxLinearVelocity * k_maxLinearVelocity;
         k_maxAngularVelocitySquared = k_maxAngularVelocity * k_maxAngularVelocity;
+        
+        fCr = 1.0;
     }
     
     public function solve(dt:Float) {
@@ -92,7 +97,28 @@ class Physics
         }
     }
     
-    public function applyImpulse(){
+    public function applyImpulse(rb1:Body, rb2:Body, cp1:Vec2, cp2:Vec2, normal:Vec2) {
         
+        var rA = cp1.sub(rb1.pos.add(rb1.localCenter));
+        var rB = cp2.sub(rb2.pos.add(rb2.localCenter));
+        var rVel = rb1.linVel.sub(rb2.linVel);
+        var kA = rA.cross(normal);
+        var kB = rB.cross(normal);
+        var uA = kA * rb1.invI;
+        var uB = kB * rb2.invI;
+        var fNumer = (-(1+fCr)) * normal.dot(rVel) + (rb1.angVel*kA - rb2.angVel*kA);
+        var fDenom = rb1.invMass + rb2.invMass + kA * uA + kB * uB;
+        var f = fNumer/fDenom;
+        var impulse = normal.mul(f);
+        
+        rb1.linVel.addAsn(impulse.mul(rb1.invMass));
+        rb1.angVel += rb1.invI * cp1.sub(rb1.localCenter).cross(impulse);
+        
+        impulse = impulse.neg();
+        rb2.linVel.addAsn(impulse.mul(rb2.invMass));
+        rb2.angVel += rb2.invI * cp2.sub(rb2.localCenter).cross(impulse);
+
     }
+
+
 }
