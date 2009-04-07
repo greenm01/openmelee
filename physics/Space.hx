@@ -50,9 +50,15 @@ class Space
     }
     
     public inline function step(timeStep:Float) {
-        updateBroadphase();
-        updateNarrowphase();
         
+        physics.solve(timeStep);
+        for(b in bodyList) {
+            b.synchronizeTransform();
+            b.synchronizeShapes();
+        }
+    
+        //updateBroadphase();
+        //updateNarrowphase();
     }
     
     public inline function updateBroadphase(){

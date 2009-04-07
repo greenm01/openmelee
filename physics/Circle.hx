@@ -36,6 +36,7 @@ class Circle extends Shape
 {
     public function new(offset:Vec2, rad:Float, density:Float) {
         super(Shape.CIRCLE, offset, density);
+        circle = this;
         radius = rad;
         computeMass();
     }

@@ -85,6 +85,7 @@ class Orz extends Ship
         bWing.push(new Vec2(42 * scale, -21 * scale));
         rBody.addShape(new Polygon(bWing, offset, density));
 
+        rBody.setMassFromShapes();
         space.addBody(rBody);
         //setPlanetGravity();
       }

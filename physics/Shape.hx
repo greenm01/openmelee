@@ -79,7 +79,7 @@ class Shape
         this.density = density;
         worldCenter = new Vec2(0.0, 0.0);
         aabb = new AABB(new Vec2(0.0, 0.0), new Vec2(0.0, 0.0));
-        //massData = {mass:0.0, center:new Vec2(0,0), I:0.0};
+        massData = {mass:0.0, center:new Vec2(0,0), I:0.0};
     }
 
     public function support(d:Vec2) : Vec2 {

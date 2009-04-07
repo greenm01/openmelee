@@ -66,8 +66,9 @@ class Melee
     
     public function new() {
         
-        timeStep = 1.0/60;
+        timeStep = 1.0/60.0;
         objectList = new FastList();
+        
         initWorld();
         running = true;
 
@@ -111,7 +112,7 @@ class Melee
         var lowerBound = new Vec2(-400,-250);
 	    worldAABB = new AABB(upperBound, lowerBound);
 		space = new Space(worldAABB);
-		//ship2 = new UrQuan(space);
+		ship2 = new UrQuan(space);
 		ship1 = new Orz(space);
         //planet = new Planet(space);
         for(i in 0...NUM_ASTROIDS) {

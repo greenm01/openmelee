@@ -42,6 +42,10 @@ class Vec2
        this.y = y;
     }
     
+    static public function init() {
+        return new Vec2(0.0, 0.0);
+    }
+    
     public inline function clone() {
         return new Vec2(x, y);
     }

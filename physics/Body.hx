@@ -68,14 +68,19 @@ class Body
     public var size : Int;
     public var next : Body;
 
-    public function new(position:Vec2, ang:Float) {
-        setAngle(ang);
+    public function new(position:Vec2, angle:Float) {
+        m_angle = angle;
         var R = new Mat22(new Vec2(0,0), new Vec2(0,0));
-        R.set(ang);
+        R.set(angle);
         xf = new XForm(position, R);
         shapeList = new FastList();
         linearDamping = 0.0;
         angularDamping = 0.0;
+        radius = 0.0;
+        force = Vec2.init();
+        linVel = Vec2.init();
+        pos = Vec2.init();
+        localCenter = Vec2.init();
     }
     
     public function addShape(s:Shape) {
@@ -97,6 +102,7 @@ class Body
             size *= Std.int(HGrid.CELL_TO_CELL_RATIO);
             level++;
         }
+
     }
     
     /**
@@ -149,13 +155,13 @@ class Body
     }
     
     private inline function getPos() {
-        return m_xf.position;
+        return xf.position;
     }
     
     private inline function setPos(p:Vec2) {
-        m_xf.position = p;
+        xf.position = p;
         synchronizeTransform();
-        return m_xf.position;
+        return xf.position;
     }
     
     private inline function setAngle(a:Float) {
@@ -172,8 +178,8 @@ class Body
      * Update rotation and position of the body
      */
     public inline function synchronizeTransform() {
-        m_xf.R.set(m_angle);
-        m_xf.position = m_xf.position.sub(Vec2.mul22(m_xf.R, localCenter));
+        xf.R.set(m_angle);
+        xf.position = xf.position.sub(Vec2.mul22(xf.R, localCenter));
     }
     
     /**
@@ -185,8 +191,6 @@ class Body
         }
     }
     
-    /// The body's origin transform
-    private var m_xf : XForm;
     /// The body's angle in radians;
     private var m_angle : Float;
 

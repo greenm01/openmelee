@@ -46,13 +46,14 @@ class Polygon extends Shape
     public function new(vertices:Array<Vec2>, offset:Vec2, density:Float) {
         
         super(Shape.POLYGON, offset, density);
+        polygon = this;
         
         this.vertices = vertices;
         worldVerts = new FastList();
         for(v in vertices) {
             worldVerts.add(new Vec2(0.0,0.0));
         }
-                
+    
         updateRadius();
         computeMass();
     }
@@ -175,7 +176,7 @@ class Polygon extends Shape
         massData.mass = density * area;
 
         // Center of mass
-        if(area < Vec2.EPSILON) throw "area too small";
+        //if(area < Vec2.EPSILON) throw "Bad polygon: area = " + area;
         center.mulAsn(1.0 / area);
         massData.center = center;
 
