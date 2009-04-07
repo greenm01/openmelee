@@ -49,11 +49,14 @@ class Body
     public var force : Vec2;
     public var torque : Float;
     
+    public var linearDamping : Float;
+    public var angularDamping : Float;
+    
     // Mass properties
-    var m_mass : Float;
-    var m_invMass : Float;
-    var m_I : Float;
-    var m_invI : Float;
+    var mass : Float;
+    public var invMass : Float;
+    var I : Float;
+    public var invI : Float;
     
     public var shapeList : FastList<Shape>;
     
@@ -71,6 +74,8 @@ class Body
         R.set(ang);
         xf = new XForm(position, R);
         shapeList = new FastList();
+        linearDamping = 0.0;
+        angularDamping = 0.0;
     }
     
     public function addShape(s:Shape) {
@@ -102,33 +107,33 @@ class Body
      */
     public function setMassFromShapes() {
         // Compute mass data from shapes. Each shape has its own density.
-        m_mass = 0.0;
-        m_invMass = 0.0;
-        m_I = 0.0;
-        m_invI = 0.0;
+        mass = 0.0;
+        invMass = 0.0;
+        I = 0.0;
+        invI = 0.0;
 
         var center = new Vec2(0.0, 0.0);
         for (s in shapeList) {
             s.computeMass();
-            m_mass += s.massData.mass;
+            mass += s.massData.mass;
             center.addAsn(s.massData.center.mul(s.massData.mass));
-            m_I += s.massData.I;
+            I += s.massData.I;
         }
 
         // Compute center of mass, and shift the origin to the COM.
-        if (m_mass > 0.0) {
-            m_invMass = 1.0 / m_mass;
-            center.mulAsn(m_invMass);
+        if (mass > 0.0) {
+            invMass = 1.0 / mass;
+            center.mulAsn(invMass);
         }
 
-        if (m_I > 0.0) {
+        if (I > 0.0) {
             // Center the inertia about the center of mass.
-            m_I -= m_mass * center.dot(center);
-            if(m_I < 0.0) throw "mass error";
-            m_invI = 1.0 / m_I;
+            I -= mass * center.dot(center);
+            if(I < 0.0) throw "mass error";
+            invI = 1.0 / I;
         } else {
-            m_I = 0.0;
-            m_invI = 0.0;
+            I = 0.0;
+            invI = 0.0;
         }
         // Update center of mass.
         localCenter = center;

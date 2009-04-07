@@ -63,7 +63,7 @@ class Melee
 
     var worldAABB : AABB;
     public var space : Space;
-
+    
     public function new() {
         
         timeStep = 1.0/60;
@@ -74,7 +74,7 @@ class Melee
         human = new Human(ship1, this);
         //ai = new AI(ship2, objectList);
         render = new Render(this);
-
+        
         //objectList.add(planet);
         objectList.add(ship1);
         objectList.add(ship2);

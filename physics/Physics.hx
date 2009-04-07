@@ -30,26 +30,42 @@
  */
 package physics;
 
+import utils.Vec2;
+
 class Physics
 {
 
     var space : Space;
+    var gravity : Vec2;
+    
+    var k_maxLinearVelocity : Float;
+    var k_maxLinearVelocitySquared : Float;
+    var k_maxAngularVelocity : Float;
+    var k_maxAngularVelocitySquared : Float;
+    
     public function new(space:Space) {
+        
+        gravity = new Vec2(0.0,0.0);
         this.space = space;
+        
+        k_maxAngularVelocity = 250.0;
+        k_maxLinearVelocity = 200.0;
+        k_maxLinearVelocitySquared = k_maxLinearVelocity * k_maxLinearVelocity;
+        k_maxAngularVelocitySquared = k_maxAngularVelocity * k_maxAngularVelocity;
     }
     
-    public function solve() {
+    public function solve(dt:Float) {
         
         // Integrate velocities and apply damping.
         for (b in space.bodyList) {
           
             // Integrate velocities.
-            b.linearVelocity = b.linearVelocity + step.dt * (gravity + b.invMass * b.force);
-            b.angularVelocity = b.angularVelocity + step.dt * b.invI * b.torque;
+            b.linVel.addAsn(gravity.add(b.force.mul(b.invMass)).mul(dt));
+            b.angVel *= (b.torque * b.invI * dt);
 
             // Reset forces.
-            b.force = bzVec2.zeroVect;
-            b.torque = 0.0f;
+            b.force.set(0.0, 0.0);
+            b.torque = 0.0;
 
             // Apply damping.
             // ODE: dv/dt + c * v = 0
@@ -58,40 +74,25 @@ class Physics
             // v2 = exp(-c * dt) * v1
             // Taylor expansion:
             // v2 = (1.0f - c * dt) * v1
-            b.linearVelocity = b.linearVelocity * bzClamp(1.0f - step.dt * b.linearDamping, 0.0f, 1.0f);
-            b.angularVelocity = b.angularVelocity * bzClamp(1.0f - step.dt * b.angularDamping, 0.0f, 1.0f);
+            b.linVel.mulAsn(Vec2.clamp(1.0 - dt * b.linearDamping, 0.0, 1.0));
+            b.angVel *= Vec2.clamp(1.0 - dt * b.angularDamping, 0.0, 1.0);
 
             // Check for large velocities.
-            if (bzDot(b.linearVelocity, b.linearVelocity) > k_maxLinearVelocitySquared) {
-                b.linearVelocity.normalize();
-                b.linearVelocity *= k_maxLinearVelocity;
+            if (b.linVel.dot(b.linVel) > k_maxLinearVelocitySquared) {
+                b.linVel.normalize();
+                b.linVel.mulAsn(k_maxLinearVelocity);
             }
-            if (b.angularVelocity * b.angularVelocity > k_maxAngularVelocitySquared) {
-                if (b.angularVelocity < 0.0f) {
-                    b.angularVelocity = -k_maxAngularVelocity;
+            if (b.angVel * b.angVel > k_maxAngularVelocitySquared) {
+                if (b.angVel < 0.0) {
+                    b.angVel = -k_maxAngularVelocity;
                 } else {
-                    b.angularVelocity = k_maxAngularVelocity;
+                    b.angVel = k_maxAngularVelocity;
                 }
             }
         }
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    public function applyImpulse(){
+        
+    }
 }

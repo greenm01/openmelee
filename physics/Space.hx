@@ -38,6 +38,7 @@ class Space
     var m_broadPhase : BroadPhase;
     var m_mpr : Mpr;
     public var bodyList : FastList<Body>;
+    var physics : Physics;
     
     public function new(spaceAABB:AABB) {
         
@@ -45,6 +46,7 @@ class Space
         m_broadPhase = new HGrid(bodyList);
         m_mpr = new Mpr();
         bodyList = new FastList();
+        physics = new Physics(this);
     }
     
     public inline function step(timeStep:Float) {
