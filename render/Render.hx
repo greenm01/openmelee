@@ -141,7 +141,7 @@ class Render
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
         {
-            for(v in p.worldVertx) {
+            for(v in p.worldVerts) {
                 GL.vertex2(v.x, v.y);
             }
         }
@@ -169,13 +169,13 @@ class Render
     function draw() {
         
        if(ship2 != null) {
-            var point1 = new Vec2(ship1.rBody.x,ship1.rBody.y);
-            var point2 = new Vec2(ship2.rBody.x,ship2.rBody.y);
-            var range = point1.minus(point2);
-            zoom = Util.clamp(1000.0/range.length(), 2.0, 60.0);
-            viewCenter = point1.minus(range.mul(0.5));
+            var point1 = new Vec2(ship1.rBody.pos.x,ship1.rBody.pos.y);
+            var point2 = new Vec2(ship2.rBody.pos.x,ship2.rBody.pos.y);
+            var range = point1.sub(point2);
+            zoom = Vec2.clamp(1000.0/range.length(), 2.0, 60.0);
+            viewCenter = point1.sub(range.mul(0.5));
         } else {
-             viewCenter = new Vec2(ship1.rBody.x, ship1.rBody.y);
+             viewCenter = new Vec2(ship1.rBody.pos.x, ship1.rBody.pos.y);
              zoom = 10;
         }
         
@@ -196,17 +196,10 @@ class Render
         GL.clear(GL.COLOR_BUFFER_BIT);
 
         // Draw dynamic bodies
+        var color : Color = {r : 0.9, g : 0.9, b : 0.9};
         for (b in space.bodyList) {
-            for (shape in b.shapeList) {
-                var s = shape;
-                var color : Color;
-                if (b.isStatic) {
-                    color = {r: 0.5, g : 0.9, b : 0.5};
-                    drawShape(s, color);
-                } else {
-                    color = {r : 0.9, g : 0.9, b : 0.9};
-                    drawShape(s, color);
-                }
+            for (s in b.shapeList) {
+                drawShape(s, color);
                 GL.loadIdentity();
                 GL.flush();
             }

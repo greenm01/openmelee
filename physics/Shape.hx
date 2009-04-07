@@ -56,8 +56,10 @@ class Shape
 {
 
     public static inline var CIRCLE = 0;
-	public static inline var SEGMENT = 1;
-	public static inline var POLYGON = 2;
+	public static inline var POLYGON = 1;
+    
+    public var circle : Circle;
+	public var polygon : Polygon;
     
     public var body : Body;
     public var radius : Float;
@@ -65,6 +67,8 @@ class Shape
     public var density : Float;
     // Local position in parent body
     public var offset : Vec2;
+    // The shape's geometric world center
+    public var worldCenter : Vec2;
     public var type : Int;
     // Axis aligned bounding box
     var aabb : AABB;
@@ -73,12 +77,16 @@ class Shape
         this.type = type;
         this.offset = offset;
         this.density = density;
-        aabb = new AABB(new Vec2(0.0,0.0), new Vec2(0.0,0.0));
+        worldCenter = new Vec2(0.0, 0.0);
+        aabb = new AABB(new Vec2(0.0, 0.0), new Vec2(0.0, 0.0));
         //massData = {mass:0.0, center:new Vec2(0,0), I:0.0};
     }
 
-    public inline function support(d:Vec2);
-    public function computeMass();
-    public inline function synchronize();
+    public function support(d:Vec2) : Vec2 {
+        return new Vec2(0.0,0.0);
+    }
+    
+    public function computeMass() {}
+    public function synchronize() {}
 
 }

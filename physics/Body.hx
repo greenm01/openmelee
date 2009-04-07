@@ -48,9 +48,12 @@ class Body
     public var angVel : Float;
     public var force : Vec2;
     public var torque : Float;
+    
+    // Mass properties
     var m_mass : Float;
-    var m_I : Float;
     var m_invMass : Float;
+    var m_I : Float;
+    var m_invI : Float;
     
     public var shapeList : FastList<Shape>;
     
@@ -108,14 +111,14 @@ class Body
         for (s in shapeList) {
             s.computeMass();
             m_mass += s.massData.mass;
-            center += s.massData.mass * s.massData.center;
+            center.addAsn(s.massData.center.mul(s.massData.mass));
             m_I += s.massData.I;
         }
 
         // Compute center of mass, and shift the origin to the COM.
         if (m_mass > 0.0) {
             m_invMass = 1.0 / m_mass;
-            center *= m_invMass;
+            center.mulAsn(m_invMass);
         }
 
         if (m_I > 0.0) {
@@ -127,10 +130,8 @@ class Body
             m_I = 0.0;
             m_invI = 0.0;
         }
-
         // Update center of mass.
         localCenter = center;
-
     }
     
     /**

@@ -34,14 +34,14 @@ import haxe.FastList;
 
 class Space 
 {
-    var m_spaceAABB : AABB;
+    public var spaceAABB : AABB;
     var m_broadPhase : BroadPhase;
     var m_mpr : Mpr;
-    var bodyList : FastList<Body>;
+    public var bodyList : FastList<Body>;
     
     public function new(spaceAABB:AABB) {
         
-        m_spaceAABB = spaceAABB;
+        this.spaceAABB = spaceAABB;
         m_broadPhase = new HGrid(bodyList);
         m_mpr = new Mpr();
         bodyList = new FastList();

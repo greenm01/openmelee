@@ -40,7 +40,7 @@ class Polygon extends Shape
     // Vertices in local coordinates
     var vertices : Array<Vec2>;
     // Vertices in world coordinates
-    var worldVerts : FastList<Vec2>;
+    public var worldVerts : FastList<Vec2>;
     var area : Float;  
     
     public function new(vertices:Array<Vec2>, offset:Vec2, density:Float) {
@@ -65,7 +65,6 @@ class Polygon extends Shape
     }
     
     public function updateAABB() {
-        var worldCenter = Vec2.mulXF(body.xf, offset);
         aabb.upperBound.x = worldCenter.x + radius;
         aabb.upperBound.y = worldCenter.y + radius;
         aabb.lowerBound.x = worldCenter.x - radius;
@@ -73,7 +72,8 @@ class Polygon extends Shape
     }
     
     // Synchronize world vertices
-    public inline override function synchronize() {
+    public override function synchronize() {
+        worldCenter = Vec2.mulXF(body.xf, offset);
         var i = 0;
         for(v in worldVerts) {
             v = Vec2.mulXF(body.xf, vertices[i++]);
@@ -83,18 +83,18 @@ class Polygon extends Shape
     /**
 	 * Returns: The shape's support point (for MPR & GJK)
 	 */
-    public override inline function support(d:Vec2) {
+    public override function support(d:Vec2) : Vec2 {
         var dLocal = Vec2.mul22(body.xf.R, d);
         var bestIndex = 0;
         var bestValue = vertices[0].dot(dLocal);
         for (i in 1...vertices.length) {
-            var value = vertices[i.dot(dLocal);
+            var value = vertices[i].dot(dLocal);
             if (value > bestValue) {
                 bestIndex = i;
                 bestValue = value;
             }
         }
-        return Vec2.mulXF(xf, vertices[bestIndex]);
+        return Vec2.mulXF(body.xf, vertices[bestIndex]);
     }
     
     /**
@@ -129,7 +129,7 @@ class Polygon extends Shape
         //
         // The rest of the derivation is handled by computer algebra.
 
-        if(m_vertexCount < 3) throw "not a polygon";
+        if(vertices.length < 3) throw "not a polygon";
 
         var center = new Vec2(0.0, 0.0);
 		area = 0.0;
@@ -144,7 +144,7 @@ class Polygon extends Shape
         for (i in 0...vertices.length) {
             // Triangle vertices.
             var p1 = pRef;
-            var p2 = m_vertices[i];
+            var p2 = vertices[i];
             var p3 = if(i + 1 < vertices.length) vertices[i+1] else vertices[0];
 
             var e1 = p2.sub(p1);

@@ -55,8 +55,8 @@ class State
     
 	public inline function predictFuturePosition(dt : Float) {
         var futPos = pos.clone();
-        futPos.x += v.x*dt;
-        futPos.y += v.y*dt;
+        futPos.x += linVel.x*dt;
+        futPos.y += linVel.y*dt;
 	    return futPos;
     }
 }
@@ -103,20 +103,19 @@ class Ship
     public inline function limitVelocity() {
         var vx = rBody.linVel.x;
         var vy = rBody.linVel.y;
-        var w = rBody.angVel;
-        rBody.v.x = Vec2.clamp(vx, -maxLinVel, maxLinVel);
-        rBody.v.y = Vec2.clamp(vy, -maxLinVel, maxLinVel);
-        rBody.w = Vec2.clamp(w, -maxAngVel, maxAngVel);
+        var omega = rBody.angVel;
+        rBody.linVel.x = Vec2.clamp(vx, -maxLinVel, maxLinVel);
+        rBody.linVel.y = Vec2.clamp(vy, -maxLinVel, maxLinVel);
+        rBody.angVel = Vec2.clamp(omega, -maxAngVel, maxAngVel);
     }
     
     public inline function updateState() {
-    	state.v = rBody.v.clone();
-    	state.speed = state.v.length();
+    	state.linVel = rBody.linVel.clone();
+    	state.speed = state.linVel.length();
     	state.pos.x = rBody.pos.x;
         state.pos.y = rBody.pos.y;
-    	state.forward = engineForce.rotate(rBody.a);
+    	state.forward = engineForce.rotate(rBody.angle);
     }
-    
     
     public function explode() {
         /*
@@ -148,22 +147,12 @@ class Ship
         */
     }
     
-    /*
-    function calcRadius() {
-        for (bzShape s = rBody.shapeList; s; s = s.next) {
-            if(s.sweepRadius > state.radius) {
-                state.radius = s.sweepRadius;
-            }
-        }
-    }
-    
     function setPlanetGravity() {
-        float minRadius = 0.1;
-        float maxRadius = 10;
-        float strength = 0.75;
-        bzVec2 center = bzVec2(0,0);
-        auto attractor = new bzAttractor(rBody, center, strength, minRadius, maxRadius);
-        world.addForce(attractor);
+        var minRadius = 0.1;
+        var maxRadius = 10.0;
+        var strength = 0.75;
+        var center = new Vec2(0.0,0.0);
+        //auto attractor = new bzAttractor(rBody, center, strength, minRadius, maxRadius);
+        //world.addForce(attractor);
     }
-    */
 }

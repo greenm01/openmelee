@@ -57,13 +57,15 @@ class Orz extends Ship
         
         rBody = new Body(pos, angle);
 
+        var density = 5.0;
+        
         // Body
         var body = new Array();
         body.push(new Vec2(42 * scale, 14 * scale)); 
         body.push(new Vec2(42 * scale, -21 * scale)); 
         body.push(new Vec2(-28 * scale, -28 * scale)); 
         body.push(new Vec2(-28 * scale, 21 * scale)); 
-        rBody.addShape(new Polygon(body, offset));
+        rBody.addShape(new Polygon(body, offset, density));
         
         // Top Wing
         var tWing = new Array();
@@ -72,7 +74,7 @@ class Orz extends Ship
         tWing.push(new Vec2(-49 * scale, 63 * scale));
         tWing.push(new Vec2(70 * scale, 14 * scale));
         tWing.push(new Vec2(42 * scale, 14 * scale));
-        rBody.addShape(new Polygon(tWing, offset));
+        rBody.addShape(new Polygon(tWing, offset, density));
 
         // Bottom Wing
         var bWing = new Array();
@@ -81,10 +83,9 @@ class Orz extends Ship
         bWing.push(new Vec2(-49 * scale, -63 * scale));
         bWing.push(new Vec2(70 * scale, -21 * scale));
         bWing.push(new Vec2(42 * scale, -21 * scale));
-        rBody.addShape(new Polygon(bWing, offset));
+        rBody.addShape(new Polygon(bWing, offset, density));
 
         space.addBody(rBody);
         //setPlanetGravity();
-        //calcRadius();
       }
 }

@@ -101,8 +101,8 @@ class Mpr
         // Phase one: Portal discovery
         
         // v0 = center of Minkowski sum
-        var v01 = shape1.pos;
-        var v02 = shape2.pos;
+        var v01 = shape1.worldCenter;
+        var v02 = shape2.worldCenter;
         var v0 = v02.sub(v01);
 
         // Avoid case where centers overlap -- any direction is fine in this case
@@ -115,7 +115,7 @@ class Mpr
         var v1 = v12.sub(v11);
 
         // origin outside v1 support plane ==> miss
-        if (Util.dot(v1, n) <= 0) return false;
+        if (v1.dot(n) <= 0) return false;
 
         // Find a candidate portal
         n = outsidePortal(v1, v0);
@@ -124,7 +124,7 @@ class Mpr
         var v2 = v22.sub(v21);
 
         // origin outside v2 support plane ==> miss
-        if (Util.dot(v2, n) <= 0) return false;
+        if (v2.dot(n) <= 0) return false;
 
         // Phase two: Portal refinement
         var maxIterations = 0;

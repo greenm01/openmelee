@@ -34,18 +34,14 @@ import utils.Vec2;
 
 class Circle extends Shape
 {
-    
-    var worldCenter : Vec2;
-    
-    public function new(offset:Vec2, radius:Float, density:Float) {
+    public function new(offset:Vec2, rad:Float, density:Float) {
         super(Shape.CIRCLE, offset, density);
-        worldCenter = new Vec2(0.0,0.0);
-        super.radius = radius;
+        radius = rad;
         computeMass();
     }
     
     // Synchronize world center
-    public override inline function synchronize() {
+    public override function synchronize() {
         worldCenter = Vec2.mulXF(body.xf, offset);
     }
     
@@ -54,7 +50,7 @@ class Circle extends Shape
      * The inertia tensor is computed about the local origin, not the centroid.
      * Params: massData = returns the mass data for this shape.
 	 */
-    public function computeMass() {
+    public override function computeMass() {
         massData.mass = density * Math.PI * radius * radius;
         massData.center = offset;
         // inertia about the local origin
@@ -64,10 +60,10 @@ class Circle extends Shape
     /**
      * Returns: The shape's support point (for MPR)
      */
-    public inline override function support(d:Vec2) {
+    public override function support(d:Vec2) : Vec2 {
         d.normalize();
-        var r = d.mul(radius);
-        r += worldCenter;
+        var r : Vec2 = d.mul(radius);
+        r.addAsn(worldCenter);
         return r;
     }
 }
