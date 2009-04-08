@@ -65,12 +65,12 @@ class Render
     
     public function new(melee : Melee) {
         
-        zoom = 40;
+        zoom = 20;
         running = true;
         space = melee.space;
         ship1 = melee.ship1;
         ship2 = melee.ship2;
-        viewCenter = new Vec2(10, 10);
+        viewCenter = new Vec2(0, 0);
         screenSize = new Vec2(800, 600);
         
         // Open window
@@ -168,16 +168,17 @@ class Render
    
     function draw() {
         
+        /*
        if(ship2 != null) {
-            var point1 = new Vec2(ship1.rBody.pos.x,ship1.rBody.pos.y);
-            var point2 = new Vec2(ship2.rBody.pos.x,ship2.rBody.pos.y);
+            var point1 = ship1.rBody.pos;
+            var point2 = ship2.rBody.pos;
             var range = point1.sub(point2);
             zoom = Vec2.clamp(1000.0/range.length(), 2.0, 60.0);
             viewCenter = point1.sub(range.mul(0.5));
         } else {
              viewCenter = new Vec2(ship1.rBody.pos.x, ship1.rBody.pos.y);
              zoom = 10;
-        }
+        } */
         
         GL.loadIdentity();
         GL.matrixMode(GL.PROJECTION);

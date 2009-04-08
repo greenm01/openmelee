@@ -50,12 +50,11 @@ class Polygon extends Shape
         
         this.vertices = vertices;
         worldVerts = new FastList();
-        for(v in vertices) {
+        for(v in 0...vertices.length) {
             worldVerts.add(new Vec2(0.0,0.0));
         }
     
         updateRadius();
-        computeMass();
     }
     
     function updateRadius() {
@@ -77,7 +76,8 @@ class Polygon extends Shape
         worldCenter = Vec2.mulXF(body.xf, offset);
         var i = 0;
         for(v in worldVerts) {
-            v = Vec2.mulXF(body.xf, vertices[i++]);
+            var p = Vec2.mulXF(body.xf, vertices[i++]);
+            v.set(p.x, p.y); 
         }
     }
     
@@ -132,13 +132,13 @@ class Polygon extends Shape
 
         if(vertices.length < 3) throw "not a polygon";
 
-        var center = new Vec2(0.0, 0.0);
+        var center = Vec2.init();
 		area = 0.0;
         var I = 0.0;
 
         // pRef is the reference point for forming triangles.
         // It's location doesn't change the result (except for rounding error).
-        var pRef = new Vec2(0.0, 0.0);
+        var pRef = Vec2.init();
 
         var k_inv3 = 1.0 / 3.0;
 
@@ -147,12 +147,12 @@ class Polygon extends Shape
             var p1 = pRef;
             var p2 = vertices[i];
             var p3 = if(i + 1 < vertices.length) vertices[i+1] else vertices[0];
-
+            trace(p3.x + "," + p3.y);
             var e1 = p2.sub(p1);
             var e2 = p3.sub(p1);
 
             var D = e1.cross(e2);
-
+            
             var triangleArea = 0.5 * D;
             area += triangleArea;
 

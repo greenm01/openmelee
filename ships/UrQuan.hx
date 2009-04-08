@@ -53,7 +53,7 @@ class UrQuan extends Ship
         rightTurnPoint = new Vec2(-0.5, 0);
         leftTurnPoint = new Vec2(0.5, 0);
         
-        var pos = new Vec2(30.0, 5.0);
+        var pos = new Vec2(20.0, 5.0);
         var angle = 0.0;
         rBody = new Body(pos, angle);
         
@@ -76,7 +76,7 @@ class UrQuan extends Ship
         body.push(new Vec2(-70 * scale, -28 * scale));
         body.push(new Vec2(-70 * scale, 24.5 * scale));
         body.push(new Vec2(42 * scale, 24.5 * scale));
-        body.push(new Vec2(42 * scale, -31.5 * scale));
+        body.push(new Vec2(42 * scale, -28 * scale));
         rBody.addShape(new Polygon(body, offset, density));
         
         // Top Strut
@@ -110,7 +110,7 @@ class UrQuan extends Ship
         bWing.push(new Vec2(28 * scale, -70 * scale));
         bWing.push(new Vec2(-42 * scale, -70 * scale));
         rBody.addShape(new Polygon(bWing, offset, density));
-
+        
         rBody.setMassFromShapes();
         space.addBody(rBody);
         //setPlanetGravity();

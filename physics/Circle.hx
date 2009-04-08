@@ -38,7 +38,6 @@ class Circle extends Shape
         super(Shape.CIRCLE, offset, density);
         circle = this;
         radius = rad;
-        computeMass();
     }
     
     // Synchronize world center

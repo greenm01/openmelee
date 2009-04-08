@@ -53,7 +53,7 @@ class Space
         
         physics.solve(timeStep);
         for(b in bodyList) {
-            b.synchronizeTransform();
+            //b.synchronizeTransform();
             b.synchronizeShapes();
         }
     
