@@ -49,7 +49,7 @@ class Human
 
 	public function onKey(key : Int, state : Int) {
         // Key pressed
-		if (state == 257 || state == 1) {
+		if (state == GLFW.PRESS) {
 			switch (key) {
 			case GLFW.KEY_ESC:
                 quit = true;

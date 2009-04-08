@@ -85,7 +85,6 @@ class Render
         GLFW.setWindowTitle("OpenMelee");
         
         GLFW.setKeyFunction(function( a:Int, b:Int ) {
-			trace("key: "+a+", "+b );
 			melee.human.onKey(a, b);
 		});
         

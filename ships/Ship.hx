@@ -85,7 +85,6 @@ class Ship
         var force = engineForce.rotate(rBody.angle);
         rBody.force.x += force.x;
         rBody.force.y += force.y;
-        trace(rBody.force.x);
     }
 
     public inline function turnLeft() {

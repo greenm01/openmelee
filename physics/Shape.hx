@@ -77,9 +77,9 @@ class Shape
         this.type = type;
         this.offset = offset;
         this.density = density;
-        worldCenter = new Vec2(0.0, 0.0);
-        aabb = new AABB(new Vec2(0.0, 0.0), new Vec2(0.0, 0.0));
-        massData = {mass:0.0, center:new Vec2(0,0), I:0.0};
+        worldCenter = Vec2.init();
+        aabb = new AABB(Vec2.init(), Vec2.init());
+        massData = {mass:0.0, center:Vec2.init(), I:0.0};
     }
 
     public function support(d:Vec2) : Vec2 {

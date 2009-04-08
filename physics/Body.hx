@@ -164,13 +164,11 @@ class Body
     
     private inline function setPos(p:Vec2) {
         xf.position = p;
-        synchronizeTransform();
         return xf.position;
     }
     
     private inline function setAngle(a:Float) {
         m_angle = a;
-        synchronizeTransform();
         return m_angle;
     }
     

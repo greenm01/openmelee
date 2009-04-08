@@ -94,6 +94,10 @@ class Physics
                     b.angVel = k_maxAngularVelocity;
                 }
             }
+            
+            // Update positions
+            b.pos.addAsn(b.linVel.mul(dt));
+            b.angle = b.angle + b.angVel*dt;
         }
     }
     
