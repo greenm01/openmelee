@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -42,7 +42,7 @@ class UrQuan extends Ship
 
     var scale : Float;
     var offset : Vec2;
-    
+
     public function new(space : Space) {
 
         scale = 0.025;
@@ -52,13 +52,13 @@ class UrQuan extends Ship
         turnForce = new Vec2(0, 9000);
         rightTurnPoint = new Vec2(-0.5, 0);
         leftTurnPoint = new Vec2(0.5, 0);
-        
-        var pos = new Vec2(20.0, 5.0);
+
+        var pos = new Vec2(10.0, 0.0);
         var angle = 0.0;
         rBody = new Body(pos, angle);
-        
+
         var density = 5.0;
-        
+
         // Head
         var head = new Array();
         head[0]=(new Vec2(42 * scale, 49 * scale));
@@ -70,7 +70,7 @@ class UrQuan extends Ship
         head[2]=(new Vec2(63 * scale, -56 * scale));
         head[1]=(new Vec2(42 * scale, -56 * scale));
         rBody.addShape(new Polygon(head, offset, density));
-        
+
         // Body
         var body = new Array();
         body[0]=(new Vec2(-70 * scale, -28 * scale));
@@ -78,7 +78,7 @@ class UrQuan extends Ship
         body[2]=(new Vec2(42 * scale, 24.5 * scale));
         body[1]=(new Vec2(42 * scale, -28 * scale));
         rBody.addShape(new Polygon(body, offset, density));
-        
+
         // Top Strut
         var tStrut = new Array();
         tStrut[0]=(new Vec2(0 * scale, 24.5 * scale));
@@ -86,7 +86,7 @@ class UrQuan extends Ship
         tStrut[2]=(new Vec2(-28 * scale, 42 * scale));
         tStrut[1]=(new Vec2(0 * scale, 42 * scale));
         rBody.addShape(new Polygon(tStrut, offset, density));
-        
+
         // Top Wing
         var tWing = new Array();
         tWing[0]=(new Vec2(-70 * scale, 42 * scale));
@@ -94,7 +94,7 @@ class UrQuan extends Ship
         tWing[2]=(new Vec2(28 * scale, 63 * scale));
         tWing[1]=(new Vec2(28 * scale, 42 * scale));
         rBody.addShape(new Polygon(tWing, offset, density));
-        
+
         // Bottom Strut
         var bStrut = new Array();
         bStrut[0]=(new Vec2(0 * scale, -31.5 * scale));
@@ -102,7 +102,7 @@ class UrQuan extends Ship
         bStrut[2]=(new Vec2(-28 * scale, -49 * scale));
         bStrut[1]=(new Vec2(-28 * scale, -31.5 * scale));
         rBody.addShape(new Polygon(bStrut, offset, density));
-        
+
         // Bottom Wing
         var bWing = new Array();
         bWing[0]=(new Vec2(-70 * scale, -49 * scale));
@@ -110,7 +110,7 @@ class UrQuan extends Ship
         bWing[2]=(new Vec2(28 * scale, -70 * scale));
         bWing[1]=(new Vec2(-42 * scale, -70 * scale));
         rBody.addShape(new Polygon(bWing, offset, density));
-        
+
         rBody.setMassFromShapes();
         space.addBody(rBody);
         //setPlanetGravity();

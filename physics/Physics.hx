@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -37,36 +37,36 @@ class Physics
 
     var space : Space;
     var gravity : Vec2;
-    
+
     var k_maxLinearVelocity : Float;
     var k_maxLinearVelocitySquared : Float;
     var k_maxAngularVelocity : Float;
     var k_maxAngularVelocitySquared : Float;
-    
+
     // Coefficient of restitution
-    var fCr : Float; 		
-    
+    var fCr : Float;
+
     public function new(space:Space) {
-        
+
         gravity = new Vec2(0.0,0.0);
         this.space = space;
-        
+
         k_maxAngularVelocity = 250.0;
         k_maxLinearVelocity = 200.0;
         k_maxLinearVelocitySquared = k_maxLinearVelocity * k_maxLinearVelocity;
         k_maxAngularVelocitySquared = k_maxAngularVelocity * k_maxAngularVelocity;
-        
+
         fCr = 1.0;
     }
-    
+
     public function solve(dt:Float) {
-        
+
         // Integrate velocities and apply damping.
         for (b in space.bodyList) {
-          
+
             // Integrate velocities.
             b.linVel.addAsn(gravity.add(b.force.mul(b.invMass)).mul(dt));
-            b.angVel *= (b.torque * b.invI * dt);
+            b.angVel += (b.torque * b.invI * dt);
 
             // Reset forces.
             b.force.set(0.0, 0.0);
@@ -94,15 +94,16 @@ class Physics
                     b.angVel = k_maxAngularVelocity;
                 }
             }
-            
+
             // Update positions
             b.pos.addAsn(b.linVel.mul(dt));
             b.angle = b.angle + b.angVel*dt;
+            b.synchronizeTransform();
         }
     }
-    
+
     public function applyImpulse(rb1:Body, rb2:Body, cp1:Vec2, cp2:Vec2, normal:Vec2) {
-        
+
         var rA = cp1.sub(rb1.pos.add(rb1.localCenter));
         var rB = cp2.sub(rb2.pos.add(rb2.localCenter));
         var rVel = rb1.linVel.sub(rb2.linVel);
@@ -114,10 +115,10 @@ class Physics
         var fDenom = rb1.invMass + rb2.invMass + kA * uA + kB * uB;
         var f = fNumer/fDenom;
         var impulse = normal.mul(f);
-        
+
         rb1.linVel.addAsn(impulse.mul(rb1.invMass));
         rb1.angVel += rb1.invI * cp1.sub(rb1.localCenter).cross(impulse);
-        
+
         impulse = impulse.neg();
         rb2.linVel.addAsn(impulse.mul(rb2.invMass));
         rb2.angVel += rb2.invI * cp2.sub(rb2.localCenter).cross(impulse);

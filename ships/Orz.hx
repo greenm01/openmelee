@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -39,34 +39,34 @@ import ships.Ship;
 // UrQuan Dreadnought
 class Orz extends Ship
 {
-    var scale : Float; 
+    var scale : Float;
     var offset : Vec2;
-    
+
     public function new(space : Space) {
-        
+
         scale = 0.025;
         offset = new Vec2(0, 0);
         super(space);
         engineForce = new Vec2(500, 0);
         turnForce = new Vec2(0, 5000);
-        rightTurnPoint = new Vec2(-0.5, 0);
-        leftTurnPoint = new Vec2(0.5, 0);
+        rightTurnPoint = new Vec2(0.5, 0);
+        leftTurnPoint = new Vec2(-0.5, 0);
 
         var pos = new Vec2(25.0, 5.0);
-        var angle = Math.PI/2;
-        
+        var angle = 0.0;
+
         rBody = new Body(pos, angle);
 
         var density = 5.0;
-        
+
         // Body
         var body = new Array();
-        body[0]=(new Vec2(42 * scale, 14 * scale)); 
-        body[3]=(new Vec2(42 * scale, -21 * scale)); 
-        body[2]=(new Vec2(-28 * scale, -28 * scale)); 
-        body[1]=(new Vec2(-28 * scale, 21 * scale)); 
+        body[0]=(new Vec2(42 * scale, 14 * scale));
+        body[3]=(new Vec2(42 * scale, -21 * scale));
+        body[2]=(new Vec2(-28 * scale, -28 * scale));
+        body[1]=(new Vec2(-28 * scale, 21 * scale));
         rBody.addShape(new Polygon(body, offset, density));
-        
+
         // Top Wing
         var tWing = new Array();
         tWing[4]=(new Vec2(-28 * scale, 21 * scale));

@@ -69,9 +69,8 @@ class Body
     public var next : Body;
 
     public function new(position:Vec2, angle:Float) {
-        
         m_angle = angle;
-        var R = new Mat22(Vec2.init(), Vec2.init());
+        var R = Mat22.init();
         R.set(angle);
         xf = new XForm(position, R);
         shapeList = new FastList();
@@ -177,11 +176,10 @@ class Body
     }
     
     /**
-     * Update rotation and position of the body
+     * Update body's rotation
      */
     public inline function synchronizeTransform() {
         xf.R.set(m_angle);
-        xf.position = xf.position.sub(Vec2.mul22(xf.R, localCenter));
     }
     
     /**

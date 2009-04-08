@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -37,7 +37,7 @@ import physics.Space;
 import physics.Shape;
 import physics.Body;
 
-class State 
+class State
 {
 	public var pos : Vec2;
     public var linVel : Vec2;
@@ -52,7 +52,7 @@ class State
 	public var enemyAngle : Float;
     public var turn : Bool;
     public var enemy : Ship;
-    
+
 	public inline function predictFuturePosition(dt : Float) {
         var futPos = pos.clone();
         futPos.x += linVel.x*dt;
@@ -75,14 +75,14 @@ class Ship
     var crew : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
-    
+
     public function new(space : Space) {
         this.space = space;
         shapeList = new FastList();
     }
 
     public function thrust() {
-        var force = engineForce.rotate(rBody.angle);
+        var force = Vec2.mul22(rBody.xf.R, engineForce);
         rBody.force.x += force.x;
         rBody.force.y += force.y;
     }
@@ -92,13 +92,14 @@ class Ship
         var tf = turnForce.rotate(rBody.angle);
         rBody.torque += lp.cross(tf);
     }
-    
+
     public inline function turnRight() {
         var rp = rightTurnPoint.rotate(rBody.angle);
         var tf = turnForce.rotate(rBody.angle);
         rBody.torque += rp.cross(tf);
+        trace(rBody.torque);
     }
-    
+
     public inline function limitVelocity() {
         var vx = rBody.linVel.x;
         var vy = rBody.linVel.y;
@@ -107,15 +108,15 @@ class Ship
         rBody.linVel.y = Vec2.clamp(vy, -maxLinVel, maxLinVel);
         rBody.angVel = Vec2.clamp(omega, -maxAngVel, maxAngVel);
     }
-    
+
     public inline function updateState() {
-    	state.linVel = rBody.linVel.clone();
-    	state.speed = state.linVel.length();
-    	state.pos.x = rBody.pos.x;
+        state.linVel = rBody.linVel.clone();
+        state.speed = state.linVel.length();
+        state.pos.x = rBody.pos.x;
         state.pos.y = rBody.pos.y;
-    	state.forward = engineForce.rotate(rBody.angle);
+        state.forward = engineForce.rotate(rBody.angle);
     }
-    
+
     public function explode() {
         /*
         for(bzShape shape = rBody.shapeList; shape; shape = shape.next) {
@@ -130,7 +131,7 @@ class Ship
                     bodyDef.angle = randomRange(-PI, PI);
                     bodyDef.allowFreeze = false;
                     bodyDef.allowSleep = false;
-                    auto shrapnel = world.createBody(bodyDef);             
+                    auto shrapnel = world.createBody(bodyDef);
                     shrapnel.createShape(shapeDef);
                     bzMassData massData;
                     massData.mass = 5.0f;
@@ -145,11 +146,11 @@ class Ship
         }
         */
     }
-    
+
     function setPlanetGravity() {
         var minRadius = 0.1;
         var maxRadius = 10.0;
-        var strength = 0.75;
+        var strength = 1.75;
         var center = new Vec2(0.0,0.0);
         //auto attractor = new bzAttractor(rBody, center, strength, minRadius, maxRadius);
         //world.addForce(attractor);

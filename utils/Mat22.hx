@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -31,21 +31,27 @@
 package utils;
 
 ///
-class Mat22 
+class Mat22
 {
     /**
      * The columns
      */
-    public var col1 : Vec2; 
+    public var col1 : Vec2;
     public var col2 : Vec2;
-    
+
     public function new(c1:Vec2, c2:Vec2) {
         this.col1 = c1;
         this.col2 = c2;
     }
 
+    static public function init() {
+        var c1 = Vec2.init();
+        var c2 = Vec2.init();
+        return new Mat22(c1, c2);
+    }
+
     public inline function set(angle:Float) {
-        var c = Math.cos(angle); 
+        var c = Math.cos(angle);
         var s = Math.sin(angle);
         col1.x = c;
         col2.x = -s;

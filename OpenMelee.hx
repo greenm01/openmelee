@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -28,17 +28,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
- class Haxmel 
+
+ class OpenMelee
  {
-     
+
      static var game : Game;
-     
+
      public static function main() {
-         
+
          game = new Game();
          game.run();
-         
-     }   
-     
+
+     }
+
  }

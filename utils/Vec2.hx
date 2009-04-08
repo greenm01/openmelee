@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -33,37 +33,37 @@ package utils;
 class Vec2
 {
     public static var EPSILON = 1e-5;
-    
+
     public var x : Float;
     public var y : Float;
-    
+
     public function new(x:Float, y:Float) {
        this.x = x;
        this.y = y;
     }
-    
+
     static public function init() {
         return new Vec2(0.0, 0.0);
     }
-    
+
     public inline function clone() {
         return new Vec2(x, y);
     }
-    
+
     public inline function zero() {
         x = 0.0;
         y = 0.0;
     }
-    
+
     public inline function isZero() {
         return(x == 0 && y == 0);
     }
-    
+
     public inline function set(x:Float, y:Float) {
         this.x = x;
         this.y = y;
     }
-    
+
     public inline function normalize() {
         var m = length();
         x *= 1.0/m;
@@ -96,7 +96,7 @@ class Vec2
     public inline function mul(s:Float)	{
         return new Vec2(x*s, y*s);
     }
-    
+
     public inline function mulAsn(s:Float) {
         x *= s;
         y *= s;
@@ -117,30 +117,30 @@ class Vec2
     public inline function neg() {
         return new Vec2(-x, -y);
     }
-    
+
     public inline function rotate(angle:Float) {
         var cos = Math.cos(angle);
         var sin = Math.sin(angle);
         return new Vec2((cos * x) - (sin * y), (cos * y) + (sin * x));
     }
-    
+
     public inline function cross(v:Vec2) {
         return x * v.y - y * v.x;
     }
-    
+
     public inline function dot(v:Vec2) {
         return x * v.x + y * v.y;
     }
-    
+
     public static inline function clamp (a:Float, low:Float, high:Float) {
         return Math.max(low, Math.min(a, high));
     }
-    
-    public static function mul22(A:Mat22, v:Vec2) {
+
+    public static inline function mul22(A:Mat22, v:Vec2) {
        return new Vec2(v.dot(A.col1), v.dot(A.col2));
     }
 
-    public static function mulXF(T:XForm, v:Vec2) {
+    public static inline function mulXF(T:XForm, v:Vec2) {
         return mul22(T.R, v.sub(T.position));
     }
 }

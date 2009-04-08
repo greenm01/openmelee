@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -34,53 +34,53 @@ import haxe.FastList;
 
 import utils.Vec2;
 
-class Polygon extends Shape 
+class Polygon extends Shape
 {
 
     // Vertices in local coordinates
     var vertices : Array<Vec2>;
     // Vertices in world coordinates
     public var worldVerts : FastList<Vec2>;
-    var area : Float;  
-    
+    var area : Float;
+
     public function new(vertices:Array<Vec2>, offset:Vec2, density:Float) {
-        
+
         super(Shape.POLYGON, offset, density);
         polygon = this;
-        
+
         this.vertices = vertices;
         worldVerts = new FastList();
         for(v in 0...vertices.length) {
             worldVerts.add(new Vec2(0.0,0.0));
         }
-    
+
         updateRadius();
     }
-    
+
     function updateRadius() {
         radius = 0.0;
         for (v in vertices) {
             radius = Math.max(radius, v.length());
         }
     }
-    
+
     public function updateAABB() {
         aabb.upperBound.x = worldCenter.x + radius;
         aabb.upperBound.y = worldCenter.y + radius;
         aabb.lowerBound.x = worldCenter.x - radius;
         aabb.lowerBound.y = worldCenter.y - radius;
     }
-    
-    // Synchronize world vertices
+
+    // Synchronize world vertices in local space
     public override function synchronize() {
-        worldCenter = Vec2.mulXF(body.xf, offset);
+        worldCenter = body.pos.add(offset);
         var i = 0;
         for(v in worldVerts) {
-            var p = Vec2.mulXF(body.xf, vertices[i++]);
-            v.set(p.x, p.y); 
+            var p = Vec2.mul22(body.xf.R, vertices[i++]);
+            v.set(p.x+worldCenter.x, p.y+worldCenter.y);
         }
     }
-    
+
     /**
 	 * Returns: The shape's support point (for MPR & GJK)
 	 */
@@ -97,7 +97,7 @@ class Polygon extends Shape
         }
         return Vec2.mulXF(body.xf, vertices[bestIndex]);
     }
-    
+
     /**
 	 * Compute the mass properties of this shape using its dimensions and density.
      * The inertia tensor is computed about the local origin, not the centroid.
@@ -147,12 +147,12 @@ class Polygon extends Shape
             var p1 = pRef;
             var p2 = vertices[i];
             var p3 = if(i + 1 < vertices.length) vertices[i+1] else vertices[0];
-            
+
             var e1 = p2.sub(p1);
             var e2 = p3.sub(p1);
 
             var D = e1.cross(e2);
-            
+
             var triangleArea = 0.5 * D;
             area += triangleArea;
 

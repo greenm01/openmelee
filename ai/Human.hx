@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/haxmel
  *
  * All rights reserved.
@@ -41,7 +41,7 @@ class Human
     var ship : Ship;
     public var quit : Bool;
     public var thrust : Bool;
-    
+
 	public function new(ship : Ship, melee : Melee) {
         this.melee = melee;
         this.ship = ship;
@@ -53,13 +53,14 @@ class Human
 			switch (key) {
 			case GLFW.KEY_ESC:
                 quit = true;
-            case GLFW.KEY_UP:            
+            case GLFW.KEY_UP:
                 thrust = true;
-            case GLFW.KEY_LEFT:            
+            case GLFW.KEY_LEFT:
                 ship.turnLeft();
-            case GLFW.KEY_RIGHT:             
+            case GLFW.KEY_RIGHT:
                 ship.turnRight();
-            case GLFW.KEY_DOWN:             
+                trace(ship.rBody.torque);
+            case GLFW.KEY_DOWN:
             case GLFW.KEY_DEL:
                 melee.ship2.explode();
                 melee.objectList.remove(melee.ship2);
