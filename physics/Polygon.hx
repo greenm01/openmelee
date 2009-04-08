@@ -147,7 +147,7 @@ class Polygon extends Shape
             var p1 = pRef;
             var p2 = vertices[i];
             var p3 = if(i + 1 < vertices.length) vertices[i+1] else vertices[0];
-            trace(p3.x + "," + p3.y);
+            
             var e1 = p2.sub(p1);
             var e2 = p3.sub(p1);
 
@@ -176,7 +176,7 @@ class Polygon extends Shape
         massData.mass = density * area;
 
         // Center of mass
-        //if(area < Vec2.EPSILON) throw "Bad polygon: area = " + area;
+        if(area < Vec2.EPSILON) throw "Bad polygon: area = " + area;
         center.mulAsn(1.0 / area);
         massData.center = center;
 

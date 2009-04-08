@@ -61,54 +61,54 @@ class UrQuan extends Ship
         
         // Head
         var head = new Array();
-        head.push(new Vec2(42 * scale, 49 * scale));
-        head.push(new Vec2(63 * scale, 49 * scale));
-        head.push(new Vec2(70 * scale, 45.5 * scale));
-        head.push(new Vec2(73.5 * scale, 38.5 * scale));
-        head.push(new Vec2(73.5 * scale, -42 * scale));
-        head.push(new Vec2(70 * scale, -49 * scale));
-        head.push(new Vec2(63 * scale, -56 * scale));
-        head.push(new Vec2(42 * scale, -56 * scale));
+        head[0]=(new Vec2(42 * scale, 49 * scale));
+        head[7]=(new Vec2(63 * scale, 49 * scale));
+        head[6]=(new Vec2(70 * scale, 45.5 * scale));
+        head[5]=(new Vec2(73.5 * scale, 38.5 * scale));
+        head[4]=(new Vec2(73.5 * scale, -42 * scale));
+        head[3]=(new Vec2(70 * scale, -49 * scale));
+        head[2]=(new Vec2(63 * scale, -56 * scale));
+        head[1]=(new Vec2(42 * scale, -56 * scale));
         rBody.addShape(new Polygon(head, offset, density));
         
         // Body
         var body = new Array();
-        body.push(new Vec2(-70 * scale, -28 * scale));
-        body.push(new Vec2(-70 * scale, 24.5 * scale));
-        body.push(new Vec2(42 * scale, 24.5 * scale));
-        body.push(new Vec2(42 * scale, -28 * scale));
+        body[0]=(new Vec2(-70 * scale, -28 * scale));
+        body[3]=(new Vec2(-70 * scale, 24.5 * scale));
+        body[2]=(new Vec2(42 * scale, 24.5 * scale));
+        body[1]=(new Vec2(42 * scale, -28 * scale));
         rBody.addShape(new Polygon(body, offset, density));
         
         // Top Strut
         var tStrut = new Array();
-        tStrut.push(new Vec2(0 * scale, 24.5 * scale));
-        tStrut.push(new Vec2(-28 * scale, 24.5 * scale));
-        tStrut.push(new Vec2(-28 * scale, 42 * scale));
-        tStrut.push(new Vec2(0 * scale, 42 * scale));
+        tStrut[0]=(new Vec2(0 * scale, 24.5 * scale));
+        tStrut[3]=(new Vec2(-28 * scale, 24.5 * scale));
+        tStrut[2]=(new Vec2(-28 * scale, 42 * scale));
+        tStrut[1]=(new Vec2(0 * scale, 42 * scale));
         rBody.addShape(new Polygon(tStrut, offset, density));
         
         // Top Wing
         var tWing = new Array();
-        tWing.push(new Vec2(-70 * scale, 42 * scale));
-        tWing.push(new Vec2(-49 * scale, 63 * scale));
-        tWing.push(new Vec2(28 * scale, 63 * scale));
-        tWing.push(new Vec2(28 * scale, 42 * scale));
+        tWing[0]=(new Vec2(-70 * scale, 42 * scale));
+        tWing[3]=(new Vec2(-49 * scale, 63 * scale));
+        tWing[2]=(new Vec2(28 * scale, 63 * scale));
+        tWing[1]=(new Vec2(28 * scale, 42 * scale));
         rBody.addShape(new Polygon(tWing, offset, density));
         
         // Bottom Strut
         var bStrut = new Array();
-        bStrut.push(new Vec2(0 * scale, -31.5 * scale));
-        bStrut.push(new Vec2(0 * scale, -49 * scale));
-        bStrut.push(new Vec2(-28 * scale, -49 * scale));
-        bStrut.push(new Vec2(-28 * scale, -31.5 * scale));
+        bStrut[0]=(new Vec2(0 * scale, -31.5 * scale));
+        bStrut[3]=(new Vec2(0 * scale, -49 * scale));
+        bStrut[2]=(new Vec2(-28 * scale, -49 * scale));
+        bStrut[1]=(new Vec2(-28 * scale, -31.5 * scale));
         rBody.addShape(new Polygon(bStrut, offset, density));
         
         // Bottom Wing
         var bWing = new Array();
-        bWing.push(new Vec2(-70 * scale, -49 * scale));
-        bWing.push(new Vec2(28 * scale, -49 * scale));
-        bWing.push(new Vec2(28 * scale, -70 * scale));
-        bWing.push(new Vec2(-42 * scale, -70 * scale));
+        bWing[0]=(new Vec2(-70 * scale, -49 * scale));
+        bWing[3]=(new Vec2(28 * scale, -49 * scale));
+        bWing[2]=(new Vec2(28 * scale, -70 * scale));
+        bWing[1]=(new Vec2(-42 * scale, -70 * scale));
         rBody.addShape(new Polygon(bWing, offset, density));
         
         rBody.setMassFromShapes();

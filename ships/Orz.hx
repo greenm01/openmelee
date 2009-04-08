@@ -61,28 +61,28 @@ class Orz extends Ship
         
         // Body
         var body = new Array();
-        body.push(new Vec2(42 * scale, 14 * scale)); 
-        body.push(new Vec2(42 * scale, -21 * scale)); 
-        body.push(new Vec2(-28 * scale, -28 * scale)); 
-        body.push(new Vec2(-28 * scale, 21 * scale)); 
+        body[0]=(new Vec2(42 * scale, 14 * scale)); 
+        body[3]=(new Vec2(42 * scale, -21 * scale)); 
+        body[2]=(new Vec2(-28 * scale, -28 * scale)); 
+        body[1]=(new Vec2(-28 * scale, 21 * scale)); 
         rBody.addShape(new Polygon(body, offset, density));
         
         // Top Wing
         var tWing = new Array();
-        tWing.push(new Vec2(-28 * scale, 21 * scale));
-        tWing.push(new Vec2(-70 * scale, 63 * scale));
-        tWing.push(new Vec2(-49 * scale, 63 * scale));
-        tWing.push(new Vec2(70 * scale, 14 * scale));
-        tWing.push(new Vec2(42 * scale, 14 * scale));
+        tWing[4]=(new Vec2(-28 * scale, 21 * scale));
+        tWing[3]=(new Vec2(-70 * scale, 63 * scale));
+        tWing[2]=(new Vec2(-49 * scale, 63 * scale));
+        tWing[1]=(new Vec2(70 * scale, 14 * scale));
+        tWing[0]=(new Vec2(42 * scale, 14 * scale));
         rBody.addShape(new Polygon(tWing, offset, density));
 
         // Bottom Wing
         var bWing = new Array();
-        bWing.push(new Vec2(-28 * scale, -28 * scale));
-        bWing.push(new Vec2(-70 * scale, -63 * scale));
-        bWing.push(new Vec2(-49 * scale, -63 * scale));
-        bWing.push(new Vec2(70 * scale, -21 * scale));
-        bWing.push(new Vec2(42 * scale, -21 * scale));
+        bWing[0]=(new Vec2(-28 * scale, -28 * scale));
+        bWing[1]=(new Vec2(-70 * scale, -63 * scale));
+        bWing[2]=(new Vec2(-49 * scale, -63 * scale));
+        bWing[3]=(new Vec2(70 * scale, -21 * scale));
+        bWing[4]=(new Vec2(42 * scale, -21 * scale));
         rBody.addShape(new Polygon(bWing, offset, density));
 
         rBody.setMassFromShapes();
