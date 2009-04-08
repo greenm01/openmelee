@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2009, Mason Green 
- * http://github.com/zzzzrrr/haxmel
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *
@@ -42,7 +42,7 @@ class Circle extends Shape
     
     // Synchronize world center
     public override function synchronize() {
-        worldCenter = Vec2.mulXF(body.xf, offset);
+        worldCenter = body.pos.add(offset);
     }
     
     /**

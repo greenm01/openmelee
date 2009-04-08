@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2009, Mason Green
- * http://github.com/zzzzrrr/haxmel
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *
@@ -82,28 +82,25 @@ class Polygon extends Shape
     }
 
     /**
-	 * Returns: The shape's support point (for MPR & GJK)
-	 */
-    public override function support(d:Vec2) : Vec2 {
-        var dLocal = Vec2.mul22(body.xf.R, d);
-        var bestIndex = 0;
-        var bestValue = vertices[0].dot(dLocal);
-        for (i in 1...vertices.length) {
-            var value = vertices[i].dot(dLocal);
-            if (value > bestValue) {
-                bestIndex = i;
-                bestValue = value;
+     * Returns: The shape's support point (for MPR)
+    */
+    public override function support(n:Vec2) : Vec2 {
+ 	var r = worldVerts.first();
+        for(v in worldVerts) {
+	    if(v == r) continue;
+            if (v.sub(r).dot(n) >= 0 ) {
+                r = v;
             }
         }
-        return Vec2.mulXF(body.xf, vertices[bestIndex]);
+        return r;
     }
 
     /**
-	 * Compute the mass properties of this shape using its dimensions and density.
+     * Compute the mass properties of this shape using its dimensions and density.
      * The inertia tensor is computed about the local origin, not the centroid.
      * Params: massData = returns the mass data for this shape.
-	 * Implements: blaze.collision.shapes.bzShape.bzShape.computeMass
-	 */
+     * Implements: blaze.collision.shapes.bzShape.bzShape.computeMass
+     */
     public override function computeMass() {
 
         // Polygon mass, centroid, and inertia.

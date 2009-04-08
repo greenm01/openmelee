@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, Mason Green
- * http://github.com/zzzzrrr/haxmel
+ * Copyright (c) 2009, Mason Green 
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *

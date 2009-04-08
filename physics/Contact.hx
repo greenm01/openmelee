@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green 
+ * Copyright (c) 2009, Mason Green
  * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
@@ -28,65 +28,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package physics;
+ package physics;
 
 import utils.Vec2;
 
-/**
- * This holds the mass data computed for a shape.
- */
-typedef MassData = {
-    /**
-	 * The mass of the shape, usually in kilograms.
-	 */
-    var mass : Float;
+ class Contact
+ {
 
-    /**
-     * The position of the shape's centroid relative to the shape's origin.
-	 */
-    var center : Vec2;
-
-    /**
-     * The rotational inertia of the shape.
-     */
-    var I : Float;
-}
-
-class Shape
-{
-
-    public static inline var CIRCLE = 0;
-	public static inline var POLYGON = 1;
+    public var shape1 : Shape;
+    public var shape2 : Shape;
+    public var normal : Vec2;
+    public var cp1 : Vec2;
+    public var cp2 : Vec2;
+    public var r1 : Vec2;
+    public var r2 : Vec2;
     
-    public var circle : Circle;
-	public var polygon : Polygon;
+    public var massNormal : Float;
+    public var massTangent : Float;
+    public var bias : Float;
+    public var separation : Float;
     
-    public var body : Body;
-    public var radius : Float;
-    public var massData : MassData;
-    public var density : Float;
-    // Local position in parent body
-    public var offset : Vec2;
-    // The shape's geometric world center
-    public var worldCenter : Vec2;
-    public var type : Int;
-    // Axis aligned bounding box
-    var aabb : AABB;
-    
-    public function new(type:Int, offset:Vec2, density:Float) {
-        this.type = type;
-        this.offset = offset;
-        this.density = density;
-        worldCenter = Vec2.init();
-        aabb = new AABB(Vec2.init(), Vec2.init());
-        massData = {mass:0.0, center:Vec2.init(), I:0.0};
+    public function new(shape1:Shape, shape2:Shape){
+	this.shape1 = shape1;
+	this.shape2 = shape2;
+	normal = Vec2.init();
+	cp1 = Vec2.init();
+	cp2 = Vec2.init();
+    r1 = Vec2.init();
+    r2 = Vec2.init();
+    var foo = shape2.body.pos.sub(shape1.body.pos);
+    separation = foo.length();
     }
-
-    public function support(d:Vec2) : Vec2 {
-        return new Vec2(0.0,0.0);
-    }
-    
-    public function computeMass() {}
-    public function synchronize() {}
-
-}
+ }

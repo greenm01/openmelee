@@ -1,6 +1,6 @@
-/* 
- * Copyright (c) 2009, Mason Green 
- * http://github.com/zzzzrrr/haxmel
+/*
+ * Copyright (c) 2009, Mason Green
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *
@@ -29,18 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  package physics;
- 
+
  import haxe.FastList;
- 
+
  class BroadPhase
  {
     var m_bodyList : FastList<Body>;
-     
+
     public function new(bodyList : FastList<Body>) {
         m_bodyList = bodyList;
     }
-    
+
     public function update() {}
-    
+
     public function commit() {}
  }

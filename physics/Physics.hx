@@ -37,12 +37,16 @@ class Physics
 
     var space : Space;
     var gravity : Vec2;
-
+    var friction : Float;
+    
     var k_maxLinearVelocity : Float;
     var k_maxLinearVelocitySquared : Float;
     var k_maxAngularVelocity : Float;
     var k_maxAngularVelocitySquared : Float;
 
+    var k_allowedPenetration : Float; 
+	var k_biasFactor : Float;
+    
     // Coefficient of restitution
     var fCr : Float;
 
@@ -50,12 +54,16 @@ class Physics
 
         gravity = new Vec2(0.0,0.0);
         this.space = space;
-
-        k_maxAngularVelocity = 250.0;
-        k_maxLinearVelocity = 200.0;
+        friction = 0.5;
+        
+        k_maxAngularVelocity = 2.0;
+        k_maxLinearVelocity = 25.0;
         k_maxLinearVelocitySquared = k_maxLinearVelocity * k_maxLinearVelocity;
         k_maxAngularVelocitySquared = k_maxAngularVelocity * k_maxAngularVelocity;
 
+        k_allowedPenetration =0.01;
+        k_biasFactor = 0.2;
+        
         fCr = 1.0;
     }
 
@@ -94,15 +102,16 @@ class Physics
                     b.angVel = k_maxAngularVelocity;
                 }
             }
-
-            // Update positions
-            b.pos.addAsn(b.linVel.mul(dt));
-            b.angle = b.angle + b.angVel*dt;
-            b.synchronizeTransform();
         }
     }
 
-    public function applyImpulse(rb1:Body, rb2:Body, cp1:Vec2, cp2:Vec2, normal:Vec2) {
+    public function applyImpulse(contact:Contact) {
+
+        var rb1 = contact.shape1.body;
+        var rb2 = contact.shape2.body;
+        var cp1 = contact.cp1;
+        var cp2 = contact.cp2;
+        var normal = contact.normal;
 
         var rA = cp1.sub(rb1.pos.add(rb1.localCenter));
         var rB = cp2.sub(rb2.pos.add(rb2.localCenter));
@@ -122,7 +131,79 @@ class Physics
         impulse = impulse.neg();
         rb2.linVel.addAsn(impulse.mul(rb2.invMass));
         rb2.angVel += rb2.invI * cp2.sub(rb2.localCenter).cross(impulse);
+    }
+    
+    public function test(c:Contact) {
+        
+        var inv_dt = 60.0;
+        
+        var b1 = c.shape1.body;
+        var b2 = c.shape2.body;
+        
+        var r1 = c.cp1.sub(b1.pos);
+        var r2 = c.cp2.sub(b2.pos);
 
+        // Precompute normal mass, tangent mass, and bias.
+        var rn1 = r1.dot(c.normal);
+        var rn2 = r2.dot(c.normal);
+        var kNormal = b1.invMass + b2.invMass;
+        kNormal += b1.invI * (r1.dot(r1)- rn1 * rn1 + b1.invI * r2.dot(r2) - rn2 * rn2);
+        c.massNormal = 1.0 / kNormal;
+
+        var tangent = cross(1.0, c.normal);
+        var rt1 = r1.dot(tangent);
+        var rt2 = r2.dot(tangent);
+        var kTangent = b1.invMass + b2.invMass;
+        kTangent += b1.invI * (r1.dot(r1) - rt1 * rt1 + b2.invI * r2.dot(r2) - rt2 * rt2);
+        c.massTangent = 1.0 /  kTangent;
+
+        c.bias = -k_biasFactor * inv_dt * Math.min(0.0, c.separation + k_allowedPenetration);
+        
+        c.r1 = c.cp1.sub(b1.pos);
+        c.r2 = c.cp2.sub(b2.pos);
+
+        // Relative velocity at contact
+        var dv = b2.linVel.add(cross(b2.angVel, c.r2)).sub(b1.linVel).sub(cross(b1.angVel, c.r1));
+
+        // Compute normal impulse
+        var vn = dv.dot(c.normal);
+
+        var dPn = c.massNormal * (-vn + c.bias);
+
+        dPn = Math.max(dPn, 0.0);
+
+        // Apply contact impulse
+        var Pn = c.normal.mul(dPn);
+
+        b1.linVel.subAsn(Pn.mul(b1.invMass));
+        b1.angVel -= b1.invI * c.r1.cross(Pn);
+
+        b2.linVel.addAsn(Pn.mul(b2.invMass));
+        b2.angVel += b2.invI * c.r2.cross(Pn);
+
+        // Relative velocity at contact
+        dv = b2.linVel.add(cross(b2.angVel, c.r2)).sub(b1.linVel).sub(cross(b1.angVel, c.r1));
+
+        var tangent = cross(1.0, c.normal);
+        var vt = dv.dot(tangent);
+        var dPt = c.massTangent * -vt;
+
+        var maxPt = friction * dPn;
+        dPt = Vec2.clamp(dPt, -maxPt, maxPt);
+
+        // Apply contact impulse
+        var Pt =  tangent.mul(dPt);
+
+        b1.linVel.subAsn(Pt.mul(b1.invMass));
+        b1.angVel -= b1.invI * c.r1.cross(Pt);
+
+        b2.linVel.addAsn(Pt.mul(b2.invMass));
+        b2.angVel += b2.invI * c.r2.cross(Pt);
+            
+    }
+    
+    inline function cross(s:Float, a:Vec2) {
+        return new Vec2(-s * a.y, s * a.x);
     }
 
 

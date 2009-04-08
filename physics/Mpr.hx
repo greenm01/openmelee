@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2009, Mason Green 
- * http://github.com/zzzzrrr/haxmel
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *
@@ -96,9 +96,15 @@ class Mpr
         return false;
     }
 
-   public function collide(shape1:Shape, shape2:Shape, returnNormal:Vec2, point1:Vec2, point2:Vec2) {
+   public function collide(contact:Contact) {
 
-        // Phase one: Portal discovery
+        var shape1 = contact.shape1;
+	var shape2 = contact.shape2;
+	var normal = contact.normal;
+	var cp1 = contact.cp1;
+	var cp2 = contact.cp2;
+
+	// Phase one: Portal discovery
         
         // v0 = center of Minkowski sum
         var v01 = shape1.worldCenter;
@@ -144,7 +150,7 @@ class Mpr
                 var ab = v3.sub(v2);
                 var t = -v2.dot(ab)/ab.dot(ab);
                 var tmp = v2.add(ab.mul(t));
-                returnNormal.set(tmp.x, tmp.y);
+                normal.set(tmp.x, tmp.y);
                 return false;
             }
             // Portal lies on the outside edge of the Minkowski Hull.
@@ -154,23 +160,23 @@ class Mpr
                 var t = v1.neg().dot(ab);
                 if (t <= 0.0) {
                     t   = 0.0;
-                    returnNormal.set(v1.x, v1.y);
+                    normal.set(v1.x, v1.y);
                 } else {
                     var denom = ab.dot(ab);
                     if (t >= denom) {
-                        returnNormal.set(v2.x, v2.y);
+                        normal.set(v2.x, v2.y);
                         t   = 1.0;
                     } else {
                         t  /= denom;
                         var t1 = v1.add(ab.mul(t));
-                        returnNormal.set(t1.x, t1.y);
+                        normal.set(t1.x, t1.y);
                     }
                 }
                 var s = 1 - t;
                 var t1 = v11.mul(s).add(v21.mul(t));
                 var t2 = v12.mul(s).add(v22.mul(t));
-                point1.set(t1.x, t1.y);
-                point2.set(t2.x, t2.y);
+                cp1.set(t1.x, t1.y);
+                cp2.set(t2.x, t2.y);
                 return true;
             }
             // If origin is inside (v1,v0,v3), refine portal

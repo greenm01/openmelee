@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2009, Mason Green 
- * http://github.com/zzzzrrr/haxmel
+ * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
  *
@@ -38,6 +38,7 @@ class Space
     var m_broadPhase : BroadPhase;
     var m_mpr : Mpr;
     public var bodyList : FastList<Body>;
+    public var contactList : FastList<Contact>;
     var physics : Physics;
     
     public function new(spaceAABB:AABB) {
@@ -46,19 +47,51 @@ class Space
         m_broadPhase = new HGrid(bodyList);
         m_mpr = new Mpr();
         bodyList = new FastList();
+	contactList = new FastList();
         physics = new Physics(this);
     }
     
-    public inline function step(timeStep:Float) {
+    public inline function step(dt:Float) {
+
+        //var inv_dt = if(dt > 0.0) 1.0 / dt else 0.0;
         
-        physics.solve(timeStep);
-        for(b in bodyList) {
-            //b.synchronizeTransform();
-            b.synchronizeShapes();
-        }
-    
+        // Determine overlapping bodies and update contact points.
         //updateBroadphase();
-        //updateNarrowphase();
+        
+        
+        // Integrate forces.
+        for (b in bodyList) {
+            if (b.invMass == 0.0) continue;
+            b.linVel.addAsn(b.force.mul(b.invMass*dt));
+            b.angVel += dt * b.invI * b.torque;
+        }
+
+        /*
+        // Perform pre-steps.
+        for (arb in arbiterList)
+        {
+            arb.preStep(inv_dt);
+        }
+
+        // Perform iterations
+        for (i in 0...iterations) {
+            for (arb in arbiterList)
+            {
+                arb.applyImpulse();
+            }
+        }
+        */
+        updateNarrowphase();
+        
+        // Integrate Velocities
+        for (b in bodyList) {
+            b.pos.addAsn(b.linVel.mul(dt));
+            b.angle += dt * b.angVel;
+            b.synchronizeTransform();
+            b.synchronizeShapes();
+            b.force.set(0.0, 0.0);
+            b.torque = 0.0;
+        }
     }
     
     public inline function updateBroadphase(){
@@ -67,6 +100,19 @@ class Space
     }
     
     public inline function updateNarrowphase() {
+	for(i in bodyList) {
+	    for(j in bodyList) {
+		if(i == j) continue;
+		   for(ic in i.shapeList) {
+			for(jc in j.shapeList) {
+				var contact = new Contact(ic, jc);
+				if(m_mpr.collide(contact)) {
+					physics.test(contact);
+				}
+			}
+		}
+	    }
+        }
     }
     
     public function addBody(body:Body) {
