@@ -69,17 +69,21 @@ class Body
     public var next : Body;
 
     public function new(position:Vec2, angle:Float) {
+        
         m_angle = angle;
-        var R = new Mat22(new Vec2(0,0), new Vec2(0,0));
+        var R = new Mat22(Vec2.init(), Vec2.init());
         R.set(angle);
         xf = new XForm(position, R);
         shapeList = new FastList();
+        
         linearDamping = 0.0;
         angularDamping = 0.0;
+        angVel = 0.0;
+        torque = 0.0;
         radius = 0.0;
+        
         force = Vec2.init();
         linVel = Vec2.init();
-        pos = Vec2.init();
         localCenter = Vec2.init();
     }
     
