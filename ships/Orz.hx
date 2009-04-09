@@ -30,63 +30,62 @@
  */
 package ships;
 
-import physics.Body;
-import physics.Space;
-import physics.Polygon;
-import utils.Vec2;
+import phx.Body;
+import phx.World;
+import phx.Polygon;
+import phx.Vector;
+
 import ships.Ship;
 
 // UrQuan Dreadnought
 class Orz extends Ship
 {
     var scale : Float;
-    var offset : Vec2;
+    var offset : Vector;
 
-    public function new(space : Space) {
+    public function new(world : World) {
 
+        maxAngVel = 2.0;
+        maxLinVel = 20.0;
+        
         scale = 0.025;
-        offset = new Vec2(0, 0);
-        super(space);
-        engineForce = new Vec2(500, 0);
-        turnForce = new Vec2(0, 5000);
-        rightTurnPoint = new Vec2(0.5, 0);
-        leftTurnPoint = new Vec2(-0.5, 0);
+        offset = Vector.init();
+        super(world);
+        engineForce = new Vector(300, 0);
+        turnForce = new Vector(0, 100);
+        rightTurnPoint = new Vector(-0.5, 0);
+        leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vec2(25.0, 5.0);
-        var angle = 0.0;
-
-        rBody = new Body(pos, angle);
-
-        var density = 5.0;
+        var pos = new Vector(25.0, 5.0);
+        rBody = new Body(pos.x, pos.y);
 
         // Body
         var body = new Array();
-        body[0]=(new Vec2(42 * scale, 14 * scale));
-        body[3]=(new Vec2(42 * scale, -21 * scale));
-        body[2]=(new Vec2(-28 * scale, -28 * scale));
-        body[1]=(new Vec2(-28 * scale, 21 * scale));
-        rBody.addShape(new Polygon(body, offset, density));
-
+        body[0]=(new Vector(42 * scale, 14 * scale));
+        body[1]=(new Vector(42 * scale, -21 * scale));
+        body[2]=(new Vector(-28 * scale, -28 * scale));
+        body[3]=(new Vector(-28 * scale, 21 * scale));
+        rBody.addShape(new Polygon(body, offset));
+    
         // Top Wing
         var tWing = new Array();
-        tWing[4]=(new Vec2(-28 * scale, 21 * scale));
-        tWing[3]=(new Vec2(-70 * scale, 63 * scale));
-        tWing[2]=(new Vec2(-49 * scale, 63 * scale));
-        tWing[1]=(new Vec2(70 * scale, 14 * scale));
-        tWing[0]=(new Vec2(42 * scale, 14 * scale));
-        rBody.addShape(new Polygon(tWing, offset, density));
-
+        tWing[4]=(new Vector(-28 * scale, 21 * scale));
+        tWing[3]=(new Vector(-70 * scale, 63 * scale));
+        tWing[2]=(new Vector(-49 * scale, 63 * scale));
+        tWing[1]=(new Vector(70 * scale, 14 * scale));
+        tWing[0]=(new Vector(42 * scale, 14 * scale));
+        rBody.addShape(new Polygon(tWing, offset));
+        
         // Bottom Wing
         var bWing = new Array();
-        bWing[0]=(new Vec2(-28 * scale, -28 * scale));
-        bWing[1]=(new Vec2(-70 * scale, -63 * scale));
-        bWing[2]=(new Vec2(-49 * scale, -63 * scale));
-        bWing[3]=(new Vec2(70 * scale, -21 * scale));
-        bWing[4]=(new Vec2(42 * scale, -21 * scale));
-        rBody.addShape(new Polygon(bWing, offset, density));
-
-        rBody.setMassFromShapes();
-        space.addBody(rBody);
+        bWing[4]=(new Vector(-28 * scale, -28 * scale));
+        bWing[3]=(new Vector(-70 * scale, -63 * scale));
+        bWing[2]=(new Vector(-49 * scale, -63 * scale));
+        bWing[1]=(new Vector(70 * scale, -21 * scale));
+        bWing[0]=(new Vector(42 * scale, -21 * scale));
+        rBody.addShape(new Polygon(bWing, offset));
+        
+        world.addBody(rBody);
         //setPlanetGravity();
       }
 }

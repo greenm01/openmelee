@@ -32,9 +32,11 @@ package melee;
 
 import haxe.FastList;
 
-import physics.AABB;
-import physics.Space;
-import physics.Body;
+import phx.col.AABB;
+import phx.col.SortedList;
+import phx.World;
+import phx.Body;
+import phx.Vector;
 
 import ships.Ship;
 import ships.UrQuan;
@@ -42,7 +44,6 @@ import ships.Orz;
 
 import ai.Human;
 import render.Render;
-import utils.Vec2;
 
 class Melee 
 {
@@ -62,7 +63,7 @@ class Melee
     var running : Bool;
 
     var worldAABB : AABB;
-    public var space : Space;
+    public var world : World;
     
     public function new() {
         
@@ -84,12 +85,15 @@ class Melee
     public function run() {
         
         // Main game loop
+        var i = 0;
         while (running && !human.quit && Render.running) {
 
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            space.step(timeStep);
+            world.step(timeStep, 2);
+            if(world.bodies == null) throw "wtf";
+            //trace(ship1.rBody.v.x + "," + ship1.rBody.v.y);
             // Update screen
             render.update();
             
@@ -104,33 +108,39 @@ class Melee
                 ship1.thrust();
             }
         }
+        render.close();
     }
 
     private function initWorld() {
 	    // Define world boundaries
-        var upperBound = new Vec2(400,250);
-        var lowerBound = new Vec2(-400,-250);
-	    worldAABB = new AABB(upperBound, lowerBound);
-		space = new Space(worldAABB);
-		ship2 = new UrQuan(space);
-		ship1 = new Orz(space);
-        //planet = new Planet(space);
+        var left = -400;
+        var top = -250;
+        var right = 400;
+        var bottom = 250;
+	    worldAABB = new AABB(left, top, right, bottom);
+        var bf = new SortedList();
+		world = new World(worldAABB, bf);
+        world.gravity = new Vector(0.0,0.0);
+        world.useIslands = false;
+		ship2 = new UrQuan(world);
+		ship1 = new Orz(world);
+        //planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
-            //var asteroid = new Asteroid(space);
+            //var asteroid = new Asteroid(world);
             //objectList.add(asteroid);
         }
 	}
 
     private function boundaryViolated(rb : Body)
 	{
-        if(rb.pos.x > worldAABB.upperBound.x) {
-            rb.pos.x = worldAABB.lowerBound.x + 5;
-        } else if (rb.pos.x < worldAABB.lowerBound.x) {
-            rb.pos.x = worldAABB.upperBound.x - 5;
-        } else if (rb.pos.y > worldAABB.upperBound.y) {
-            rb.pos.y = worldAABB.lowerBound.y + 5;
-        } else if(rb.pos.y < worldAABB.lowerBound.y) {
-            rb.pos.y = worldAABB.upperBound.y - 5;
+        if(rb.x > worldAABB.r) {
+            rb.x = worldAABB.l + 5;
+        } else if (rb.x < worldAABB.l) {
+            rb.x = worldAABB.r - 5;
+        } else if (rb.y > worldAABB.t) {
+            rb.y = worldAABB.b + 5;
+        } else if(rb.y < worldAABB.b) {
+            rb.y = worldAABB.t - 5;
         }
 	}
 }

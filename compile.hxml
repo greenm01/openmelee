@@ -1,4 +1,3 @@
 -main OpenMelee
 -neko om.n
 -lib opengl
--lib physaxe

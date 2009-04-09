@@ -32,20 +32,20 @@ package ships;
 
 import haxe.FastList;
 
-import utils.Vec2;
-import physics.Space;
-import physics.Shape;
-import physics.Body;
+import phx.Vector;
+import phx.World;
+import phx.Shape;
+import phx.Body;
 
 class State
 {
-	public var pos : Vec2;
-    public var linVel : Vec2;
-    public var up : Vec2;
-    public var side : Vec2;
-    public var forward : Vec2;
-    public var target : Vec2;
-    public var avoid : Vec2;
+	public var pos : Vector;
+    public var linVel : Vector;
+    public var up : Vector;
+    public var side : Vector;
+    public var forward : Vector;
+    public var target : Vector;
+    public var avoid : Vector;
 	public var speed : Float;
 	public var maxForce : Float;
     public var radius : Float;
@@ -63,58 +63,57 @@ class State
 
 class Ship
 {
-    var space : Space;
+    var world : World;
     public var rBody : Body;
     var shapeList : FastList<Shape>;
-    var engineForce : Vec2;
-    var turnForce : Vec2;
-    var leftTurnPoint : Vec2;
-    var rightTurnPoint : Vec2;
+    var engineForce : Vector;
+    var turnForce : Vector;
+    var leftTurnPoint : Vector;
+    var rightTurnPoint : Vector;
 	var state : State;
     var battery : Float;
     var crew : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
 
-    public function new(space : Space) {
-        this.space = space;
+    public function new(world : World) {
+        this.world = world;
         shapeList = new FastList();
     }
 
     public function thrust() {
-        var force = Vec2.mul22(rBody.xf.R, engineForce);
-        rBody.force.x += force.x;
-        rBody.force.y += force.y;
+        var force = engineForce.rotate(rBody.a);
+        rBody.f.x += force.x;
+        rBody.f.y += force.y;
     }
 
     public inline function turnLeft() {
-        var lp = leftTurnPoint.rotate(rBody.angle);
-        var tf = turnForce.rotate(rBody.angle);
-        rBody.torque += lp.cross(tf);
+        var lp = leftTurnPoint.rotate(rBody.a);
+        var tf = turnForce.rotate(rBody.a);
+        rBody.t += lp.cross(tf);
     }
 
     public inline function turnRight() {
-        var rp = rightTurnPoint.rotate(rBody.angle);
-        var tf = turnForce.rotate(rBody.angle);
-        rBody.torque += rp.cross(tf);
-        trace(rBody.torque);
+        var rp = rightTurnPoint.rotate(rBody.a);
+        var tf = turnForce.rotate(rBody.a);
+        rBody.t += rp.cross(tf);
     }
 
     public inline function limitVelocity() {
-        var vx = rBody.linVel.x;
-        var vy = rBody.linVel.y;
-        var omega = rBody.angVel;
-        rBody.linVel.x = Vec2.clamp(vx, -maxLinVel, maxLinVel);
-        rBody.linVel.y = Vec2.clamp(vy, -maxLinVel, maxLinVel);
-        rBody.angVel = Vec2.clamp(omega, -maxAngVel, maxAngVel);
+        var vx = rBody.x;
+        var vy = rBody.y;
+        var omega = rBody.w;
+        rBody.x = Vector.clamp(vx, -maxLinVel, maxLinVel);
+        rBody.y = Vector.clamp(vy, -maxLinVel, maxLinVel);
+        rBody.w = Vector.clamp(omega, -maxAngVel, maxAngVel);
     }
 
     public inline function updateState() {
-        state.linVel = rBody.linVel.clone();
+        state.linVel = new Vector(rBody.x, rBody.y);
         state.speed = state.linVel.length();
-        state.pos.x = rBody.pos.x;
-        state.pos.y = rBody.pos.y;
-        state.forward = engineForce.rotate(rBody.angle);
+        state.pos.x = rBody.x;
+        state.pos.y = rBody.y;
+        state.forward = engineForce.rotate(rBody.a);
     }
 
     public function explode() {
@@ -128,7 +127,7 @@ class Ship
                     shapeDef.vertices = s.vertices;
                     shapeDef.density = s.density;
                     bodyDef.position = s.worldCenter;
-                    bodyDef.angle = randomRange(-PI, PI);
+                    bodyDef.a = randomRange(-PI, PI);
                     bodyDef.allowFreeze = false;
                     bodyDef.allowSleep = false;
                     auto shrapnel = world.createBody(bodyDef);
@@ -151,7 +150,7 @@ class Ship
         var minRadius = 0.1;
         var maxRadius = 10.0;
         var strength = 1.75;
-        var center = new Vec2(0.0,0.0);
+        var center = Vector.init();
         //auto attractor = new bzAttractor(rBody, center, strength, minRadius, maxRadius);
         //world.addForce(attractor);
     }

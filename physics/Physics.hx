@@ -135,10 +135,13 @@ class Physics
     
     public function test(c:Contact) {
         
-        var inv_dt = 60.0;
+        var inv_dt = (1.0/60.0)/60.0;
         
         var b1 = c.shape1.body;
         var b2 = c.shape2.body;
+        
+        c.cp1 = b1.pos.sub(c.cp1);
+        c.cp2 = b2.pos.sub(c.cp2);
         
         var r1 = c.cp1.sub(b1.pos);
         var r2 = c.cp2.sub(b2.pos);
@@ -164,7 +167,9 @@ class Physics
 
         // Relative velocity at contact
         var dv = b2.linVel.add(cross(b2.angVel, c.r2)).sub(b1.linVel).sub(cross(b1.angVel, c.r1));
-
+        
+        trace(dv.x + "," + dv.y);
+        
         // Compute normal impulse
         var vn = dv.dot(c.normal);
 

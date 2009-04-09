@@ -34,15 +34,15 @@ import opengl.GL;
 import opengl.GLU;
 import opengl.GLFW;
 
-import physics.Space;
-import physics.Body;
-import physics.Shape;
-import physics.Polygon;
-import physics.Circle;
+import phx.World;
+import phx.Body;
+import phx.Shape;
+import phx.Polygon;
+import phx.Circle;
+import phx.Vector;
 
 import melee.Melee;
 import ships.Ship;
-import utils.Vec2;
 
 /// Color for drawing. Each value has the range [0,1].
 typedef Color = {
@@ -56,9 +56,9 @@ class Render
 
     static var MAX_CIRCLE_RES = 32;
 	var zoom : Float;
-	var viewCenter : Vec2;
-    var space : Space;
-    var screenSize : Vec2;
+	var viewCenter : Vector;
+    var world : World;
+    var screenSize : Vector;
     var ship1 : Ship;
     var ship2 : Ship;
     static public var running : Bool;
@@ -67,11 +67,11 @@ class Render
         
         zoom = 20;
         running = true;
-        space = melee.space;
+        world = melee.world;
         ship1 = melee.ship1;
         ship2 = melee.ship2;
-        viewCenter = new Vec2(0, 0);
-        screenSize = new Vec2(800, 600);
+        viewCenter = new Vector(0, 0);
+        screenSize = new Vector(800, 600);
         
         // Open window
         var width : Int = cast(screenSize.x);
@@ -103,21 +103,24 @@ class Render
         GLFW.swapBuffers();
     }
 
-    function drawSolidCircle(circle : Circle, color : Color)
+    function drawSolidCircle(circ : Circle, color : Color)
     {
-        var center = circle.worldCenter;
-        var radius = circle.radius; 
-        var k_segments = 25;
-        var k_increment = 2.0 * Math.PI / k_segments;
-        var theta = 0.0;
+        var c = new Vector(circ.tC.x, circ.tC.y);
+        var r = circ.r;
+        var segs = 20;
+        var coef = 2.0 * Math.PI / segs;
+        var theta = circ.body.a;
         GL.enable(GL.BLEND);
         GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
-        for (i in 0...k_segments) {
-            var v = center.add(new Vec2(Math.cos(theta), Math.sin(theta)).mul(radius));
-            GL.vertex2(v.x, v.y);
-            theta += k_increment;
+        {
+            for (n in 0...segs+1) {
+                var rads = n * coef;
+                var x = r * Math.cos(rads + theta) + c.x;
+                var y = r * Math.sin(rads + theta) + c.y;
+                GL.vertex2(x, y);
+            }
         }
         GL.end();
         GL.disable(GL.BLEND);
@@ -125,33 +128,40 @@ class Render
         theta = 0.0;
         GL.color4(color.r, color.g, color.b, 1.0);
         GL.begin(GL.LINE_LOOP);
-        for (i in 0...k_segments) {
-            var v = center.add(new Vec2(Math.cos(theta), Math.sin(theta)).mul(radius));
-            GL.vertex2(v.x, v.y);
-            theta += k_increment;
+        {
+            for (n in 0...segs+1) {
+                var rads = n * coef;
+                var x = r * Math.cos(rads + theta) + c.x;
+                var y = r * Math.sin(rads + theta) + c.y;
+                GL.vertex2(x, y);
+            }
+            GL.vertex2(c.x, c.y);
         }
         GL.end();
     }
 
-    function drawSolidPolygon(p : Polygon, color : Color)
-    {
+    function drawSolidPolygon(p : Polygon, color : Color) {
+        var v = p.tVerts; 
         GL.enable(GL.BLEND);
         GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
         GL.color4(0.5 * color.r, 0.5 * color.g, 0.5 * color.b, 0.5);
         GL.begin(GL.TRIANGLE_FAN);
         {
-            for(v in p.worldVerts) {
+            while( v != null ) {
                 GL.vertex2(v.x, v.y);
+                v = v.next;
             }
         }
         GL.end();
         GL.disable(GL.BLEND);
 
         GL.color4(color.r, color.g, color.b, 1.0);
+        v = p.tVerts;
         GL.begin(GL.LINE_LOOP);
         {
-            for(v in p.worldVerts) {
+            while( v != null ) {
                 GL.vertex2(v.x, v.y);
+                v = v.next;
             }
         }
         GL.end();
@@ -167,17 +177,16 @@ class Render
    
     function draw() {
         
-        /*
        if(ship2 != null) {
-            var point1 = ship1.rBody.pos;
-            var point2 = ship2.rBody.pos;
-            var range = point1.sub(point2);
-            zoom = Vec2.clamp(1000.0/range.length(), 2.0, 60.0);
-            viewCenter = point1.sub(range.mul(0.5));
+            var point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
+            var point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
+            var range = point1.minus(point2);
+            zoom = Vector.clamp(1000.0/range.length(), 2.0, 60.0);
+            viewCenter = point1.minus(range.mult(0.5));
         } else {
-             viewCenter = new Vec2(ship1.rBody.pos.x, ship1.rBody.pos.y);
+             viewCenter = new Vector(ship1.rBody.x, ship1.rBody.y);
              zoom = 10;
-        } */
+        } 
         
         GL.loadIdentity();
         GL.matrixMode(GL.PROJECTION);
@@ -197,8 +206,8 @@ class Render
 
         // Draw dynamic bodies
         var color : Color = {r : 0.9, g : 0.9, b : 0.9};
-        for (b in space.bodyList) {
-            for (s in b.shapeList) {
+        for (b in world.bodies) {
+            for (s in b.shapes) {
                 drawShape(s, color);
                 GL.loadIdentity();
                 GL.flush();
@@ -207,14 +216,13 @@ class Render
 
         {
             // Draw the world bounds
-            var worldLower = space.spaceAABB.lowerBound;
-            var worldUpper = space.spaceAABB.upperBound;
+            var wb = world.box;
             var color : Color = {r : 0.3, g : 0.9, b : 0.9};        
             var vs = new Array();
-            vs.push(new Vec2(worldLower.x, worldLower.y));
-            vs.push(new Vec2(worldUpper.x, worldLower.y));
-            vs.push(new Vec2(worldUpper.x, worldUpper.y));
-            vs.push(new Vec2(worldLower.x, worldUpper.y));
+            vs.push(new Vector(wb.l, wb.b));
+            vs.push(new Vector(wb.r, wb.b));
+            vs.push(new Vector(wb.r, wb.t));
+            vs.push(new Vector(wb.l, wb.t));
             GL.color3(color.r, color.g, color.b);
             GL.begin( GL.LINE_LOOP );
             {
@@ -226,5 +234,9 @@ class Render
             GL.loadIdentity();
             GL.flush();
         }
+    }
+    
+    public function close() {
+        GLFW.terminate();
     }
 }

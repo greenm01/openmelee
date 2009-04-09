@@ -56,7 +56,6 @@ import utils.Vec2;
 	cp2 = Vec2.init();
     r1 = Vec2.init();
     r2 = Vec2.init();
-    var foo = shape2.body.pos.sub(shape1.body.pos);
-    separation = foo.length();
+    separation = shape2.worldCenter.sub(shape1.worldCenter).length();
     }
  }
