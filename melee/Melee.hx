@@ -35,22 +35,25 @@ import haxe.FastList;
 import phx.col.AABB;
 import phx.col.SortedList;
 import phx.World;
+import phx.WorldBoundaryListener;
 import phx.Body;
 import phx.Vector;
 
 import ships.Ship;
+import ships.GameObject;
 import ships.UrQuan;
 import ships.Orz;
 import ships.Planet;
 import ships.Asteroid;
 
+//import ai.AI;
 import ai.Human;
 import render.Render;
 
 class Melee 
 {
     static var NUM_ASTROIDS : Int = 12;
-    public var objectList : FastList<Ship>;
+    public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
     var render : Render;
@@ -68,7 +71,7 @@ class Melee
     public var world : World;
     
     public function new() {
-        
+                
         timeStep = 1.0/60.0;
         objectList = new FastList();
         
@@ -79,7 +82,7 @@ class Melee
         //ai = new AI(ship2, objectList);
         render = new Render(this);
         
-        //objectList.add(planet);
+        objectList.add(planet);
         objectList.add(ship1);
         objectList.add(ship2);
     }
@@ -93,9 +96,7 @@ class Melee
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            world.step(timeStep, 2);
-            if(world.bodies == null) throw "wtf";
-            //trace(ship1.rBody.v.x + "," + ship1.rBody.v.y);
+            world.step(timeStep, 5);
             // Update screen
             render.update();
             
@@ -129,20 +130,7 @@ class Melee
         planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(world);
-            //objectList.add(asteroid);
-        }
-	}
-
-    private function boundaryViolated(rb : Body)
-	{
-        if(rb.x > worldAABB.r) {
-            rb.x = worldAABB.l + 5;
-        } else if (rb.x < worldAABB.l) {
-            rb.x = worldAABB.r - 5;
-        } else if (rb.y > worldAABB.t) {
-            rb.y = worldAABB.b + 5;
-        } else if(rb.y < worldAABB.b) {
-            rb.y = worldAABB.t - 5;
+            objectList.add(asteroid);
         }
 	}
 	

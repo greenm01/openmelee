@@ -55,6 +55,8 @@ class Body {
 	public var shapes : haxe.FastList<Shape>;
 	public var arbiters : haxe.FastList<Arbiter>;
 	public var properties : Properties;
+    
+    public var world : World;
 
 	public function new( x, y, ?props ) {
 		id = ID++;

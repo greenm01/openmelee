@@ -85,6 +85,10 @@ class Polygon extends Shape {
 		var body = body;
 		var aabb = aabb;
 
+        if(!body.world.box.intersects2(aabb)) {
+            boundaryViolated();
+        }
+            
 		// reset bounding box
 		aabb.l = aabb.t =  Const.FMAX;
 		aabb.r = aabb.b = -Const.FMAX;

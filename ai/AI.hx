@@ -30,49 +30,46 @@
  */
 package ai;
 
-import tango.util.container.LinkedList : LinkedList;
-import tango.io.Stdout : Stdout;
-import tango.math.Math : atan2, abs, PI, isNaN;
+import phx.Vector;
+import phx.World;
 
-import blaze.common.bzMath: bzVec2, bzClamp;
-import blaze.bzWorld : bzWorld;
-
-import openmelee.ai.steer : Steer;
-import openmelee.ships.ship : Ship;
-
-alias LinkedList!(Ship) ObjectList;
+import ships.Ship;
+import ships.GameObject;
 
 typedef Threat = {
-    Ship target;
-    bzVec2 steering;
-    float distance = 0.0f;
-    float collisionTime = 0.0f;
-    float minSeparation = float.max;
-    bzVec2 relativePos;
-    bzVec2 relativeVel;
+    var target : Ship;
+    var steering : Vector;
+    var distance : Float;
+    var collisionTime : Float;
+    var minSeparation : Float;
+    var relativePos : Vector;
+    var relativeVel : Vector;
 }
 
-class AI {
+class AI 
+{
 
 	var steer : Steer;
 	var ship : Ship;
-	var maxPredictionTime : Float= 0.1f;
+	var maxPredictionTime : Float;
 	var st : Vector;
     
     var avoidRight : Bool;
     var avoidLeft : Bool;
     
-	public function new(ship : Ship, objectList : FastList<Ship>) {
+	public function new(ship : Ship, objectList : FastList<GameObject>) {
 		this.ship = ship;
 		steer = new Steer(ship, objectList);
+        maxPredictionTime = 0.1;
 	}
 	
     // Elementary steering AI 
-	void move(Ship enemy) {
+	public function move(enemy:Ship) {
 	   
         if(!ship) return;
         
-        Threat threat;        
+        var threat : Threat = {target:Enemy, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
+                                minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.inig()}; 
 	    steer.update();
         steer.collisionThreat(threat);
         st = threat.steering;

@@ -61,10 +61,8 @@ class State
     }
 }
 
-class Ship
+class Ship extends GameObject
 {
-    var world : World;
-    public var rBody : Body;
     var shapeList : FastList<Shape>;
     var engineForce : Vector;
     var turnForce : Vector;
@@ -77,7 +75,7 @@ class Ship
     var maxAngVel : Float;
 
     public function new(world : World) {
-        this.world = world;
+        super(world);
         shapeList = new FastList();
     }
 
@@ -99,7 +97,7 @@ class Ship
         rBody.t += rp.cross(tf);
     }
 
-    public inline function limitVelocity() {
+    public override function limitVelocity() {
         var vx = rBody.x;
         var vy = rBody.y;
         var omega = rBody.w;
@@ -108,7 +106,7 @@ class Ship
         rBody.w = Vector.clamp(omega, -maxAngVel, maxAngVel);
     }
 
-    public inline function updateState() {
+    public override function updateState() {
         state.linVel = new Vector(rBody.x, rBody.y);
         state.speed = state.linVel.length();
         state.pos.x = rBody.x;

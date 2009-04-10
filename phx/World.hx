@@ -51,7 +51,7 @@ class World implements BroadCallback {
 	public var islands : haxe.FastList<Island>;
 	var properties : IntHash<Properties>;
 	var waitingBodies : haxe.FastList<Body>;
-
+    
 	public function new( worldBoundary, broadphase ) {
 		bodies = new haxe.FastList<Body>();
 		joints = new haxe.FastList<Joint>();
@@ -186,16 +186,6 @@ class World implements BroadCallback {
 
 		// cleanup
 		stamp++;
-		if( boundsCheck > 0 && stamp % boundsCheck == 0 ) {
-			var tmp = new haxe.FastList<phx.Body>();
-			for( b in bodies )
-				tmp.add(b);
-			for( s in broadphase.pick(box) )
-				tmp.remove(s.body);
-			for( b in tmp )
-				if( removeBody(b) )
-					b.onDestroy();
-		}
 		timer.stop();
 	}
 
@@ -292,6 +282,7 @@ class World implements BroadCallback {
 
 	public function addBody(b) {
 		bodies.add(b);
+        b.world = this;
 		waitingBodies.add(b);
 		b.properties.count++;
 		b.motion = sleepEpsilon * Const.WAKEUP_FACTOR;

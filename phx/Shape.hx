@@ -55,6 +55,19 @@ class Shape {
 		this.area = 0;
 		aabb = new phx.col.AABB(0,0,0,0);
 	}
+    
+    function boundaryViolated() {
+        var rb = body;
+        if(rb.x > rb.world.box.r) {
+            rb.x = rb.world.box.l + 5;
+        } else if (rb.x < rb.world.box.l) {
+            rb.x = rb.world.box.r - 5;
+        } else if (rb.y > rb.world.box.b) {
+            rb.y = rb.world.box.t + 5;
+        } else if(rb.y < rb.world.box.t) {
+            rb.y = rb.world.box.b - 5;
+        }
+    }    
 
 	public function update() {
 	}

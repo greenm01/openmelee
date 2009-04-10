@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mason Green
+ * Copyright (c) 2009, Mason Green 
  * http://github.com/zzzzrrr/openmelee
  *
  * All rights reserved.
@@ -28,51 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ai;
+package melee;
 
-import opengl.GLFW;
+import phx.WorldBoundaryListener;
+import phx.Body;
 
-import ships.Ship;
-import melee.Melee;
-
-class Human
+class BoundaryListener extends WorldBoundaryListener
 {
-    var melee : Melee;
-    var ship : Ship;
-    public var quit : Bool;
-    public var thrust : Bool;
+	var melee : Melee;
 
-	public function new(ship : Ship, melee : Melee) {
-        this.melee = melee;
-        this.ship = ship;
+	public function new(melee:Melee) {
+        super();
+		this.melee = melee;
 	}
 
-	public function onKey(key : Int, state : Int) {
-        // Key pressed
-		if (state == GLFW.PRESS) {
-			switch (key) {
-			case GLFW.KEY_ESC:
-                quit = true;
-            case GLFW.KEY_UP:
-                thrust = true;
-            case GLFW.KEY_LEFT:
-                ship.turnLeft();
-            case GLFW.KEY_RIGHT:
-                ship.turnRight();
-            case GLFW.KEY_DOWN:
-            case GLFW.KEY_DEL:
-                melee.ship2.explode();
-                melee.objectList.remove(melee.ship2);
-                melee.world.removeBody(melee.ship2.rBody);
-                melee.ship2 = null;
-			}
-        // Key released
-		} else {
-		    if(key == GLFW.KEY_UP) {
-		         thrust = false;
-		    } else if (key == GLFW.KEY_LEFT || key == GLFW.KEY_RIGHT) {
-                ship.rBody.w = 0.0;
-            }
-		}
+	public override function violation(body:Body) {
+        trace("callback");
+        melee.boundaryViolated(body);
 	}
 }

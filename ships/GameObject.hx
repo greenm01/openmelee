@@ -28,11 +28,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- class ships;
+ package ships;
+ 
+ import phx.Body;
+ import phx.World;
  
  class GameObject
  {
- 
- 
- 
+    public var rBody : Body;
+    public var world : World;
+    public var radius : Float;
+    
+    public function new(world:World) {
+        this.world = world;
+    }
+    
+    public function limitVelocity(){}
+    public function updateState() {}
+    
  }

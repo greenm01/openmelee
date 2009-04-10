@@ -35,12 +35,11 @@ import phx.World;
 import phx.Circle;
 import phx.Vector;
 
-class Planet 
+class Planet extends GameObject
 {
-    var world : World;
-    
+   
     public function new(world:World) {
-        this.world = world;
+        super(world);
         init();
     }
     

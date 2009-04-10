@@ -37,13 +37,11 @@ import phx.Body;
 
 import melee.Melee;
 
-class Asteroid 
+class Asteroid extends GameObject
 {
-
-    var world : World;
     
     public function new(world:World) {
-        this.world = world;
+        super(world);
         init();
     }
 
