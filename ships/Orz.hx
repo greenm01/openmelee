@@ -52,7 +52,7 @@ class Orz extends Ship
         offset = Vector.init();
         super(world);
         engineForce = new Vector(300, 0);
-        turnForce = new Vector(0, 100);
+        turnForce = new Vector(0, 3000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
@@ -69,20 +69,20 @@ class Orz extends Ship
     
         // Top Wing
         var tWing = new Array();
-        tWing[4]=(new Vector(-28 * scale, 21 * scale));
-        tWing[3]=(new Vector(-70 * scale, 63 * scale));
+        tWing[0]=(new Vector(-28 * scale, 21 * scale));
+        tWing[1]=(new Vector(-70 * scale, 63 * scale));
         tWing[2]=(new Vector(-49 * scale, 63 * scale));
-        tWing[1]=(new Vector(70 * scale, 14 * scale));
-        tWing[0]=(new Vector(42 * scale, 14 * scale));
+        tWing[3]=(new Vector(70 * scale, 14 * scale));
+        tWing[4]=(new Vector(42 * scale, 14 * scale));
         rBody.addShape(new Polygon(tWing, offset));
         
         // Bottom Wing
         var bWing = new Array();
-        bWing[4]=(new Vector(-28 * scale, -28 * scale));
-        bWing[3]=(new Vector(-70 * scale, -63 * scale));
-        bWing[2]=(new Vector(-49 * scale, -63 * scale));
-        bWing[1]=(new Vector(70 * scale, -21 * scale));
-        bWing[0]=(new Vector(42 * scale, -21 * scale));
+        bWing[0]=(new Vector(-28 * scale, -28 * scale));
+        bWing[4]=(new Vector(-70 * scale, -63 * scale));
+        bWing[3]=(new Vector(-49 * scale, -63 * scale));
+        bWing[2]=(new Vector(70 * scale, -21 * scale));
+        bWing[1]=(new Vector(42 * scale, -21 * scale));
         rBody.addShape(new Polygon(bWing, offset));
         
         world.addBody(rBody);

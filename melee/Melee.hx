@@ -41,6 +41,8 @@ import phx.Vector;
 import ships.Ship;
 import ships.UrQuan;
 import ships.Orz;
+import ships.Planet;
+import ships.Asteroid;
 
 import ai.Human;
 import render.Render;
@@ -58,7 +60,7 @@ class Melee
 
     public var ship1 : Ship;
 	public var ship2 : Ship;
-    //svar planet : Ship;
+    var planet : Planet;
 
     var running : Bool;
 
@@ -124,9 +126,9 @@ class Melee
         world.useIslands = false;
 		ship2 = new UrQuan(world);
 		ship1 = new Orz(world);
-        //planet = new Planet(world);
+        planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
-            //var asteroid = new Asteroid(world);
+            var asteroid = new Asteroid(world);
             //objectList.add(asteroid);
         }
 	}
@@ -143,4 +145,9 @@ class Melee
             rb.y = worldAABB.t - 5;
         }
 	}
+	
+	public static inline function randomRange(min:Float, max:Float) {
+	    var rand = Math.random() * 1e99;
+	    return min + rand % (max + 1 - min);
+    }
 }

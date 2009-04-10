@@ -213,7 +213,14 @@ class Render
                 GL.flush();
             }
         }
-
+        
+        // Draw static bodies
+        for(s in world.staticBody.shapes) {
+            drawShape(s, color);
+            GL.loadIdentity();
+            GL.flush();
+        }
+        
         {
             // Draw the world bounds
             var wb = world.box;

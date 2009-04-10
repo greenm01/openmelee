@@ -74,10 +74,10 @@ class UrQuan extends Ship
         
         // Body
         var body = new Array();
-        body[0]=(new Vector(-70 * scale, -28 * scale));
+        body[0]=(new Vector(-70 * scale, -30.5 * scale));
         body[1]=(new Vector(-70 * scale, 24.5 * scale));
         body[2]=(new Vector(42 * scale, 24.5 * scale));
-        body[3]=(new Vector(42 * scale, -28 * scale));
+        body[3]=(new Vector(42 * scale, -30.5 * scale));
         rBody.addShape(new Polygon(body, offset));
 
         // Top Strut
