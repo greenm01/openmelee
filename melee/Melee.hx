@@ -35,7 +35,6 @@ import haxe.FastList;
 import phx.col.AABB;
 import phx.col.SortedList;
 import phx.World;
-import phx.WorldBoundaryListener;
 import phx.Body;
 import phx.Vector;
 
