@@ -58,7 +58,8 @@ class UrQuan extends Ship
         leftTurnPoint = new Vector(0.5, 0);
 
         var pos = new Vector(10.0, 0.0);
-        rBody = new Body(pos.x, pos.y);
+        props.maxMotion = 1e3;
+        rBody = new Body(pos.x, pos.y, props);
         
         // Head
         var head = new Array();

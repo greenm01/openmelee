@@ -68,6 +68,7 @@ class World implements BroadCallback {
 		staticBody = new phx.Body(0,0);
 		staticBody.island = new Island(this);
 		staticBody.updatePhysics();
+        staticBody.world = this;
 		box = worldBoundary;
 		this.broadphase = broadphase;
 		broadphase.init(box,this,staticBody);

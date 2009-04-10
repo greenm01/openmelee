@@ -57,8 +57,10 @@ class Asteroid extends GameObject
             var x = Melee.randomRange(-100.0, 100.0);
             var y = Melee.randomRange(-100.0, 100.0);
             var angle = Melee.randomRange(-Math.PI, Math.PI);
+            var asteroid = new Body(x,y, props);
             
-            var asteroid = new Body(x,y);
+            asteroid.v.x = x;
+            asteroid.v.y = y;
             asteroid.a = angle;
             
             asteroid.addShape(s1);

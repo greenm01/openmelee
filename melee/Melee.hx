@@ -96,7 +96,7 @@ class Melee
             // Update AI
             //ai.move(ship1);
             // Update Physics
-            world.step(timeStep, 5);
+            world.step(timeStep, 10);
             // Update screen
             render.update();
             
@@ -104,6 +104,7 @@ class Melee
             for(o in objectList) {
                 //o.limitVelocity();
                 //o.updateState();
+                o.applyGravity();
             }
 
             // Apply thrust

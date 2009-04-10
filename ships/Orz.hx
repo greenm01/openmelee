@@ -33,6 +33,7 @@ package ships;
 import phx.Body;
 import phx.World;
 import phx.Polygon;
+import phx.Properties;
 import phx.Vector;
 
 import ships.Ship;
@@ -45,9 +46,6 @@ class Orz extends Ship
 
     public function new(world : World) {
 
-        maxAngVel = 2.0;
-        maxLinVel = 20.0;
-        
         scale = 0.025;
         offset = Vector.init();
         super(world);
@@ -57,8 +55,9 @@ class Orz extends Ship
         leftTurnPoint = new Vector(0.5, 0);
 
         var pos = new Vector(25.0, 5.0);
-        rBody = new Body(pos.x, pos.y);
-
+        props.maxMotion = 5e3;
+        rBody = new Body(pos.x, pos.y, props);
+        
         // Body
         var body = new Array();
         body[0]=(new Vector(42 * scale, 14 * scale));

@@ -144,12 +144,33 @@ class Ship extends GameObject
         */
     }
 
-    function setPlanetGravity() {
+    public override function applyGravity() {
+        
         var minRadius = 0.1;
-        var maxRadius = 10.0;
-        var strength = 1.75;
+        var maxRadius = 50.0;
+        var strength = 100.0;
         var center = Vector.init();
-        //auto attractor = new bzAttractor(rBody, center, strength, minRadius, maxRadius);
-        //world.addForce(attractor);
+        
+        var rx = center.x - rBody.x;
+        var ry = center.y - rBody.y;
+
+        var d = Math.sqrt(rx * rx + ry * ry);
+        if (d < 1e-7)
+            return;
+        else {
+            rx /= d;
+            ry /= d;
+        }
+
+        var ratio = (d - minRadius) / (maxRadius - minRadius);
+        if (ratio < 0)
+            ratio = 0;
+        else
+            if (ratio > 1)
+                ratio = 1;
+
+        rBody.f.x = rx * ratio * strength;
+        rBody.f.y = ry * ratio * strength;
+        
     }
 }

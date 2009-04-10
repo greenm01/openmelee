@@ -32,18 +32,28 @@
  
  import phx.Body;
  import phx.World;
+ import phx.Properties;
  
  class GameObject
  {
     public var rBody : Body;
     public var world : World;
     public var radius : Float;
+    public var props : Properties;
     
     public function new(world:World) {
         this.world = world;
+        // Default properties
+        var linearFriction = 0.999; 
+        var angularFriction = 0.999;
+        var biasCoef = 0.1; 
+        var maxMotion = 1e6; 
+        var maxDist = 0.5;
+        props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
     }
     
     public function limitVelocity(){}
     public function updateState() {}
+    public function applyGravity() {}
     
  }

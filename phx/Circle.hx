@@ -24,6 +24,8 @@
  */
 package phx;
 
+import neko.Lib;
+
 class Circle extends Shape {
 
 	public var c:Vector;
@@ -41,6 +43,11 @@ class Circle extends Shape {
 	}
 
 	public override function update() {
+        
+        if(!body.world.box.intersects2(aabb)) {
+            boundaryViolated();
+        }
+        
 		tC.x = body.x + Const.XROT(c,body);
 		tC.y = body.y + Const.YROT(c,body);
 		aabb.l = tC.x - r;
