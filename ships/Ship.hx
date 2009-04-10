@@ -36,30 +36,7 @@ import phx.Vector;
 import phx.World;
 import phx.Shape;
 import phx.Body;
-
-class State
-{
-	public var pos : Vector;
-    public var linVel : Vector;
-    public var up : Vector;
-    public var side : Vector;
-    public var forward : Vector;
-    public var target : Vector;
-    public var avoid : Vector;
-	public var speed : Float;
-	public var maxForce : Float;
-    public var radius : Float;
-	public var enemyAngle : Float;
-    public var turn : Bool;
-    public var enemy : Ship;
-
-	public inline function predictFuturePosition(dt : Float) {
-        var futPos = pos.clone();
-        futPos.x += linVel.x*dt;
-        futPos.y += linVel.y*dt;
-	    return futPos;
-    }
-}
+import ships.GameObject;
 
 class Ship extends GameObject
 {
@@ -68,7 +45,6 @@ class Ship extends GameObject
     var turnForce : Vector;
     var leftTurnPoint : Vector;
     var rightTurnPoint : Vector;
-	var state : State;
     var battery : Float;
     var crew : Float;
     var maxLinVel : Float;

@@ -36,6 +36,7 @@ import phx.Circle;
 import phx.Body;
 
 import melee.Melee;
+import utils.Util;
 
 class Asteroid extends GameObject
 {
@@ -54,9 +55,9 @@ class Asteroid extends GameObject
             offset.set(0.5,0.5);
 			var s2 = new Circle(radius, offset);
             
-            var x = Melee.randomRange(-100.0, 100.0);
-            var y = Melee.randomRange(-100.0, 100.0);
-            var angle = Melee.randomRange(-Math.PI, Math.PI);
+            var x = Util.randomRange(-100.0, 100.0);
+            var y = Util.randomRange(-100.0, 100.0);
+            var angle = Util.randomRange(-Math.PI, Math.PI);
             var asteroid = new Body(x,y, props);
             
             asteroid.v.x = x;

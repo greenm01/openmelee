@@ -149,5 +149,9 @@ class Body {
 
 	public dynamic function onDestroy() {
 	}
+    
+    public inline function localPoint(v:Vector) {
+        return new Vector(v.x - x, v.y - y);
+    }
 
 }

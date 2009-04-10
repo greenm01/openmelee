@@ -30,6 +30,8 @@
  */
 package ai;
 
+import haxe.FastList;
+
 import phx.Vector;
 import phx.World;
 
@@ -37,7 +39,7 @@ import ships.Ship;
 import ships.GameObject;
 
 typedef Threat = {
-    var target : Ship;
+    var target : GameObject;
     var steering : Vector;
     var distance : Float;
     var collisionTime : Float;
@@ -66,18 +68,19 @@ class AI
     // Elementary steering AI 
 	public function move(enemy:Ship) {
 	   
-        if(!ship) return;
+        if(ship == null) return;
         
-        var threat : Threat = {target:Enemy, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
-                                minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.inig()}; 
+        var go = new GameObject(null);
+        var threat : Threat = {target:go, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
+                                minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.init()}; 
 	    steer.update();
         steer.collisionThreat(threat);
         st = threat.steering;
         
-        if(st == bzVec2.zeroVect) {
+        if(st.x == 0.0 && st.y == 0.0) {
             if(avoidLeft || avoidRight) {
                 avoidLeft = avoidRight = false;
-                ship.rBody.angularVelocity = 0.0f;
+                ship.rBody.w = 0.0;
             }
             st = steer.targetEnemy(enemy.state, maxPredictionTime);
             chase(enemy);
@@ -88,18 +91,18 @@ class AI
             return;
         }
         
-        assert(0);
+        throw "error";
     }
     
-    void chase(Ship enemy) {
+    function chase(enemy:Ship) {
         
         ship.state.target = st;
         st = ship.rBody.localPoint(st);
         // Because ship's heading is 90 off rigid body's heading
         st = st.rotateLeft90();
-        float angle = atan2(st.x, st.y);
+        var angle = Math.atan2(st.x, st.y);
         
-		if(abs(angle) > 0.05) {
+		if(Math.abs(angle) > 0.05) {
             if(!ship.state.turn) {
                 if(st.x >= 0) {
                     ship.turnRight();
@@ -110,22 +113,22 @@ class AI
                 }
            }
 		} else {
-			ship.rBody.angularVelocity = 0.0f;
+			ship.rBody.w = 0.0;
 			ship.state.turn = false;
 		}
 		
-		float range = (ship.state.position - enemy.state.position).length; 
-		if(range > 2 && abs(angle) < PI/4) {
+		var range = (ship.state.pos.minus(enemy.state.pos)).length(); 
+		if(range > 2.0 && Math.abs(angle) < Math.PI/4.0) {
 			ship.thrust();
 		}
     }
     
-    void avoid() {
+    function avoid() {
         
         st = ship.rBody.localPoint(st);
         // Because ship's heading is 90 off rigid body's heading
         st = st.rotateLeft90();
-        float angle = atan2(st.x, st.y);
+        var angle = Math.atan2(st.x, st.y);
         
         if(st.x <= 0) {
             if(!avoidRight) {

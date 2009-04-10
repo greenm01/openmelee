@@ -68,6 +68,10 @@ class Vector {
 	public inline function mult( s : Float ) {
 		return new Vector(x * s, y * s);
 	}
+    
+    public inline function div( s : Float ) {
+		return new Vector(x / s, y / s);
+	}
 
 	public inline function length() {
 		return Math.sqrt(x * x + y * y);
@@ -99,6 +103,14 @@ class Vector {
 		var d = Math.sqrt(x * x + y * y);
 		var k = if( d < Const.EPSILON ) 0 else 1 / d;
 		return new Vector( -y * k , x * k );
+	}
+    
+    public inline function normalize() {
+		var d = Math.sqrt(x * x + y * y);
+		var k = if( d < Const.EPSILON ) 0 else 1 / d;
+		x *= k;
+        y *= k;
+        return d;
 	}
 
 }

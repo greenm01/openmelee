@@ -32,29 +32,33 @@
  */
 package ai;
 
+import haxe.FastList;
+
 import phx.Vector;
 import phx.Shape;
 import phx.Body;
 
-import ships.State;
 import ships.Ship;
+import ships.GameObject;
+import ai.AI;
+import utils.Util;
 
 class Steer 
 {
 
-    var objectList:FastList<Ship>;
+    var objectList:FastList<GameObject>;
     
     // Constructor: initializes state
-    public function new (ship:Ship, objectList:FastList<Ship>)
+    public function new (ship:Ship, objectList:FastList<GameObject>)
     {
         this.objectList = objectList;
         m_ship = ship;
         m_body = ship.rBody;
     }
     
-    void update() {
-        m_position = m_ship.state.position;
-        m_velocity = m_ship.state.velocity;
+    public function update() {
+        m_position = m_ship.state.pos;
+        m_velocity = m_ship.state.linVel;
         m_speed = m_ship.state.speed;
         m_maxForce = m_ship.state.maxForce;
         m_forward = m_ship.state.forward;
@@ -66,47 +70,48 @@ class Steer
     function steerForWander (dt:Float) {
         // random walk m_wanderSide and m_wanderUp between -1 and +1
         var speed = 12 * dt; // maybe this (12) should be an argument?
-        m_wanderSide = scalarRandomWalk (m_wanderSide, speed, -1, +1);
-        m_wanderUp   = scalarRandomWalk (m_wanderUp,   speed, -1, +1);
+        m_wanderSide = Util.scalarRandomWalk (m_wanderSide, speed, -1, 1);
+        m_wanderUp   = Util.scalarRandomWalk (m_wanderUp,   speed, -1, 1);
 
         // return a pure lateral steering vector: (+/-Side) + (+/-Up)
-        return (m_side * m_wanderSide) + (m_up * m_wanderUp);
+        return m_side.mult(m_wanderSide).plus(m_up.mult(m_wanderUp));
     }
 
     // Seek behavior
     function steerForSeek (target:Vector) {
-        var desiredVelocity = target - m_position;
-        return desiredVelocity - m_velocity;
+        var desiredVelocity = target.minus(m_position);
+        return desiredVelocity.minus(m_velocity);
     }
 
     // Flee behavior
     public function steerForFlee (target:Vector) {
-        bzVec2 desiredVelocity = m_position - target;
-        return desiredVelocity - m_velocity;
+        var desiredVelocity = m_position.minus(target);
+        return desiredVelocity.minus(m_velocity);
     }
     
     // Steer to avoid
-    void collisionThreat(threat:Treat, maxLookAhead:Float = 10.0) {
+    public function collisionThreat(threat:Threat, maxLookAhead:Float = 10.0) {
 
         // 1. Find the target that’s closest to collision
         
         var radius = m_radius;
         var rad = 0.0;
-        var shortestTime = float.max;
+        var shortestTime = 1e99;
     
         // Loop through each target
         for(obstacle in objectList) {
 
             var target = obstacle.rBody;
             
-            if(target is m_body) continue;
+            if(target == m_body) continue;
             
             // Calculate the time to collision
-            var relativePos = target.position - m_position;
-            var relativeVel = m_velocity - target.linearVelocity;
-            var relativeSpeed = relativeVel.length;
+            var pos = new Vector(target.x, target.y);
+            var relativePos = pos.minus(m_position);
+            var relativeVel = m_velocity.minus(target.v);
+            var relativeSpeed = relativeVel.length();
             // Time to closest point of approach
-            var timeToCPA = bzDot(relativePos, relativeVel) /
+            var timeToCPA = relativePos.dot(relativeVel) /
                                     (relativeSpeed * relativeSpeed);
                             
             // Threat is separating 
@@ -120,9 +125,9 @@ class Steer
             timeToCPA = Vector.clamp(timeToCPA, 0, maxLookAhead);
             
             // Calculate closest point of approach
-            var cpa = m_position + m_velocity * timeToCPA;
-            var eCpa = target.position + target.linearVelocity * timeToCPA;
-            relativePos = (eCpa - cpa);
+            var cpa = m_position.plus(m_velocity.mult(timeToCPA));
+            var eCpa = pos.plus(target.v.mult(timeToCPA));
+            relativePos = (eCpa.minus(cpa));
             var dCPA = relativePos.length();
                 
             // No collision
@@ -143,13 +148,13 @@ class Steer
         // 2. Calculate the steering
 
         // If we have no target, then exit
-        if(!threat.target) return;
+        if(threat.target == null) return;
         
         // If we’re going to hit exactly, or if we’re already
         // colliding, then do the steering based on current
         // position.
         //if(threat.minSeparation < m_radius || threat.distance < radius + rad) {
-            //threat.steering =  m_position - threat.target.state.position;
+            //threat.steering =  m_position - threat.target.state.pos;
         //} else {
             // Otherwise calculate the future relative position:
             threat.steering = threat.relativePos; 
@@ -163,13 +168,13 @@ class Steer
         // imagine we are at the origin with no velocity,
         // compute the relative velocity of the other vehicle
         var myVelocity = m_velocity;
-        var otherVelocity = other.velocity;
-        var relVelocity = otherVelocity - myVelocity;
-        var relSpeed = relVelocity.length;
+        var otherVelocity = other.linVel;
+        var relVelocity = otherVelocity.minus(myVelocity);
+        var relSpeed = relVelocity.length();
 
         // for parallel paths, the vehicles will always be at the same distance,
         // so return 0 (aka "now") since "there is no time like the present"
-        if (relSpeed == 0) return 0;
+        if (relSpeed == 0.0) return 0.0;
 
         // Now consider the path of the other vehicle in this relative
         // space, a line defined by the relative position and velocity.
@@ -177,12 +182,12 @@ class Steer
         // the nearest approach.
 
         // Take the unit tangent along the other vehicle's path
-        var relTangent = relVelocity / relSpeed;
+        var relTangent = relVelocity.div(relSpeed);
 
         // find distance from its path to origin (compute offset from
         // other to us, find length of projection onto path)
-        var relPosition = m_position - other.position;
-        var projection = bzDot(relTangent, relPosition);
+        var relPosition = m_position.minus(other.pos);
+        var projection : Float = relTangent.dot(relPosition);
 
         return projection / relSpeed;
     }
@@ -192,90 +197,78 @@ class Steer
     // between them
     function computeNearestApproachPositions (other:State, time:Float) {
 
-        bzVec2 myTravel =  m_forward *  m_speed * time;
-        bzVec2 otherTravel = other.forward * other.speed * time;
+        var myTravel =  m_forward.mult(m_speed * time);
+        var otherTravel = other.forward.mult(other.speed * time);
 
-        bzVec2 myFinal =  m_position + myTravel;
-        bzVec2 otherFinal = other.position + otherTravel;
+        var myFinal =  m_position.plus(myTravel);
+        var otherFinal = other.pos.plus(otherTravel);
 
-        return (myFinal - otherFinal).length;
+        return myFinal.minus(otherFinal).length();
     }
 
     public function targetEnemy (quarry:State, maxPredictionTime:Float) {
 
         // offset from this to quarry, that distance, unit vector toward quarry
-        var offset = quarry.position - m_position;
-        var distance = offset.length;
-        var unitOffset = offset / distance;
+        var offset = quarry.pos.minus(m_position);
+        var distance = offset.length();
+        var unitOffset = offset.div(distance);
 
         // how parallel are the paths of "this" and the quarry
         // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-        var parallelness = bzDot(m_forward , quarry.forward);
+        var parallelness = m_forward.dot(quarry.forward);
 
         // how "forward" is the direction to the quarry
         // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-        var forwardness = bzDot(m_forward , unitOffset);
+        var forwardness = m_forward.dot(unitOffset);
 
         var directTravelTime = distance / m_speed;
-        var f = intervalComparison (forwardness,  -0.707f, 0.707f);
-        var p = intervalComparison (parallelness, -0.707f, 0.707f);
+        var f = Util.intervalComparison (forwardness,  -0.707, 0.707);
+        var p = Util.intervalComparison (parallelness, -0.707, 0.707);
 
-        var timeFactor = 0; // to be filled in below
+        var timeFactor = 0.0; // to be filled in below
 
         // Break the pursuit into nine cases, the cross product of the
         // quarry being [ahead, aside, or behind] us and heading
         // [parallel, perpendicular, or anti-parallel] to us.
         switch (f)
         {
-        case +1:
+        case 1:
             switch (p)
             {
-            case +1:          // ahead, parallel
-                timeFactor = 4;
-                break;
+            case 1:          // ahead, parallel
+                timeFactor = 4.0;
             case 0:           // ahead, perpendicular
-                timeFactor = 1.8f;
-                break;
+                timeFactor = 1.8;
             case -1:          // ahead, anti-parallel
-                timeFactor = 0.85f;
-                break;
+                timeFactor = 0.85;
             }
-            break;
         case 0:
             switch (p)
             {
-            case +1:          // aside, parallel
-                timeFactor = 1;
-                break;
+            case 1:          // aside, parallel
+                timeFactor = 1.0;
             case 0:           // aside, perpendicular
-                timeFactor = 0.8f;
-                break;
+                timeFactor = 0.8;
             case -1:          // aside, anti-parallel
-                timeFactor = 4;
-                break;
+                timeFactor = 4.0;
             }
-            break;
         case -1:
             switch (p)
             {
-            case +1:          // behind, parallel
-                timeFactor = 0.5f;
-                break;
+            case 1:          // behind, parallel
+                timeFactor = 0.5;
             case 0:           // behind, perpendicular
-                timeFactor = 2;
-                break;
+                timeFactor = 2.0;
             case -1:          // behind, anti-parallel
-                timeFactor = 2;
-                break;
+                timeFactor = 2.0;
             }
-            break;
         }
 
         // estimated time until intercept of quarry
         var et = directTravelTime * timeFactor;
 
         // xxx experiment, if kept, this limit should be an argument
-        var etl = (et > maxPredictionTime) ? maxPredictionTime : et;
+        var etl = if (et > maxPredictionTime) maxPredictionTime else et;
 
         // estimated position of quarry at intercept
         var target = quarry.predictFuturePosition(etl);
@@ -287,11 +280,11 @@ class Steer
     public function steerForEvasion (menace:State,  maxPredictionTime:Float)  {
 
         // offset from this to menace, that distance, unit vector toward menace
-        var offset = menace.position - m_position;
-        var distance = offset.length;
+        var offset = menace.pos.minus(m_position);
+        var distance = offset.length();
 
         var roughTime = distance / menace.speed;
-        var predictionTime = ((roughTime > maxPredictionTime) ? maxPredictionTime : roughTime);
+        var predictionTime = if (roughTime > maxPredictionTime) maxPredictionTime else roughTime;
         var target = menace.predictFuturePosition (predictionTime);
 
         return steerForFlee (target);
@@ -304,51 +297,51 @@ class Steer
     public function steerForTargetSpeed (targetSpeed:Float) {
         var mf = m_maxForce;
         var speedError = targetSpeed - m_speed;
-        return m_forward * Vector.clamp(speedError, -mf, +mf);
+        return m_forward.mult(Vector.clamp(speedError, -mf, mf));
     }
 
 
     // ----------------------------------------------------------- utilities
-    function isAhead (target:Vector) {return isAhead2 (target, 0.707);};
-    function isAside (target:Vector) {return isAside2 (target, 0.707);};
-    function isBehind (target:Vector) {return isBehind2 (target, -0.707);};
+    function isAhead (target:Vector) {return isAhead2 (target, 0.707);}
+    function isAside (target:Vector) {return isAside2 (target, 0.707);}
+    function isBehind (target:Vector) {return isBehind2 (target, -0.707);}
 
     function isAhead2 (target:Vector, cosThreshold:Float)
     {
-        var targetDirection = target - m_position;
+        var targetDirection = target.minus(m_position);
         targetDirection.normalize();
-        return bzDot(m_forward, targetDirection) > cosThreshold;
+        return m_forward.dot(targetDirection) > cosThreshold;
     }
 
     function isAside2 (target:Vector, cosThreshold:Float)
     {
-        var targetDirection = target - m_position;
+        var targetDirection = target.minus(m_position);
         targetDirection.normalize();
-        var dp = bzDot(m_forward, targetDirection);
+        var dp = m_forward.dot(targetDirection);
         return (dp < cosThreshold) && (dp > -cosThreshold);
     }
 
     function isBehind2 (target:Vector, cosThreshold:Float)
     {
-        var targetDirection = target - m_position;
+        var targetDirection = target.minus(m_position);
         targetDirection.normalize();
         return m_forward.dot(targetDirection) < cosThreshold;
     }
 
-    m_ship : Ship;
+    var m_ship : Ship;
     
-    m_position : Vector;
-    m_velocity: Vector;
-    m_up : Vector;
-    m_side : Vector;
-    m_forward : Vector;
-    m_radius : Float;
-    m_body : Body;
+    var m_position : Vector;
+    var m_velocity: Vector;
+    var m_up : Vector;
+    var m_side : Vector;
+    var m_forward : Vector;
+    var m_radius : Float;
+    var m_body : Body;
 	
-	m_speed : Float;
-	m_maxForce : Float;
+	var m_speed : Float;
+	var m_maxForce : Float;
     
     // Wander behavior
-    m_wanderSide : Float;
-    m_wanderUp : Float;
+    var m_wanderSide : Float;
+    var m_wanderUp : Float;
 }

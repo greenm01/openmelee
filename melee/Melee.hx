@@ -46,7 +46,7 @@ import ships.Orz;
 import ships.Planet;
 import ships.Asteroid;
 
-//import ai.AI;
+import ai.AI;
 import ai.Human;
 import render.Render;
 
@@ -58,7 +58,7 @@ class Melee
     var allowSleep : Bool;
     var render : Render;
 
-    //var ai : AI;
+    var ai : AI;
     public var human : Human;
 
     public var ship1 : Ship;
@@ -100,10 +100,8 @@ class Melee
             // Update screen
             render.update();
             
-            // Limit velocities
             for(o in objectList) {
-                //o.limitVelocity();
-                //o.updateState();
+                o.updateState();
                 o.applyGravity();
             }
 
@@ -125,7 +123,7 @@ class Melee
         var bf = new SortedList();
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
-        world.useIslands = false;
+        //world.useIslands = false;
 		ship2 = new UrQuan(world);
 		ship1 = new Orz(world);
         planet = new Planet(world);
@@ -134,9 +132,4 @@ class Melee
             objectList.add(asteroid);
         }
 	}
-	
-	public static inline function randomRange(min:Float, max:Float) {
-	    var rand = Math.random() * 1e99;
-	    return min + rand % (max + 1 - min);
-    }
 }

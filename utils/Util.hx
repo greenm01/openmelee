@@ -28,58 +28,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- package ships;
- 
- import phx.Body;
- import phx.Vector;
- import phx.World;
- import phx.Properties;
- 
- class GameObject
- {
-    public var rBody : Body;
-    public var world : World;
-    public var radius : Float;
-    public var props : Properties;
-    public var state : State;
-    
-    public function new(world:World) {
-        this.world = world;
-        // Default properties
-        var linearFriction = 0.999; 
-        var angularFriction = 0.999;
-        var biasCoef = 0.1; 
-        var maxMotion = 1e6; 
-        var maxDist = 0.5;
-        props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
-    }
-    
-    public function limitVelocity(){}
-    public function updateState() {}
-    public function applyGravity() {}
-    
- }
- 
-class State
-{
-	public var pos : Vector;
-    public var linVel : Vector;
-    public var up : Vector;
-    public var side : Vector;
-    public var forward : Vector;
-    public var target : Vector;
-    public var avoid : Vector;
-	public var speed : Float;
-	public var maxForce : Float;
-    public var radius : Float;
-	public var enemyAngle : Float;
-    public var turn : Bool;
-    public var enemy : Ship;
+package utils;
 
-	public inline function predictFuturePosition(dt : Float) {
-        var futPos = pos.clone();
-        futPos.x += linVel.x*dt;
-        futPos.y += linVel.y*dt;
-	    return futPos;
+import phx.Vector;
+
+class Util
+{
+
+    public static function scalarRandomWalk(initial:Float, walkspeed:Float, min:Float, max:Float) {
+        
+        var next = initial + (((randomRange(0, 1) * 2) - 1) * walkspeed);
+        if (next < min) return min;
+        if (next > max) return max;
+        return next;
+    }
+
+    // return component of vector perpendicular to a unit basis vector
+    // IMPORTANT NOTE: assumes "basis" has unit magnitude(length==1)
+    public static function perpendicularComponent(v:Vector, unitBasis:Vector) {
+        return v.minus(parallelComponent(v, unitBasis));
+    }
+
+    // return component of vector parallel to a unit basis vector
+    // IMPORTANT NOTE: assumes "basis" has unit magnitude (length == 1)
+    public static function parallelComponent(v:Vector, unitBasis:Vector) {
+        var projection = v.dot(unitBasis);
+        return unitBasis.mult(projection);
+    }
+            
+    // ----------------------------------------------------------------------------
+    // classify a value relative to the interval between two bounds:
+    //     returns -1 when below the lower bound
+    //     returns  0 when between the bounds (inside the interval)
+    //     returns +1 when above the upper bound
+    public static function intervalComparison(x:Float, lowerBound:Float, upperBound:Float) {
+        if (x < lowerBound) return -1;
+        if (x > upperBound) return 1;
+        return 0;
+    }
+            
+    public static inline function randomRange(min:Float, max:Float) {
+	    var rand = Math.random() * 1e99;
+	    return min + rand % (max + 1 - min);
     }
 }
