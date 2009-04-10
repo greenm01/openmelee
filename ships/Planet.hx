@@ -49,5 +49,6 @@ class Planet extends GameObject
         var offset = Vector.init();
         var planet = new Circle(radius, offset);
         world.addStaticShape(planet);
+        rBody = world.staticBody;
     }    
 }

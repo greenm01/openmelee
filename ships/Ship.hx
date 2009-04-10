@@ -37,6 +37,7 @@ import phx.World;
 import phx.Shape;
 import phx.Body;
 import ships.GameObject;
+import utils.Util;
 
 class Ship extends GameObject
 {
@@ -77,9 +78,9 @@ class Ship extends GameObject
         var vx = rBody.x;
         var vy = rBody.y;
         var omega = rBody.w;
-        rBody.x = Vector.clamp(vx, -maxLinVel, maxLinVel);
-        rBody.y = Vector.clamp(vy, -maxLinVel, maxLinVel);
-        rBody.w = Vector.clamp(omega, -maxAngVel, maxAngVel);
+        rBody.x = Util.clamp(vx, -maxLinVel, maxLinVel);
+        rBody.y = Util.clamp(vy, -maxLinVel, maxLinVel);
+        rBody.w = Util.clamp(omega, -maxAngVel, maxAngVel);
     }
 
     public override function updateState() {

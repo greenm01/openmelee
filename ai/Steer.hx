@@ -103,7 +103,7 @@ class Steer
 
             var target = obstacle.rBody;
             
-            if(target == m_body) continue;
+            if(target == m_body || target == null) continue;
             
             // Calculate the time to collision
             var pos = new Vector(target.x, target.y);
@@ -122,7 +122,7 @@ class Steer
             var distance = relativePos.length();
             
             // Clamp look ahead time
-            timeToCPA = Vector.clamp(timeToCPA, 0, maxLookAhead);
+            timeToCPA = Util.clamp(timeToCPA, 0, maxLookAhead);
             
             // Calculate closest point of approach
             var cpa = m_position.plus(m_velocity.mult(timeToCPA));
@@ -297,7 +297,7 @@ class Steer
     public function steerForTargetSpeed (targetSpeed:Float) {
         var mf = m_maxForce;
         var speedError = targetSpeed - m_speed;
-        return m_forward.mult(Vector.clamp(speedError, -mf, mf));
+        return m_forward.mult(Util.clamp(speedError, -mf, mf));
     }
 
 

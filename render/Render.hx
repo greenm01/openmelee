@@ -43,6 +43,7 @@ import phx.Vector;
 
 import melee.Melee;
 import ships.Ship;
+import utils.Util;
 
 /// Color for drawing. Each value has the range [0,1].
 typedef Color = {
@@ -181,7 +182,7 @@ class Render
             var point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
             var point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
             var range = point1.minus(point2);
-            zoom = Vector.clamp(1000.0/range.length(), 2.0, 60.0);
+            zoom = Util.clamp(1000.0/range.length(), 2.0, 60.0);
             viewCenter = point1.minus(range.mult(0.5));
         } else {
              viewCenter = new Vector(ship1.rBody.x, ship1.rBody.y);

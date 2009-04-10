@@ -32,6 +32,7 @@ package utils;
 
 import phx.Vector;
 
+// Math utility functions
 class Util
 {
 
@@ -70,5 +71,9 @@ class Util
     public static inline function randomRange(min:Float, max:Float) {
 	    var rand = Math.random() * 1e99;
 	    return min + rand % (max + 1 - min);
+    }
+    
+    public static inline function clamp (a:Float, low:Float, high:Float) {
+        return Math.max(low, Math.min(a, high));
     }
 }

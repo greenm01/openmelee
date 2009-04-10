@@ -79,7 +79,7 @@ class Melee
         running = true;
 
         human = new Human(ship1, this);
-        //ai = new AI(ship2, objectList);
+        ai = new AI(ship2, objectList);
         render = new Render(this);
         
         objectList.add(planet);
@@ -94,7 +94,7 @@ class Melee
         while (running && !human.quit && Render.running) {
 
             // Update AI
-            //ai.move(ship1);
+            ai.move(ship1);
             // Update Physics
             world.step(timeStep, 10);
             // Update screen

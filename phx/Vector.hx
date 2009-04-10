@@ -91,10 +91,6 @@ class Vector {
         return new Vector((cos * x) - (sin * y), (cos * y) + (sin * x));
     }
     
-    public static inline function clamp (a:Float, low:Float, high:Float) {
-        return Math.max(low, Math.min(a, high));
-    }
-
 	public function toString() {
 		return "("+(Math.round(x*100)/100)+","+(Math.round(y*100)/100)+")";
 	}

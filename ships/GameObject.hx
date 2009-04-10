@@ -52,6 +52,7 @@
         var maxMotion = 1e6; 
         var maxDist = 0.5;
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
+        state = new State();
     }
     
     public function limitVelocity(){}
@@ -76,6 +77,14 @@ class State
     public var turn : Bool;
     public var enemy : Ship;
 
+    public function new() {
+        pos = Vector.init();
+        linVel = Vector.init();
+        forward = Vector.init();
+        radius = 0.0;
+        speed = 0.0;
+    }
+    
 	public inline function predictFuturePosition(dt : Float) {
         var futPos = pos.clone();
         futPos.x += linVel.x*dt;
