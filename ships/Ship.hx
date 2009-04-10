@@ -84,7 +84,7 @@ class Ship extends GameObject
     }
 
     public override function updateState() {
-        state.linVel = new Vector(rBody.x, rBody.y);
+        state.linVel.set(rBody.x, rBody.y);
         state.speed = state.linVel.length();
         state.pos.x = rBody.x;
         state.pos.y = rBody.y;
@@ -146,8 +146,8 @@ class Ship extends GameObject
             if (ratio > 1)
                 ratio = 1;
 
-        rBody.f.x = rx * ratio * strength;
-        rBody.f.y = ry * ratio * strength;
+        rBody.f.x += rx * ratio * strength;
+        rBody.f.y += ry * ratio * strength;
         
     }
 }

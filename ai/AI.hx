@@ -67,17 +67,21 @@ class AI
 	
     // Elementary steering AI 
 	public function move(enemy:Ship) {
-	   
+
         if(ship == null) return;
         
         var go = new GameObject(null);
         var threat : Threat = {target:go, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
                                 minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.init()}; 
 	    steer.update();
-        steer.collisionThreat(threat);
-        st = threat.steering;
-        
-        if(st.x == 0.0 && st.y == 0.0) {
+        //steer.collisionThreat(threat);
+        //st = threat.steering;
+		
+        st = steer.targetEnemy(enemy.state, maxPredictionTime);
+        chase(enemy);
+		return;
+        /*
+		if(st.x == 0.0 && st.y == 0.0) {
             if(avoidLeft || avoidRight) {
                 avoidLeft = avoidRight = false;
                 ship.rBody.w = 0.0;
@@ -90,7 +94,7 @@ class AI
             avoid();
             return;
         }
-        
+        */
         throw "error";
     }
     
@@ -101,10 +105,10 @@ class AI
         // Because ship's heading is 90 off rigid body's heading
         st = st.rotateLeft90();
         var angle = Math.atan2(st.x, st.y);
-        
+    
 		if(Math.abs(angle) > 0.05) {
             if(!ship.state.turn) {
-                if(st.x >= 0) {
+                if(angle >= 0) {
                     ship.turnRight();
                     ship.state.turn = true;
                 } else {
@@ -115,11 +119,10 @@ class AI
 		} else {
 			ship.rBody.w = 0.0;
 			ship.state.turn = false;
-		}
-		
-		var range = (ship.state.pos.minus(enemy.state.pos)).length(); 
-		if(range > 2.0 && Math.abs(angle) < Math.PI/4.0) {
-			ship.thrust();
+			var range = (ship.state.pos.minus(enemy.state.pos)).length(); 
+			if(range > 2.0) {
+				ship.thrust();
+			}
 		}
     }
     

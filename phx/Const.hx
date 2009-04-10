@@ -31,7 +31,7 @@ class Const {
 	public static inline var WORLD_BOUNDS_FREQ = 120;
 
 	public static var DEFAULT_MATERIAL = new Material( 0.001, 0.81, 1 );
-	public static var DEFAULT_PROPERTIES = new Properties( 0.999, 0.999, 0.1, FMAX, 0.5 );
+	public static var DEFAULT_PROPERTIES = new Properties( 0.999, 0.999, 0.1, FMAX, 0.05 );
 
 	// sleep
 	public static inline var SLEEP_BIAS = 0.95;

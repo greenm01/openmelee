@@ -57,7 +57,7 @@ class Orz extends Ship
         var pos = new Vector(25.0, 5.0);
         props.maxMotion = 5e3;
         rBody = new Body(pos.x, pos.y, props);
-        
+		
         // Body
         var body = new Array();
         body[0]=(new Vector(42 * scale, 14 * scale));

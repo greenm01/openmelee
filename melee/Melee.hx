@@ -93,18 +93,19 @@ class Melee
         var i = 0;
         while (running && !human.quit && Render.running) {
 
-            // Update AI
-            ai.move(ship1);
             // Update Physics
             world.step(timeStep, 10);
             // Update screen
             render.update();
-            
+			
             for(o in objectList) {
                 o.updateState();
                 o.applyGravity();
             }
-
+			
+			// Update AI
+            ai.move(ship1);
+			
             // Apply thrust
             if(human.thrust) {
                 ship1.thrust();

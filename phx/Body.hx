@@ -151,7 +151,12 @@ class Body {
 	}
     
     public inline function localPoint(v:Vector) {
-        return new Vector(v.x - x, v.y - y);
+		var d = new Vector(v.x - x, v.y - y);
+		var c = Math.cos(a);
+		var s = Math.sin(a);
+		var col1 = new Vector(c,s);
+		var col2 = new Vector(-s,c);
+		return new Vector(d.dot(col1), d.dot(col2));
     }
 
 }

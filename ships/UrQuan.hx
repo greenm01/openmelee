@@ -46,21 +46,19 @@ class UrQuan extends Ship
 
     public function new(world : World) {
 
-        maxAngVel = 2.0;
-        maxLinVel = 20.0;
-        
         scale = 0.025;
         offset = new Vector(0, 0);
         super(world);
         engineForce = new Vector(500, 0);
-        turnForce = new Vector(0, 9000);
+        turnForce = new Vector(0, 2000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
         var pos = new Vector(10.0, 0.0);
-        props.maxMotion = 1e3;
+        props.maxMotion = 2e3;
         rBody = new Body(pos.x, pos.y, props);
-        
+        rBody.a = Math.PI;
+		
         // Head
         var head = new Array();
         head[0]=(new Vector(42 * scale, 49 * scale));

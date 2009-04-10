@@ -50,7 +50,7 @@
         var angularFriction = 0.999;
         var biasCoef = 0.1; 
         var maxMotion = 1e6; 
-        var maxDist = 0.5;
+        var maxDist = 0.05;
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
         state = new State();
     }
@@ -83,6 +83,7 @@ class State
         forward = Vector.init();
         radius = 0.0;
         speed = 0.0;
+		turn = false;
     }
     
 	public inline function predictFuturePosition(dt : Float) {
