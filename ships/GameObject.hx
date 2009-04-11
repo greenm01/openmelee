@@ -83,7 +83,6 @@ class State
         forward = Vector.init();
         radius = 0.0;
         speed = 0.0;
-		turn = false;
     }
     
 	public inline function predictFuturePosition(dt : Float) {

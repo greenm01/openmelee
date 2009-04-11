@@ -50,7 +50,7 @@ class UrQuan extends Ship
         offset = new Vector(0, 0);
         super(world);
         engineForce = new Vector(500, 0);
-        turnForce = new Vector(0, 2000);
+        turnForce = new Vector(0, 4000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 

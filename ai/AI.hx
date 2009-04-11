@@ -58,7 +58,8 @@ class AI
     
     var avoidRight : Bool;
     var avoidLeft : Bool;
-    
+    var range : Float;
+	
 	public function new(ship : Ship, objectList : FastList<GameObject>) {
 		this.ship = ship;
 		steer = new Steer(ship, objectList);
@@ -76,7 +77,9 @@ class AI
 	    steer.update();
         steer.collisionThreat(threat);
         st = threat.steering;
-				  
+		
+		range = (ship.state.pos.minus(enemy.state.pos)).length(); 
+		
 		if(st.x == 0.0 && st.y == 0.0) {
             if(avoidLeft || avoidRight) {
                 avoidLeft = avoidRight = false;
@@ -115,8 +118,7 @@ class AI
 		} else {
 			ship.rBody.w = 0.0;
 			ship.state.turn = false;
-			var range = (ship.state.pos.minus(enemy.state.pos)).length(); 
-			if(range > 2.0) {
+			if(range > 5.0) {
 				ship.thrust();
 			}
 		}
@@ -142,8 +144,9 @@ class AI
                 avoidRight = false;
             }
         }
-                
-        ship.thrust();
+               
+		ship.thrust();
+	
     }
 
 }

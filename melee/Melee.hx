@@ -51,7 +51,7 @@ import render.Render;
 
 class Melee 
 {
-    static var NUM_ASTROIDS : Int = 12;
+    static var NUM_ASTROIDS : Int = 20;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
@@ -119,13 +119,13 @@ class Melee
         var top = -250;
         var right = 400;
         var bottom = 250;
+		// Physaxe inverts top and bottom because of Flash?
 	    worldAABB = new AABB(left, top, right, bottom);
         var bf = new SortedList();
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
-        //world.useIslands = false;
-		ship1 = new UrQuan(world);
-		ship2 = new Orz(world);
+		ship2 = new UrQuan(world);
+		ship1 = new Orz(world);
         planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(world);
