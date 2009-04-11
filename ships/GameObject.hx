@@ -45,6 +45,8 @@
     public var radius : Float;
     public var props : Properties;
     public var state : State;
+    public var birthday : Float;
+    public var lifetime : Float;
     
     public function new(melee:Melee) {
         if(melee != null) {
@@ -59,6 +61,18 @@
         var maxDist = 0.05;
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
         state = new State();
+        birthday = neko.Sys.time();
+        lifetime = phx.Const.FMAX;
+    }
+    
+    public inline function checkDeath() {
+        var time = neko.Sys.time();
+        var dt = time - birthday;
+        if(dt >= lifetime) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     public function destroy() {}

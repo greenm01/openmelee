@@ -56,6 +56,8 @@ class Debris extends GameObject
         shrapnel.a = angle;
         melee.world.addBody(shrapnel);
         melee.objectList.add(this);
+        lifetime = 2.0;
+        rBody = shrapnel;
     }
     
     public function initCircle() {

@@ -98,6 +98,11 @@ class Melee
             render.update();
 			
             for(o in objectList) {
+                if(o.checkDeath()) {
+                    world.removeBody(o.rBody);
+                    o = null;
+                    continue;
+                }
                 o.updateState();
                 o.applyGravity();
             }
