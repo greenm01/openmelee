@@ -36,6 +36,7 @@ import phx.Polygon;
 import phx.Vector;
 
 import ships.Ship;
+import melee.Melee;
 
 // UrQuan Dreadnought
 class UrQuan extends Ship
@@ -44,17 +45,17 @@ class UrQuan extends Ship
     var scale : Float;
     var offset : Vector;
 
-    public function new(world : World) {
+    public function new(melee : Melee) {
 
         scale = 0.025;
         offset = new Vector(0, 0);
-        super(world);
+        super(melee);
         engineForce = new Vector(500, 0);
         turnForce = new Vector(0, 4000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(10.0, 0.0);
+        var pos = new Vector(20.0, 30.0);
         props.maxMotion = 2e3;
         rBody = new Body(pos.x, pos.y, props);
         rBody.a = Math.PI;

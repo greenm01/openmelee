@@ -32,6 +32,9 @@ package ships;
 
 import phx.Vector;
 import phx.Polygon;
+import phx.Body;
+
+import utils.Util;
 import melee.Melee;
 
 class Debris extends GameObject
@@ -41,9 +44,9 @@ class Debris extends GameObject
         super(melee);
     }
     
-    public function initPoly(vertices:Array<Vector>, offset:Vector) {
-        var poly = new Polygon(verts, s.offset.clone());
-        var shrapnel = new Body(rBody.x, rBody.y);
+    public function initPoly(verts:Array<Vector>, pos:Vector, offset:Vector) {
+        var poly = new Polygon(verts, offset.clone());
+        var shrapnel = new Body(pos.x, pos.y);
         shrapnel.addShape(poly);
         var x = Util.randomRange(-50, 50);
         var y = Util.randomRange(-50, 50);
@@ -55,7 +58,7 @@ class Debris extends GameObject
         melee.objectList.add(this);
     }
     
-    public funtion initCircle() {
+    public function initCircle() {
     }
     
 }

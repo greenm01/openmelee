@@ -90,7 +90,7 @@ class Steer
     }
     
     // Steer to avoid
-    public function collisionThreat(threat:Threat, maxLookAhead:Float = 10.0) {
+    public function collisionThreat(threat:Threat, maxLookAhead:Float = 30.0) {
 
         // 1. Find the target that’s closest to collision
         

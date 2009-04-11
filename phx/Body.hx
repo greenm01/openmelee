@@ -158,5 +158,15 @@ class Body {
 		var col2 = new Vector(-s,c);
 		return new Vector(d.dot(col1), d.dot(col2));
     }
+    
+    public inline function worldPoint(v:Vector) {
+        var c = Math.cos(a);
+		var s = Math.sin(a);
+		var col1 = new Vector(c,s);
+		var col2 = new Vector(-s,c);
+		var point = new Vector(col1.x * v.x + col2.x * v.y, col1.y * v.x + col2.y * v.y);
+		var pos = new Vector(x, y);
+		return pos.plus(point);
+    }
 
 }

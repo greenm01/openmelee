@@ -35,11 +35,13 @@ import phx.World;
 import phx.Circle;
 import phx.Vector;
 
+import melee.Melee;
+
 class Planet extends GameObject
 {
    
-    public function new(world:World) {
-        super(world);
+    public function new(melee:Melee) {
+        super(melee);
         init();
     }
     

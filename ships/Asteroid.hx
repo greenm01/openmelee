@@ -41,8 +41,8 @@ import utils.Util;
 class Asteroid extends GameObject
 {
     
-    public function new(world:World) {
-        super(world);
+    public function new(melee:Melee) {
+        super(melee);
         init();
     }
 

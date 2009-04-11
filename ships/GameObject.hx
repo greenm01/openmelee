@@ -35,16 +35,22 @@
  import phx.World;
  import phx.Properties;
  
+ import melee.Melee;
+ 
  class GameObject
  {
     public var rBody : Body;
     public var world : World;
+    public var melee : Melee;
     public var radius : Float;
     public var props : Properties;
     public var state : State;
     
-    public function new(world:World) {
-        this.world = world;
+    public function new(melee:Melee) {
+        if(melee != null) {
+            this.world = melee.world;
+        }
+        this.melee = melee;
         // Default properties
         var linearFriction = 0.999; 
         var angularFriction = 0.999;
@@ -54,6 +60,8 @@
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
         state = new State();
     }
+    
+    public function destroy() {}
     
     public function limitVelocity(){}
     public function updateState() {}

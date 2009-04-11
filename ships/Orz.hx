@@ -37,18 +37,27 @@ import phx.Properties;
 import phx.Vector;
 
 import ships.Ship;
+import melee.Melee;
 
+class MainWeapon
+{
+    public function new(){
+    }    
+    
+}
+    
 // UrQuan Dreadnought
 class Orz extends Ship
 {
     var scale : Float;
     var offset : Vector;
-
-    public function new(world : World) {
+    var howitzer : Body;
+    
+    public function new(melee : Melee) {
 
         scale = 0.025;
         offset = Vector.init();
-        super(world);
+        super(melee);
         engineForce = new Vector(300, 0);
         turnForce = new Vector(0, 3000);
         rightTurnPoint = new Vector(-0.5, 0);
@@ -86,5 +95,24 @@ class Orz extends Ship
         
         world.addBody(rBody);
         //setPlanetGravity();
+      }
+      
+      public override function fire() {
+          var verts = new Array<Vector>();
+          verts.push(new Vector(0.25,0.5));
+          verts.push(new Vector(0.25,-0.5));
+          verts.push(new Vector(-0.25,-0.5));
+          verts.push(new Vector(-0.25,0.5));
+          var poly = new Polygon(verts, Vector.init());
+          var localPos = new Vector(2.0, 0.0);
+          var worldPos = rBody.worldPoint(localPos);
+          howitzer = new Body(worldPos.x, worldPos.y);
+          //var fw = Vector.normal(worldPos.x, worldPos.y);
+          howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
+          //torpedo.v.x += 75;
+          //torpedo.v.y += 75;
+          howitzer.addShape(poly);
+          world.addBody(howitzer);
+    
       }
 }

@@ -36,8 +36,11 @@ import phx.Vector;
 import phx.World;
 import phx.Shape;
 import phx.Body;
+import phx.Polygon;
+
 import ships.GameObject;
 import utils.Util;
+import melee.Melee;
 
 class Ship extends GameObject
 {
@@ -51,8 +54,8 @@ class Ship extends GameObject
     var maxLinVel : Float;
     var maxAngVel : Float;
 
-    public function new(world : World) {
-        super(world);
+    public function new(melee:Melee) {
+        super(melee);
         shapeList = new FastList();
     }
 
@@ -92,33 +95,22 @@ class Ship extends GameObject
     }
 
     public function explode() {
-        /*
-        for(bzShape shape = rBody.shapeList; shape; shape = shape.next) {
-            auto bodyDef = new bzBodyDef;
-            switch(shape.type) {
-                case bzShapeType.POLYGON:
-                    auto s = cast(bzPolygon) shape;
-                    auto shapeDef = new bzPolyDef;
-                    shapeDef.vertices = s.vertices;
-                    shapeDef.density = s.density;
-                    bodyDef.position = s.worldCenter;
-                    bodyDef.a = randomRange(-PI, PI);
-                    bodyDef.allowFreeze = false;
-                    bodyDef.allowSleep = false;
-                    auto shrapnel = world.createBody(bodyDef);
-                    shrapnel.createShape(shapeDef);
-                    bzMassData massData;
-                    massData.mass = 5.0f;
-                    shrapnel.setMass(massData);
-                    float x = randomRange(-300, 300);
-                    float y = randomRange(-300, 300);
-                    shrapnel.linearVelocity = bzVec2(x, y);
-                    break;
-                default:
-                    break;
+        for(s in rBody.shapes) {
+            var debris = new Debris(melee);
+            switch(s.type) {
+                case Shape.POLYGON:
+                    var verts = new Array<Vector>();
+                    var v = s.polygon.verts;
+                    while(v != null) {
+                        verts.push(v.clone());
+                        v = v.next;
+                    }
+                    var pos = new Vector(rBody.x, rBody.y);
+                    debris.initPoly(verts, pos, s.offset);
+                case Shape.CIRCLE:
             }
         }
-        */
+        world.removeBody(rBody);
     }
 
     public override function applyGravity() {
@@ -150,4 +142,6 @@ class Ship extends GameObject
         rBody.f.y += ry * ratio * strength;
         
     }
+    
+    public function fire() {}
 }

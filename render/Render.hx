@@ -61,7 +61,7 @@ class Render
     var world : World;
     var screenSize : Vector;
     var ship1 : Ship;
-    var ship2 : Ship;
+    public var ship2 : Ship;
     static public var running : Bool;
     
     public function new(melee : Melee) {

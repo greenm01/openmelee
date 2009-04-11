@@ -51,13 +51,13 @@ import render.Render;
 
 class Melee 
 {
-    static var NUM_ASTROIDS : Int = 20;
+    static var NUM_ASTROIDS : Int = 10;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
-    var render : Render;
+    public var render : Render;
 
-    var ai : AI;
+    public var ai : AI;
     public var human : Human;
 
     public var ship1 : Ship;
@@ -124,11 +124,11 @@ class Melee
         var bf = new SortedList();
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
-		ship2 = new UrQuan(world);
-		ship1 = new Orz(world);
-        planet = new Planet(world);
+		ship2 = new UrQuan(this);
+		ship1 = new Orz(this);
+        planet = new Planet(this);
         for(i in 0...NUM_ASTROIDS) {
-            var asteroid = new Asteroid(world);
+            var asteroid = new Asteroid(this);
             objectList.add(asteroid);
         }
 	}
