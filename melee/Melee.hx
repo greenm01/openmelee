@@ -124,8 +124,8 @@ class Melee
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
         //world.useIslands = false;
-		ship2 = new UrQuan(world);
-		ship1 = new Orz(world);
+		ship1 = new UrQuan(world);
+		ship2 = new Orz(world);
         planet = new Planet(world);
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(world);

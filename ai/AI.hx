@@ -74,13 +74,9 @@ class AI
         var threat : Threat = {target:go, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
                                 minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.init()}; 
 	    steer.update();
-        //steer.collisionThreat(threat);
-        //st = threat.steering;
-		
-        st = steer.targetEnemy(enemy.state, maxPredictionTime);
-        chase(enemy);
-		return;
-        /*
+        steer.collisionThreat(threat);
+        st = threat.steering;
+				  
 		if(st.x == 0.0 && st.y == 0.0) {
             if(avoidLeft || avoidRight) {
                 avoidLeft = avoidRight = false;
@@ -94,7 +90,7 @@ class AI
             avoid();
             return;
         }
-        */
+ 
         throw "error";
     }
     
