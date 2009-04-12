@@ -41,4 +41,9 @@
         this.ship = ship;
     }    
     
+    public override function destroy() {
+        world.removeBody(rBody);
+        return true;
+    }
+    
 }

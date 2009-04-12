@@ -50,7 +50,6 @@ class Ship extends GameObject
     var leftTurnPoint : Vector;
     var rightTurnPoint : Vector;
     var battery : Float;
-    var crew : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
 
@@ -94,7 +93,7 @@ class Ship extends GameObject
         state.forward = engineForce.rotate(rBody.a);
     }
 
-    public function explode() {
+    public override function destroy() {
         for(s in rBody.shapes) {
             var debris = new Debris(melee);
             switch(s.type) {
@@ -111,6 +110,7 @@ class Ship extends GameObject
             }
         }
         world.removeBody(rBody);
+        return true;
     }
 
     public override function applyGravity() {

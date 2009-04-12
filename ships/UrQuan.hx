@@ -47,9 +47,10 @@ class UrQuan extends Ship
 
     public function new(melee : Melee) {
 
+        super(melee);
+        health = 30.0;
         scale = 0.025;
         offset = new Vector(0, 0);
-        super(melee);
         engineForce = new Vector(500, 0);
         turnForce = new Vector(0, 4000);
         rightTurnPoint = new Vector(-0.5, 0);

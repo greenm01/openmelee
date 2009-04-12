@@ -37,6 +37,7 @@ class Arbiter {
 
 	public var stamp : Int;
 	public var island : Island;
+	public var world : World;
 	public var allocator : Allocator;
 	public var sleeping : Bool;
 
@@ -70,6 +71,12 @@ class Arbiter {
 			c.jnAcc = c.jtAcc = 0;
 			c.next = contacts;
 			contacts = c;
+			
+			// Contact listener
+			if(world.contactListener != null) {
+			    world.contactListener.add(s1.body, s2.body);
+            }
+			
 		}
 		// init datas
 		c.px = p.x;

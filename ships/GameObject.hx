@@ -47,6 +47,8 @@
     public var state : State;
     public var birthday : Float;
     public var lifetime : Float;
+    public var damage : Float;
+    public var health : Float;
     
     public function new(melee:Melee) {
         if(melee != null) {
@@ -63,6 +65,8 @@
         state = new State();
         birthday = neko.Sys.time();
         lifetime = phx.Const.FMAX;
+        damage = 5.0;
+        health = phx.Const.FMAX;
     }
     
     public inline function checkDeath() {
@@ -75,7 +79,9 @@
         }
     }
     
-    public function destroy() {}
+    public function destroy() {
+        return false;    
+    }
     
     public function limitVelocity(){}
     public function updateState() {}

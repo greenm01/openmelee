@@ -28,85 +28,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module openmelee.melee.contactListener;
+package melee;
 
-import blaze.collision.bzCollision : bzContactID;
-import blaze.dynamics.contact.bzContact : bzContactPoint, bzContactResult;
-import blaze.dynamics.bzWorldCallbacks : bzContactListener;
-import blaze.collision.shapes.bzShape : bzShape;
-import blaze.common.bzMath : bzVec2;
+import phx.WorldContactListener;
+import phx.Shape;
+import phx.Vector;
+import phx.Contact;
+import phx.Body;
 
-import openmelee.melee.melee;
-
-/*
-enum ContactState {
-    e_contactAdded,
-    e_contactPersisted,
-    e_contactRemoved
-}
-*/
-
-// bzWorld contact callback
-class ContactListener : bzContactListener
+// World contact callback
+class ContactListener extends WorldContactListener
 {
 
-	Melee melee;
+	public var melee : Melee;
 
-	this(Melee melee) {
-		this.melee = melee;
+	public function new() {
+	    super();
 	}
 
-	void add(bzContactPoint point)
-	{
-		if (melee.pointCount == k_maxContactPoints) {
-			return;
-		}
-
-		ContactPoint *cp = &melee.points[melee.pointCount];
-		cp.shape1 = point.shape1;
-		cp.shape2 = point.shape2;
-		cp.position = point.position;
-		cp.normal = point.normal;
-		cp.id = point.id;
-		//cp.state = ContactState.e_contactAdded;
-
-		++melee.pointCount;
+	public override function add(rb1: Body, rb2:Body) {
+		melee.handleContact(rb1, rb2);
 	}
-
-	void persist(bzContactPoint point)
-	{
-		if (melee.pointCount == k_maxContactPoints) {
-			return;
-		}
-
-		ContactPoint *cp = &melee.points[melee.pointCount];
-		cp.shape1 = point.shape1;
-		cp.shape2 = point.shape2;
-		cp.position = point.position;
-		cp.normal = point.normal;
-		cp.id = point.id;
-		//cp.state = ContactState.e_contactPersisted;
-
-		++melee.pointCount;
-	}
-
-	void remove(bzContactPoint point)
-	{
-		if (melee.pointCount == k_maxContactPoints) {
-			return;
-		}
-
-		ContactPoint *cp = &melee.points[melee.pointCount];
-		cp.shape1 = point.shape1;
-		cp.shape2 = point.shape2;
-		cp.position = point.position;
-		cp.normal = point.normal;
-		cp.id = point.id;
-		//cp.state = ContactState.e_contactRemoved;
-
-		++melee.pointCount;
-	}
-
-	void result(bzContactResult point) {}
-
 }

@@ -37,6 +37,7 @@ import phx.col.SortedList;
 import phx.World;
 import phx.Body;
 import phx.Vector;
+import phx.WorldContactListener;
 
 import ships.Ship;
 import ships.GameObject;
@@ -69,8 +70,13 @@ class Melee
     var worldAABB : AABB;
     public var world : World;
     
+    var contactListener : ContactListener;
+    
     public function new() {
                 
+        contactListener = new ContactListener();
+        contactListener.melee = this;
+        
         timeStep = 1.0/60.0;
         objectList = new FastList();
         
@@ -129,6 +135,7 @@ class Melee
         var bf = new SortedList();
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
+        world.contactListener = contactListener;
 		ship2 = new UrQuan(this);
 		ship1 = new Orz(this);
         planet = new Planet(this);
@@ -137,4 +144,43 @@ class Melee
             objectList.add(asteroid);
         }
 	}
+	
+	public function handleContact(rb1:Body, rb2:Body) {
+	    var go1,go2 : GameObject;
+	    go1 = go2 = null;
+	    // Find the associated game object
+	    for(o in objectList) {
+	        if(o.rBody == rb1) {
+	            go1 = o;
+            } else if(o.rBody == rb2) {
+                go2 = o;
+            }
+        }
+        
+        if(go1 == null || go2 == null) {
+            return;
+        }
+        
+        go1.health -= go2.damage;
+        go2.health -= go1.damage;
+        
+        if(go1.rBody == ship2.rBody || go2.rBody == ship2.rBody) {
+            trace(ship2.health);
+        }
+        
+        if(go1.health <= 0) {
+            trace("explode");
+            if(go1.destroy()) {
+                objectList.remove(go1);
+            }
+        }
+        
+        if(go2.health <= 0) {
+            trace("explode");
+            if(go2.destroy()) {
+                objectList.remove(go2);
+            }
+        }
+	    
+    }
 }

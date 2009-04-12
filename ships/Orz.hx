@@ -39,13 +39,6 @@ import phx.Vector;
 import ships.Ship;
 import melee.Melee;
 
-class MainWeapon
-{
-    public function new(){
-    }    
-    
-}
-    
 // UrQuan Dreadnought
 class Orz extends Ship
 {
@@ -53,11 +46,14 @@ class Orz extends Ship
     var offset : Vector;
     var howitzer : Body;
     
+    var primary : GameObject;
+    
     public function new(melee : Melee) {
 
+        super(melee);
+        health = 20.0;
         scale = 0.025;
         offset = Vector.init();
-        super(melee);
         engineForce = new Vector(300, 0);
         turnForce = new Vector(0, 3000);
         rightTurnPoint = new Vector(-0.5, 0);
@@ -98,6 +94,7 @@ class Orz extends Ship
       }
       
       public override function fire() {
+          primary = new PrimaryWeapon(this, melee);
           var verts = new Array<Vector>();
           verts.push(new Vector(0.25,0.5));
           verts.push(new Vector(0.25,-0.5));
@@ -107,12 +104,13 @@ class Orz extends Ship
           var localPos = new Vector(2.0, 0.0);
           var worldPos = rBody.worldPoint(localPos);
           howitzer = new Body(worldPos.x, worldPos.y);
-          //var fw = Vector.normal(worldPos.x, worldPos.y);
           howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
-          //torpedo.v.x += 75;
-          //torpedo.v.y += 75;
           howitzer.addShape(poly);
           world.addBody(howitzer);
-    
+          primary.rBody = howitzer;
+          primary.lifetime = 0.25;
+          primary.damage = 10.0;
+          primary.health = 5.0;
+          melee.objectList.add(primary);
       }
 }

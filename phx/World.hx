@@ -51,6 +51,8 @@ class World implements BroadCallback {
 	public var islands : haxe.FastList<Island>;
 	var properties : IntHash<Properties>;
 	var waitingBodies : haxe.FastList<Body>;
+	
+	public var contactListener : WorldContactListener;
     
 	public function new( worldBoundary, broadphase ) {
 		bodies = new haxe.FastList<Body>();
@@ -234,6 +236,7 @@ class World implements BroadCallback {
 		if( a == null ) {
 			a = allocator.allocArbiter();
 			a.assign(s1,s2);
+			a.world = this;
 			pairFound = false;
 		} else if( a.sleeping ) {
 			a.stamp = stamp;

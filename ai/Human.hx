@@ -63,8 +63,7 @@ class Human
                 ship.turnRight();
             case GLFW.KEY_DOWN:
             case GLFW.KEY_SPACE:
-                trace("explode");
-                melee.ship2.explode();
+                melee.ship2.destroy();
                 melee.ship2 = new UrQuan(melee);
                 melee.ai.ship = melee.ship2;
                 melee.render.ship2 = melee.ship2;

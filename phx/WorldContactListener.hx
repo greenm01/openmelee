@@ -32,8 +32,9 @@ package phx;
 
 class WorldContactListener
 {
-
-
-
+    public function new() {
+    }
+    
+    public function add(rb1: Body, rb2:Body) {}
 
 }
