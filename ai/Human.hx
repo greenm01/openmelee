@@ -39,8 +39,8 @@ class Human
     var melee : Melee;
     var ship : Ship;
     public var quit : Bool;
-    public var thrust : Bool;
-
+    var turn : Bool;
+    
 	public function new(ship : Ship, melee : Melee) {
         this.melee = melee;
         this.ship = ship;
@@ -51,11 +51,17 @@ class Human
             case 29: // ESC
                 quit = true;
             case 38: // UP
-                thrust = true;
+                ship.engines = true;
             case 37: // LEFT
-                ship.turnLeft();
+                if(!ship.turnL) {
+                    ship.turnLeft();
+                    ship.turnL = true;
+                }
             case 39: // RIGHT
-                ship.turnRight();
+                if(!ship.turnR) {
+                    ship.turnRight();
+                    ship.turnR = true;
+                }
             case 40: // DOWN
             case 32: // SPACE
                 melee.ship2.destroy();
@@ -68,11 +74,13 @@ class Human
     }
     
     public function onKeyUp(key:Int) {
-        if(key == 38) {
-		         thrust = false;
-		    } else if (key == 37 || key == 39) {
-                ship.rBody.w = 0.0;
-            }
+        if (key == 37 || key == 39) {
+            ship.turnR = false;
+            ship.turnL = false;
+            ship.rBody.w = 0.0;
+        } else if(key == 38) {
+            ship.engines = false;
+        }
     }
     
 }

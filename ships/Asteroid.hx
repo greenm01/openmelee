@@ -48,11 +48,11 @@ class Asteroid extends GameObject
 
     function init() {
 		{
-		    var radius = 0.5;
-            var offset = new Vector(-0.5, 0.5);
+		    var radius = 1.0;
+            var offset = new Vector(-1.0, 1.0);
 			var s1 = new Circle(radius, offset);
             
-            offset.set(0.5,0.5);
+            offset.set(1.0,1.0);
 			var s2 = new Circle(radius, offset);
             
             var x = Util.randomRange(-100.0, 100.0);

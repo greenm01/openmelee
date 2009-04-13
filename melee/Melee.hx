@@ -117,11 +117,6 @@ class Melee
 
         // Update AI
         ai.move(ship1);
-
-        // Apply thrust
-        if(human.thrust) {
-            ship1.thrust();
-        }
     }
 
     private function initWorld() {

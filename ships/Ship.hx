@@ -44,11 +44,19 @@ import melee.Melee;
 
 class Ship extends GameObject
 {
+    
     var shapeList : FastList<Shape>;
+    
     var engineForce : Vector;
     var turnForce : Vector;
     var leftTurnPoint : Vector;
     var rightTurnPoint : Vector;
+    
+    // Control commands
+    public var turnL : Bool;
+    public var turnR : Bool;
+    public var engines : Bool;
+    
     var battery : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
@@ -86,6 +94,9 @@ class Ship extends GameObject
     }
 
     public override function updateState() {
+        if(engines) {
+            thrust();
+        }
         state.linVel.set(rBody.x, rBody.y);
         state.speed = state.linVel.length();
         state.pos.x = rBody.x;
