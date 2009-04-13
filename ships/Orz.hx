@@ -59,7 +59,7 @@ class Orz extends Ship
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(25.0, 5.0);
+        var pos = new Vector(410.0, 360.0);
         props.maxMotion = 5e3;
         rBody = new Body(pos.x, pos.y, props);
 		
@@ -108,7 +108,7 @@ class Orz extends Ship
           howitzer.addShape(poly);
           world.addBody(howitzer);
           primary.rBody = howitzer;
-          primary.lifetime = 0.25;
+          primary.lifetime = 2.5;
           primary.damage = 10.0;
           primary.health = 5.0;
           melee.objectList.add(primary);

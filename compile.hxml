@@ -1,3 +1,6 @@
+#-neko om.n
+#-lib opengl
+-swf9 om.swf
 -main OpenMelee
--neko om.n
--lib opengl
+-swf-header 800:600:60:000000
+

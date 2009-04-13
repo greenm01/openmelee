@@ -55,7 +55,7 @@ class Ship extends GameObject
 
     public function new(melee:Melee) {
         super(melee);
-        shapeList = new FastList();
+        shapeList = new FastList<Shape>();
     }
 
     public function thrust() {
@@ -118,11 +118,11 @@ class Ship extends GameObject
         var minRadius = 0.1;
         var maxRadius = 50.0;
         var strength = 100.0;
-        var center = Vector.init();
+        var center = new Vector(400.0, 250.0);
         
         var rx = center.x - rBody.x;
         var ry = center.y - rBody.y;
-
+        
         var d = Math.sqrt(rx * rx + ry * ry);
         if (d < 1e-7)
             return;

@@ -32,13 +32,23 @@
  class OpenMelee
  {
 
-     static var game : Game;
-
-     public static function main() {
-
-         game = new Game();
-         game.run();
-
-     }
+    static var game : Game;
+    public var root : flash.display.MovieClip;
+    public static var inst : OpenMelee;
+    
+    public function new(root) {
+        this.root = root;
+    }
+    
+    function initGame() {
+        game = new Game(this);
+    }
+    
+    public static function main() {
+        flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		var root = flash.Lib.current;
+        inst = new OpenMelee(root);
+        inst.initGame();
+    }
 
  }

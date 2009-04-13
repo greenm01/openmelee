@@ -48,15 +48,17 @@ import ships.Asteroid;
 
 import ai.AI;
 import ai.Human;
-import render.Render;
+import render.RenderFlash;
 
 class Melee 
 {
+    public var om : OpenMelee;
+    
     static var NUM_ASTROIDS : Int = 10;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
-    public var render : Render;
+    public var render : RenderFlash;
 
     public var ai : AI;
     public var human : Human;
@@ -72,70 +74,69 @@ class Melee
     
     var contactListener : ContactListener;
     
-    public function new() {
-                
+    public function new(om:OpenMelee) {
+        
+        this.om = om;
         contactListener = new ContactListener();
         contactListener.melee = this;
         
         timeStep = 1.0/60.0;
-        objectList = new FastList();
+        objectList = new FastList<GameObject>();
         
         initWorld();
         running = true;
 
         human = new Human(ship1, this);
         ai = new AI(ship2, objectList);
-        render = new Render(this);
         
         objectList.add(planet);
         objectList.add(ship1);
         objectList.add(ship2);
+        
+        render = new RenderFlash(this);
     }
 
-    public function run() {
+     // Main game loop
+    public function loop() {
         
-        // Main game loop
-        var i = 0;
-        while (running && !human.quit && Render.running) {
+        // Update Physics
+        world.step(timeStep, 10);
 
-            // Update Physics
-            world.step(timeStep, 10);
-            // Update screen
-            render.update();
-			
-            for(o in objectList) {
-                if(o.checkDeath()) {
-                    world.removeBody(o.rBody);
-                    o = null;
-                    continue;
-                }
-                o.updateState();
-                o.applyGravity();
+        // Update screen
+        render.update();
+
+        for(o in objectList) {
+            if(o.checkDeath()) {
+                world.removeBody(o.rBody);
+                o = null;
+                continue;
             }
-			
-			// Update AI
-            ai.move(ship1);
-			
-            // Apply thrust
-            if(human.thrust) {
-                ship1.thrust();
-            }
+            o.updateState();
+            o.applyGravity();
         }
-        render.close();
+
+        // Update AI
+        ai.move(ship1);
+
+        // Apply thrust
+        if(human.thrust) {
+            ship1.thrust();
+        }
     }
 
     private function initWorld() {
 	    // Define world boundaries
-        var left = -400;
-        var top = -250;
-        var right = 400;
-        var bottom = 250;
+        var left = 0;
+        var top = 0;
+        var right = 800;
+        var bottom = 500;
 		// Physaxe inverts top and bottom because of Flash?
 	    worldAABB = new AABB(left, top, right, bottom);
         var bf = new SortedList();
 		world = new World(worldAABB, bf);
         world.gravity = new Vector(0.0,0.0);
         world.contactListener = contactListener;
+        world.useIslands = false;
 		ship2 = new UrQuan(this);
 		ship1 = new Orz(this);
         planet = new Planet(this);
@@ -164,19 +165,13 @@ class Melee
         go1.health -= go2.damage;
         go2.health -= go1.damage;
         
-        if(go1.rBody == ship2.rBody || go2.rBody == ship2.rBody) {
-            trace(ship2.health);
-        }
-        
         if(go1.health <= 0) {
-            trace("explode");
             if(go1.destroy()) {
                 objectList.remove(go1);
             }
         }
         
         if(go2.health <= 0) {
-            trace("explode");
             if(go2.destroy()) {
                 objectList.remove(go2);
             }

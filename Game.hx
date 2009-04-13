@@ -33,12 +33,14 @@ import melee.Melee;
 class Game
 {
     var melee : Melee;
+    var om : OpenMelee;
     
-    public function new() {
-        melee = new Melee();
+    public function new(om:OpenMelee) {
+        this.om = om;
+        melee = new Melee(om);
     }
     
     public function run() {
-        melee.run();
+        //melee.run();
     }
 }

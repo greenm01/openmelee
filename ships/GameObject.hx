@@ -63,14 +63,14 @@
         var maxDist = 0.05;
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
         state = new State();
-        birthday = neko.Sys.time();
+        birthday = flash.Lib.getTimer() / 1000;
         lifetime = phx.Const.FMAX;
         damage = 5.0;
         health = phx.Const.FMAX;
     }
     
     public inline function checkDeath() {
-        var time = neko.Sys.time();
+        var time = flash.Lib.getTimer() / 1000;
         var dt = time - birthday;
         if(dt >= lifetime) {
             return true;

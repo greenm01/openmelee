@@ -24,8 +24,6 @@
  */
 package phx;
 
-import neko.Lib;
-
 class Circle extends Shape {
 
 	public var c:Vector;

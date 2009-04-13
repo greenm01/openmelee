@@ -30,8 +30,6 @@
  */
 package ai;
 
-import opengl.GLFW;
-
 import ships.Ship;
 import ships.UrQuan;
 import melee.Melee;
@@ -48,35 +46,33 @@ class Human
         this.ship = ship;
 	}
 
-	public function onKey(key : Int, state : Int) {
-	    //trace(key);
-        // Key pressed
-		if (state == GLFW.PRESS) {
-			switch (key) {
-			case GLFW.KEY_ESC:
+	public function onKeyDown(key:Int) {
+        switch (key) {
+            case 29: // ESC
                 quit = true;
-            case GLFW.KEY_UP:
+            case 38: // UP
                 thrust = true;
-            case GLFW.KEY_LEFT:
+            case 37: // LEFT
                 ship.turnLeft();
-            case GLFW.KEY_RIGHT:
+            case 39: // RIGHT
                 ship.turnRight();
-            case GLFW.KEY_DOWN:
-            case GLFW.KEY_SPACE:
+            case 40: // DOWN
+            case 32: // SPACE
                 melee.ship2.destroy();
                 melee.ship2 = new UrQuan(melee);
                 melee.ai.ship = melee.ship2;
                 melee.render.ship2 = melee.ship2;
             case 90: // z
                 ship.fire();
-			}
-        // Key released
-		} else {
-		    if(key == GLFW.KEY_UP) {
+            }
+    }
+    
+    public function onKeyUp(key:Int) {
+        if(key == 38) {
 		         thrust = false;
-		    } else if (key == GLFW.KEY_LEFT || key == GLFW.KEY_RIGHT) {
+		    } else if (key == 37 || key == 39) {
                 ship.rBody.w = 0.0;
             }
-		}
-	}
+    }
+    
 }
