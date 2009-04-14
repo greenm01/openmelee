@@ -52,7 +52,7 @@ class AI
 {
 
 	var steer : Steer;
-	public var ship : Ship;
+	public var ship : GameObject;
 	var maxPredictionTime : Float;
 	var st : Vector;
     
@@ -60,7 +60,7 @@ class AI
     var avoidLeft : Bool;
     var range : Float;
 	
-	public function new(ship : Ship, objectList : FastList<GameObject>) {
+	public function new(ship : GameObject, objectList : FastList<GameObject>) {
 		this.ship = ship;
 		steer = new Steer(ship, objectList);
         maxPredictionTime = 0.25;

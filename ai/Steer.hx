@@ -47,7 +47,7 @@ class Steer
     var objectList:FastList<GameObject>;
     
     // Constructor: initializes state
-    public function new (ship:Ship, objectList:FastList<GameObject>)
+    public function new (ship:GameObject, objectList:FastList<GameObject>)
     {
         this.objectList = objectList;
         m_ship = ship;
@@ -88,7 +88,7 @@ class Steer
     }
     
     // Steer to avoid
-    public function collisionThreat(threat:Threat, maxLookAhead:Float = 30.0) {
+    public function collisionThreat(threat:Threat, maxLookAhead:Float = 10.0) {
 
         // 1. Find the target that’s closest to collision
         
@@ -326,7 +326,7 @@ class Steer
         return m_forward.dot(targetDirection) < cosThreshold;
     }
 
-    var m_ship : Ship;
+    var m_ship : GameObject;
     
     var m_position : Vector;
     var m_velocity: Vector;

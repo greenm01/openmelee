@@ -90,6 +90,9 @@
     public function limitVelocity(){}
     public function updateState() {}
     public function applyGravity() {}
+	public function turnRight() {}
+	public function turnLeft() {}
+	public function thrust() {}
     
  }
  

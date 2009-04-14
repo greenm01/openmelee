@@ -68,19 +68,19 @@ class Ship extends GameObject
         shapeList = new FastList<Shape>();
     }
 
-    public function thrust() {
+    public override function thrust() {
         var force = engineForce.rotate(rBody.a);
         rBody.f.x += force.x;
         rBody.f.y += force.y;
     }
 
-    public inline function turnLeft() {
+    public override function turnLeft() {
         var lp = leftTurnPoint.rotate(rBody.a);
         var tf = turnForce.rotate(rBody.a);
         rBody.t += lp.cross(tf);
     }
 
-    public inline function turnRight() {
+    public override function turnRight() {
         var rp = rightTurnPoint.rotate(rBody.a);
         var tf = turnForce.rotate(rBody.a);
         rBody.t += rp.cross(tf);
@@ -123,6 +123,7 @@ class Ship extends GameObject
                 case Shape.CIRCLE:
             }
         }
+		uponDeath();
         world.removeBody(rBody);
         return true;
     }
@@ -157,7 +158,7 @@ class Ship extends GameObject
         
     }
 	
+	public function uponDeath() {}
 	public function updateSpecial() {}
-    
     public function fire() {}
 }

@@ -118,6 +118,9 @@ class UrQuan extends Ship
         world.addBody(rBody);
     }
 	
+	public override function uponDeath() {  
+	}
+	
 	public override function updateSpecial() {
 	  }
 }

@@ -40,7 +40,7 @@ import phx.Vector;
 import ships.Ship;
 import melee.Melee;
 
-// UrQuan Dreadnought
+// Orz Nemesis
 class Orz extends Ship
 {
     var scale : Float;
@@ -135,18 +135,40 @@ class Orz extends Ship
           melee.objectList.add(primary);
       }
 	  
-	  public override function updateSpecial() {
-		  turret.v = rBody.v;
-		  turret.x = rBody.x;
-		  turret.y = rBody.y;
-		  if (special) {
-			  if (turnL) {
-				  tA += Math.PI / 32;
-			  } else if (turnR) {
-				  tA -= Math.PI / 32;
-				  
-			  }
+	public override function uponDeath() {
+		for (s in turret.shapes) {
+			s.groups = 1;
+		}
+	}
+	  
+	public override function updateSpecial() {
+	  turret.v = rBody.v;
+	  turret.x = rBody.x;
+	  turret.y = rBody.y;
+	  if (special) {
+		  if (turnL) {
+			tA += Math.PI / 32;
+		  } else if (turnR) {
+			tA -= Math.PI / 32;
+		  } else {
+			// Release a marine
+			/*
+			var marine = new Marine(melee, this);
+			marine.group = group;
+			melee.objectList.add(marine);
+			var verts = new Array<Vector>();
+			verts.push(new Vector(0.0,0.25));
+			verts.push(new Vector(0.15,0.0));
+			verts.push(new Vector( -0.15, 0.0));
+			var poly = new Polygon(verts, Vector.init());
+			var localPos = new Vector(0, 1.25);
+			var worldPos = turret.worldPoint(localPos);
+			marine.rBody = new Body(worldPos.x, worldPos.y, props);
+			marine.rBody.addShape(poly);
+			world.addBody(marine.rBody);
+			*/
 		  }
-		  turret.a = rBody.a + Math.PI/2 + tA;
 	  }
+	  turret.a = rBody.a + Math.PI/2 + tA;
+	}
 }
