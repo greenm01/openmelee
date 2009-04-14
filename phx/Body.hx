@@ -168,5 +168,12 @@ class Body {
 		var pos = new Vector(x, y);
 		return pos.plus(point);
     }
+	
+	public inline function applyImpulse(j:Vector, r:Vector) {
+		v.x += (j.x * invMass);
+		v.y += (j.y * invMass);
+		w += invInertia * (r.x * j.y - r.y * j.x);
+	}
+
 
 }

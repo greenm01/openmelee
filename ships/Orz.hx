@@ -35,6 +35,7 @@ import phx.World;
 import phx.Polygon;
 import phx.Properties;
 import phx.Vector;
+import phx.joint.PivotJoint;
 
 import ships.Ship;
 import melee.Melee;
@@ -45,7 +46,7 @@ class Orz extends Ship
     var scale : Float;
     var offset : Vector;
     var howitzer : Body;
-    
+    var pivotJoint : PivotJoint;
     var primary : GameObject;
     
     public function new(melee : Melee) {

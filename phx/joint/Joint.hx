@@ -26,19 +26,27 @@ package phx.joint;
 
 class Joint {
 
+	var joint_bias_coef : Float;
+
 	public var b1:phx.Body;
 	public var b2:phx.Body;
 
 	public var anchr1:phx.Vector;
 	public var anchr2:phx.Vector;
-
+	var r1 : phx.Vector;
+	var r2 : phx.Vector;
+	
 	public var island : phx.Island;
 
 	function new( b1, b2, anchr1, anchr2 ) {
+		joint_bias_coef = 0.1;
 		this.b1 = b1;
 		this.b2 = b2;
 		this.anchr1 = anchr1;
 		this.anchr2 = anchr2;
+		r1 = phx.Vector.init();
+		r2 = phx.Vector.init();
+
 	}
 
 	public function preStep( invDt : Float ) {

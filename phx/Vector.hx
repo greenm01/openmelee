@@ -90,7 +90,11 @@ class Vector {
         var sin = Math.sin(angle);
         return new Vector((cos * x) - (sin * y), (cos * y) + (sin * x));
     }
-    
+	
+	public inline function rotateByVector(v:Vector) {
+		return new Vector(this.x * v.x - this.y * v.y, this.x * v.y + this.y * v.x);
+	}
+	
 	public function toString() {
 		return "("+(Math.round(x*100)/100)+","+(Math.round(y*100)/100)+")";
 	}
