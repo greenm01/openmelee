@@ -39,6 +39,9 @@
  
  class GameObject
  {
+	
+	static var GROUP = 0;
+	public var group : Int;
     public var rBody : Body;
     public var world : World;
     public var melee : Melee;
@@ -54,6 +57,7 @@
         if(melee != null) {
             this.world = melee.world;
         }
+		group = GROUP++;
         this.melee = melee;
         // Default properties
         var linearFriction = 0.999; 

@@ -56,7 +56,9 @@ class Ship extends GameObject
     public var turnL : Bool;
     public var turnR : Bool;
     public var engines : Bool;
-    
+    public var special : Bool;
+	public var primay : Bool;
+	
     var battery : Float;
     var maxLinVel : Float;
     var maxAngVel : Float;
@@ -94,6 +96,7 @@ class Ship extends GameObject
     }
 
     public override function updateState() {
+		updateSpecial();
         if(engines) {
             thrust();
         }
@@ -153,6 +156,8 @@ class Ship extends GameObject
         rBody.f.y += ry * ratio * strength;
         
     }
+	
+	public function updateSpecial() {}
     
     public function fire() {}
 }

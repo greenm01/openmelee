@@ -50,37 +50,43 @@ class Human
         switch (key) {
             case 29: // ESC
                 quit = true;
-            case 38: // UP
+            case 87: // 'w' (thrust)
                 ship.engines = true;
-            case 37: // LEFT
-                if(!ship.turnL) {
-                    ship.turnLeft();
+            case 65: // 'a' (left)
+                if (!ship.turnL) {
+					if(!ship.special) {
+						ship.turnLeft();
+					}
                     ship.turnL = true;
                 }
-            case 39: // RIGHT
-                if(!ship.turnR) {
-                    ship.turnRight();
+            case 68: // 'd' (right)
+                if (!ship.turnR) {
+					if(!ship.special) 
+						ship.turnRight();
+					}
                     ship.turnR = true;
-                }
             case 40: // DOWN
             case 32: // SPACE
                 melee.ship2.destroy();
                 melee.ship2 = new UrQuan(melee);
                 melee.ai.ship = melee.ship2;
                 melee.render.ship2 = melee.ship2;
-            case 90: // z
+            case 190: // '.' (fire)
                 ship.fire();
-            }
+			case 191: // '/' (special)
+				ship.special = true;
+		}
     }
     
     public function onKeyUp(key:Int) {
-        if (key == 37 || key == 39) {
+        if (key == 65 || key == 68) {
             ship.turnR = false;
             ship.turnL = false;
             ship.rBody.w = 0.0;
-        } else if(key == 38) {
+        } else if(key == 87) {
             ship.engines = false;
-        }
-    }
-    
+        } else if (key == 191) {
+			ship.special = false;
+		}
+	}
 }

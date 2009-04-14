@@ -33,9 +33,9 @@ package ships;
 import phx.Body;
 import phx.World;
 import phx.Polygon;
+import phx.Circle;
 import phx.Properties;
 import phx.Vector;
-import phx.joint.PivotJoint;
 
 import ships.Ship;
 import melee.Melee;
@@ -46,12 +46,14 @@ class Orz extends Ship
     var scale : Float;
     var offset : Vector;
     var howitzer : Body;
-    var pivotJoint : PivotJoint;
     var primary : GameObject;
-    
+    var turret : Body;
+	var tA : Float;
+	
     public function new(melee : Melee) {
 
         super(melee);
+		tA = 0.0;
         health = 20.0;
         scale = 0.025;
         offset = Vector.init();
@@ -90,22 +92,40 @@ class Orz extends Ship
         bWing[1]=(new Vector(42 * scale, -21 * scale));
         rBody.addShape(new Polygon(bWing, offset));
         
+		// Turret
+		turret = new Body(pos.x, pos.y, props);
+		offset.set(0, -0.05);
+		var base = new Circle(0.6, offset);
+		pos = pos.plus(offset);
+		var verts = new Array<Vector>();
+		verts.push(new Vector(0.15,0.75));
+		verts.push(new Vector(0.15,-0.5));
+		verts.push(new Vector(-0.15,-0.5));
+		verts.push(new Vector( -0.15, 0.75));
+		offset.set(0.0, 0.5);
+		var barrel = new Polygon(verts, offset);
+		base.groups = barrel.groups = 2;
+		turret.addShape(base);
+		turret.addShape(barrel);
+		
+		world.addBody(turret);
         world.addBody(rBody);
-        //setPlanetGravity();
       }
       
       public override function fire() {
           primary = new PrimaryWeapon(this, melee);
+		  primary.group = group;
           var verts = new Array<Vector>();
           verts.push(new Vector(0.25,0.5));
           verts.push(new Vector(0.25,-0.5));
           verts.push(new Vector(-0.25,-0.5));
           verts.push(new Vector(-0.25,0.5));
           var poly = new Polygon(verts, Vector.init());
-          var localPos = new Vector(2.0, 0.0);
-          var worldPos = rBody.worldPoint(localPos);
+          var localPos = new Vector(0, 1.25);
+          var worldPos = turret.worldPoint(localPos);
           howitzer = new Body(worldPos.x, worldPos.y);
-          howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
+		  howitzer.a = turret.a;
+          howitzer.v = new Vector(0.0, 100.0).rotate(turret.a);
           howitzer.addShape(poly);
           world.addBody(howitzer);
           primary.rBody = howitzer;
@@ -114,4 +134,19 @@ class Orz extends Ship
           primary.health = 5.0;
           melee.objectList.add(primary);
       }
+	  
+	  public override function updateSpecial() {
+		  turret.v = rBody.v;
+		  turret.x = rBody.x;
+		  turret.y = rBody.y;
+		  if (special) {
+			  if (turnL) {
+				  tA += Math.PI / 32;
+			  } else if (turnR) {
+				  tA -= Math.PI / 32;
+				  
+			  }
+		  }
+		  turret.a = rBody.a + Math.PI/2 + tA;
+	  }
 }

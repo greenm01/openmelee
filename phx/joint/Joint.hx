@@ -35,7 +35,9 @@ class Joint {
 	public var anchr2:phx.Vector;
 	var r1 : phx.Vector;
 	var r2 : phx.Vector;
-	
+	var n : phx.Vector;
+	public var nMass:Float;
+
 	public var island : phx.Island;
 
 	function new( b1, b2, anchr1, anchr2 ) {
@@ -46,7 +48,7 @@ class Joint {
 		this.anchr2 = anchr2;
 		r1 = phx.Vector.init();
 		r2 = phx.Vector.init();
-
+		n = phx.Vector.init();
 	}
 
 	public function preStep( invDt : Float ) {

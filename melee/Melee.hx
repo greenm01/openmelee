@@ -153,7 +153,7 @@ class Melee
             }
         }
         
-        if(go1 == null || go2 == null) {
+        if(go1 == null || go2 == null || (go1.group == go2.group)) {
             return;
         }
         

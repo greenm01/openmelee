@@ -116,6 +116,8 @@ class UrQuan extends Ship
         rBody.addShape(new Polygon(bWing, offset));
         
         world.addBody(rBody);
-        //setPlanetGravity();
     }
+	
+	public override function updateSpecial() {
+	  }
 }
