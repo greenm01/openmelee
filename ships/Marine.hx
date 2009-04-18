@@ -1,4 +1,4 @@
-﻿/* OpenMelee
+/* OpenMelee
  * Copyright (c) 2009, Mason Green 
  * http://github.com/zzzzrrr/openmelee
  *
@@ -33,7 +33,7 @@ package ships;
 import phx.Vector;
 
 import melee.Melee;
-import ai.AI;
+import ai.Steer;
 
 // Autonomous Space Marine - Ooh-rah!
 class Marine extends GameObject
@@ -42,7 +42,9 @@ class Marine extends GameObject
 	var ship : Ship;
 	// The enemy to kill
 	var enemy : Ship;
-	var ai : AI;
+	
+	var steer : Steer;
+	var maxPredictionTime : Float;
 	
 	var engineForce : Vector;
 	var turnForce : Vector;
@@ -50,11 +52,11 @@ class Marine extends GameObject
 	var leftTurnPoint : Vector;
 	
 	public function new(melee:Melee, ship:Ship) {
+		super(melee);
 		this.ship = ship;
 		enemy = melee.ship2;
-		ai = new AI(this, melee.objectList);
-		super(melee);
-		
+		steer = new Steer(this, melee.objectList);
+		maxPredictionTime = 0.01;
 		engineForce = new Vector(10, 0);
         turnForce = new Vector(0, 10);
         rightTurnPoint = new Vector( -0.15, 0);
@@ -62,13 +64,25 @@ class Marine extends GameObject
 	}
 	
 	public override function updateState() {
-		ai.move(enemy);
+	 	state.linVel.set(rBody.x, rBody.y);
+        state.speed = state.linVel.length();
+        state.pos.x = rBody.x;
+        state.pos.y = rBody.y;
+        state.forward = engineForce.rotate(rBody.a);
+		ai();
 	}
 	
 	public override function thrust() {
 		var force = engineForce.rotate(rBody.a);
         rBody.f.x += force.x;
         rBody.f.y += force.y;
+	}
+	
+	function ai() {
+		steer.update();
+	   	var target = steer.targetEnemy(enemy.state, maxPredictionTime);
+		target.normalize();
+	  	rBody.f = target.mult(20.0); 		
 	}
 	
 	public override function turnLeft() {

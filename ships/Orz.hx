@@ -155,7 +155,6 @@ class Orz extends Ship
 			/*
 			var marine = new Marine(melee, this);
 			marine.group = group;
-			melee.objectList.add(marine);
 			var verts = new Array<Vector>();
 			verts.push(new Vector(0.0,0.25));
 			verts.push(new Vector(0.15,0.0));
@@ -166,6 +165,7 @@ class Orz extends Ship
 			marine.rBody = new Body(worldPos.x, worldPos.y, props);
 			marine.rBody.addShape(poly);
 			world.addBody(marine.rBody);
+			melee.objectList.add(marine);
 			*/
 		  }
 	  }

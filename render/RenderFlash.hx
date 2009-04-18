@@ -287,8 +287,6 @@ class RenderFlash
     
     inline function transform(v:Vector) {
         var lp = localPoint(v);
-        //lp.x *= 10;
-        //lp.y *= 10;
         return(worldPoint(lp));
     }
     
@@ -301,7 +299,7 @@ class RenderFlash
     }
     
     inline function worldPoint(v:Vector) {
-        var x = 400.0;
+        var x = 250.0;
         var y = 250.0;
 		var col1 = new Vector(1,0);
 		var col2 = new Vector(0,1);

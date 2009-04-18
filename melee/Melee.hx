@@ -123,7 +123,7 @@ class Melee
 	    // Define world boundaries
         var left = 0;
         var top = 0;
-        var right = 800;
+        var right = 500;
         var bottom = 500;
 		// Physaxe inverts top and bottom because of Flash?
 	    worldAABB = new AABB(left, top, right, bottom);

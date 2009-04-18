@@ -76,14 +76,14 @@ class Steer
     }
 
     // Seek behavior
-    function steerForSeek (target:Vector) {
+    public function steerForSeek (target:Vector) {
         var desiredVelocity = target.minus(m_position);
         return desiredVelocity.minus(m_velocity);
     }
 
     // Flee behavior
     public function steerForFlee (target:Vector) {
-        var desiredVelocity = m_position.minus(target);
+        var desiredVelocity = target.minus(m_position);
         return desiredVelocity.minus(m_velocity);
     }
     
