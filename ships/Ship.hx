@@ -100,7 +100,7 @@ class Ship extends GameObject
         if(engines) {
             thrust();
         }
-        state.linVel.set(rBody.x, rBody.y);
+        state.linVel.set(rBody.v.x, rBody.v.y);
         state.speed = state.linVel.length();
         state.pos.x = rBody.x;
         state.pos.y = rBody.y;

@@ -187,16 +187,26 @@ class RenderFlash
 	}
    
     function draw() {
-    
-        var point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
+	
+		var point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
         var point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
         var range = point1.minus(point2);
         var dist = range.length();
         zoom = Util.clamp(500/dist, 1.0, 25.0);
         viewCenter = point1.minus(range.mult(0.5));
 
-        //trace(zoom);
-        
+		/*
+		var z1 = new Vector(ship2.rBody.x, ship2.rBody.y);
+		var z2 = new Vector(ship2.state.target.x, ship2.state.target.y);
+		z1 = transform(z1);
+		z2 = transform(z2);
+
+		g.lineStyle(shape.lineSize,shape.line);
+		g.moveTo(z2.x, z2.y);
+		g.lineTo(z2.x, z2.y);
+		g.lineTo(z1.x, z1.y);
+		*/
+
         dist = Util.clamp(dist, 20, 400);
         var left = (viewCenter.x - dist);
         var right = (viewCenter.x + dist);

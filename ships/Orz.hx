@@ -152,7 +152,6 @@ class Orz extends Ship
 			tA -= Math.PI / 32;
 		  } else {
 			// Release a marine
-			/*
 			var marine = new Marine(melee, this);
 			marine.group = group;
 			var verts = new Array<Vector>();
@@ -166,7 +165,6 @@ class Orz extends Ship
 			marine.rBody.addShape(poly);
 			world.addBody(marine.rBody);
 			melee.objectList.add(marine);
-			*/
 		  }
 	  }
 	  turret.a = rBody.a + Math.PI/2 + tA;

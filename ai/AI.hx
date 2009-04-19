@@ -100,7 +100,7 @@ class AI
     
     function chase(enemy:Ship) {
         
-        ship.state.target = st;
+        ship.state.target = st.clone();
         st = ship.rBody.localPoint(st);
         // Because ship's heading is 90 off rigid body's heading
         st = st.rotateLeft90();
@@ -126,7 +126,7 @@ class AI
     }
     
     function avoid() {
-        
+       
         st = ship.rBody.localPoint(st);
         // Because ship's heading is 90 off rigid body's heading
         st = st.rotateLeft90();

@@ -116,6 +116,7 @@ class State
         pos = Vector.init();
         linVel = Vector.init();
         forward = Vector.init();
+		target = Vector.init();
         radius = 0.0;
         speed = 0.0;
     }
