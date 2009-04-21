@@ -31,67 +31,42 @@
 package ships;
 
 import phx.Vector;
+import phx.Polygon;
+import phx.Body;
 
 import melee.Melee;
-import ai.Steer;
+import ai.AI;
 
 // Autonomous Space Marine - Ooh-rah!
-class Marine extends GameObject
+class Marine extends Ship
 {
 	// The ship this Jarhead deploys from
-	var ship : Ship;
+	var motherShip : Orz;
 	// The enemy to kill
-	var enemy : Ship;
 	
-	var steer : Steer;
-	var maxPredictionTime : Float;
-	
-	var engineForce : Vector;
-	var turnForce : Vector;
-	var rightTurnPoint : Vector;
-	var leftTurnPoint : Vector;
-	
-	public function new(melee:Melee, ship:Ship) {
+	public function new(melee:Melee, motherShip:Orz) {
 		super(melee);
-		props.maxMotion = 2e6;
-		this.ship = ship;
-		enemy = melee.ship2;
-		steer = new Steer(this, melee.objectList);
-		maxPredictionTime = 0.0;
-		engineForce = new Vector(10, 0);
-        turnForce = new Vector(0, 10);
+		props.maxMotion = 5e3;
+		this.motherShip = motherShip;
+		initAI(melee.ship2);
+		engineForce = new Vector(0, 300);
+        turnForce = new Vector(3000, 0);
         rightTurnPoint = new Vector( -0.15, 0);
 		leftTurnPoint = new Vector(0.15, 0);
+		
+		var verts = new Array<Vector>();
+		verts.push(new Vector(0.0,0.25));
+		verts.push(new Vector(0.15,0.0));
+		verts.push(new Vector( -0.15, 0.0));
+		var poly = new Polygon(verts, Vector.init());
+		var localPos = new Vector(0, 1.25);
+		var worldPos = motherShip.turret.worldPoint(localPos);
+		rBody = new Body(worldPos.x, worldPos.y, props);
+		rBody.addShape(poly);
+		world.addBody(rBody);
 	}
 	
-	public override function updateState() {
-	 	state.linVel.set(rBody.v.x, rBody.v.y);
-        state.speed = state.linVel.length();
-        state.pos.x = rBody.x;
-        state.pos.y = rBody.y;
-        state.forward = engineForce.rotate(rBody.a);
-		ai();
+	public override function applyGravity() {
 	}
-	
-	public override function thrust() {
-		var force = engineForce.rotate(rBody.a);
-        rBody.f.x += force.x;
-        rBody.f.y += force.y;
-	}
-	
-	function ai() {
-		steer.update();
-	   	var target = steer.targetEnemy(enemy.state, maxPredictionTime);
-		state.target = target;
-		var v = steer.steerForSeek(target);
-		rBody.f.x = rBody.mass * v.x;
-		rBody.f.y = rBody.mass * v.y;
-	}
-	
-	public override function turnLeft() {
-    }
-
-    public override function turnRight() {
-    }
 	
 }

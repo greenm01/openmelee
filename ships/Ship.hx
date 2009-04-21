@@ -41,6 +41,7 @@ import phx.Polygon;
 import ships.GameObject;
 import utils.Util;
 import melee.Melee;
+import ai.AI;
 
 class Ship extends GameObject
 {
@@ -63,8 +64,8 @@ class Ship extends GameObject
     var maxLinVel : Float;
     var maxAngVel : Float;
 
-	public var marine : GameObject;
-	public var numMarines : Int;
+	var ai : AI;
+	var enemy : Ship;
 
     public function new(melee:Melee) {
         super(melee);
@@ -109,6 +110,17 @@ class Ship extends GameObject
         state.pos.y = rBody.y;
         state.forward = engineForce.rotate(rBody.a);
     }
+	
+	public function initAI(enemy:Ship) {
+		ai = new AI(this, melee.objectList);
+		this.enemy = ai.enemy = enemy;
+	}
+	
+	public override function updateAI() {
+		if(ai != null) {
+			ai.move();
+		}
+	}
 
     public override function destroy() {
         for(s in rBody.shapes) {
@@ -163,5 +175,5 @@ class Ship extends GameObject
 	
 	public function uponDeath() {}
 	public function updateSpecial() {}
-    public function fire() {}
+    public function fire() { }
 }

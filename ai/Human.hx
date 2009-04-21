@@ -69,7 +69,7 @@ class Human
             case 32: // SPACE
                 melee.ship2.destroy();
                 melee.ship2 = new UrQuan(melee);
-                melee.ai.ship = melee.ship2;
+                melee.ship2.initAI(ship);
                 melee.render.ship2 = melee.ship2;
             case 190: // '.' (fire)
                 ship.fire();

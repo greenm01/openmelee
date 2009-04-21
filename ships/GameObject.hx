@@ -92,7 +92,8 @@
     public function applyGravity() {}
 	public function turnRight() {}
 	public function turnLeft() {}
-	public function thrust() {}
+	public function thrust() { }
+	public function updateAI() {}	
     
  }
  

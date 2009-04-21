@@ -47,12 +47,11 @@ class Orz extends Ship
     var offset : Vector;
     var howitzer : Body;
     var primary : GameObject;
-    var turret : Body;
+    public var turret : Body;
 	var tA : Float;
 	
     public function new(melee : Melee) {
         super(melee);
-		numMarines = 0;
 		tA = 0.0;
         health = 20.0;
         scale = 0.025;
@@ -153,22 +152,8 @@ class Orz extends Ship
 		  } else {
 			// Release a marine
 			var marine = new Marine(melee, this);
-			numMarines++;
 			marine.group = group;
-			var verts = new Array<Vector>();
-			verts.push(new Vector(0.0,0.25));
-			verts.push(new Vector(0.15,0.0));
-			verts.push(new Vector( -0.15, 0.0));
-			var poly = new Polygon(verts, Vector.init());
-			var localPos = new Vector(0, 1.25);
-			var worldPos = turret.worldPoint(localPos);
-			marine.rBody = new Body(worldPos.x, worldPos.y, props);
-			marine.rBody.addShape(poly);
-			world.addBody(marine.rBody);
 			melee.objectList.add(marine);
-			if(numMarines == 1) {
-				this.marine = marine;
-			}
 		  }
 	  }
 	  turret.a = rBody.a + Math.PI/2 + tA;

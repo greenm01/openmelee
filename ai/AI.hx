@@ -52,6 +52,7 @@ class AI
 {
 
 	var steer : Steer;
+	public var enemy : Ship;
 	public var ship : GameObject;
 	var maxPredictionTime : Float;
 	var st : Vector;
@@ -68,7 +69,7 @@ class AI
 	}
 	
     // Elementary steering AI 
-	public function move(enemy:Ship) {
+	public function move() {
 
         if(ship == null) return;
         
@@ -87,7 +88,7 @@ class AI
                 ship.rBody.w = 0.0;
             }
             st = steer.targetEnemy(enemy.state, maxPredictionTime);
-            chase(enemy);
+            chase();
             return;
         } else {
             ship.state.turn = false;
@@ -98,7 +99,7 @@ class AI
         throw "error";
     }
     
-    function chase(enemy:Ship) {
+    function chase() {
         
         ship.state.target = st.clone();
         st = ship.rBody.localPoint(st);

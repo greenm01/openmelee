@@ -60,12 +60,10 @@ class Melee
     var allowSleep : Bool;
     public var render : RenderFlash;
 
-    public var ai : AI;
     public var human : Human;
-
+	
     public var ship1 : Ship;
 	public var ship2 : Ship;
-
     var planet : Planet;
 
     var running : Bool;
@@ -88,7 +86,6 @@ class Melee
         running = true;
 
         human = new Human(ship1, this);
-        ai = new AI(ship2, objectList);
         
         objectList.add(planet);
         objectList.add(ship1);
@@ -114,10 +111,8 @@ class Melee
             }
             o.updateState();
             o.applyGravity();
+			o.updateAI();
         }
-
-        // Update AI
-        ai.move(ship1);
     }
 
     private function initWorld() {
@@ -135,6 +130,7 @@ class Melee
         world.useIslands = false;
 		ship2 = new UrQuan(this);
 		ship1 = new Orz(this);
+		ship2.initAI(ship1);
         planet = new Planet(this);
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(this);
