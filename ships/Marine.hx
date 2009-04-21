@@ -53,10 +53,11 @@ class Marine extends GameObject
 	
 	public function new(melee:Melee, ship:Ship) {
 		super(melee);
+		props.maxMotion = 2e6;
 		this.ship = ship;
 		enemy = melee.ship2;
 		steer = new Steer(this, melee.objectList);
-		maxPredictionTime = 0.1;
+		maxPredictionTime = 0.0;
 		engineForce = new Vector(10, 0);
         turnForce = new Vector(0, 10);
         rightTurnPoint = new Vector( -0.15, 0);
@@ -81,9 +82,10 @@ class Marine extends GameObject
 	function ai() {
 		steer.update();
 	   	var target = steer.targetEnemy(enemy.state, maxPredictionTime);
+		state.target = target;
 		var v = steer.steerForSeek(target);
-		rBody.v.x = v.x;
-		rBody.v.y = v.y;
+		rBody.f.x = rBody.mass * v.x;
+		rBody.f.y = rBody.mass * v.y;
 	}
 	
 	public override function turnLeft() {

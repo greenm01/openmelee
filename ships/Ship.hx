@@ -63,6 +63,9 @@ class Ship extends GameObject
     var maxLinVel : Float;
     var maxAngVel : Float;
 
+	public var marine : GameObject;
+	public var numMarines : Int;
+
     public function new(melee:Melee) {
         super(melee);
         shapeList = new FastList<Shape>();

@@ -65,6 +65,7 @@ class Melee
 
     public var ship1 : Ship;
 	public var ship2 : Ship;
+
     var planet : Planet;
 
     var running : Bool;

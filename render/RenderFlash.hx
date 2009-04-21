@@ -83,8 +83,11 @@ class RenderFlash
     public var ship2 : Ship;
     static public var running : Bool;
     
+	var melee : Melee;
+
     public function new(melee:Melee) {
-        
+
+        this.melee = melee;
         scale = Vector.init();
 
         this.root = melee.om.root;
@@ -196,15 +199,18 @@ class RenderFlash
         viewCenter = point1.minus(range.mult(0.5));
 
 		/*
-		var z1 = new Vector(ship2.rBody.x, ship2.rBody.y);
-		var z2 = new Vector(ship2.state.target.x, ship2.state.target.y);
-		z1 = transform(z1);
-		z2 = transform(z2);
+		if(ship1.numMarines > 0) {
+			var marine = ship1.marine;
+			var z1 = new Vector(marine.rBody.x, marine.rBody.y);
+			var z2 = new Vector(marine.state.target.x, marine.state.target.y);
+			z1 = transform(z1);
+			z2 = transform(z2);
 
-		g.lineStyle(shape.lineSize,shape.line);
-		g.moveTo(z2.x, z2.y);
-		g.lineTo(z2.x, z2.y);
-		g.lineTo(z1.x, z1.y);
+			g.lineStyle(shape.lineSize,shape.line);
+			g.moveTo(z2.x, z2.y);
+			g.lineTo(z2.x, z2.y);
+			g.lineTo(z1.x, z1.y);
+		}
 		*/
 
         dist = Util.clamp(dist, 20, 400);
