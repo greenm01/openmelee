@@ -61,6 +61,7 @@ class Steer
         m_maxForce = m_ship.state.maxForce;
         m_forward = m_ship.state.forward;
         m_radius = m_ship.state.radius;
+		m_group = m_ship.group;
     }
 
     // -------------------------------------------------- steering behaviors
@@ -89,7 +90,7 @@ class Steer
     
     // Steer to avoid
     public function collisionThreat(threat:Threat, maxLookAhead:Float = 10.0) {
-
+		
         // 1. Find the target closest to collision
         
         var radius = m_radius;
@@ -101,7 +102,7 @@ class Steer
 
             var target = obstacle.rBody;
             
-            if(target == m_body || target == null) continue;
+            if(target == m_body || target == null || m_group == obstacle.group) continue;
             
             // Calculate the time to collision
             var pos = new Vector(target.x, target.y);
@@ -127,10 +128,10 @@ class Steer
             var eCpa = pos.plus(target.v.mult(timeToCPA));
             relativePos = (eCpa.minus(cpa));
             var dCPA = relativePos.length();
-                
+            
             // No collision
             if (dCPA > radius + obstacle.state.radius) continue;
-
+			
             // Check if it's the closest collision threat
             if (timeToCPA < shortestTime && dCPA < threat.minSeparation) {
                 shortestTime = timeToCPA;
@@ -204,8 +205,8 @@ class Steer
         return myFinal.minus(otherFinal).length();
     }
 
-    public function targetEnemy (quarry:State, maxPredictionTime:Float) {
-
+    public function target(quarry:State, maxPredictionTime:Float) {
+		
         // offset from this to quarry, that distance, unit vector toward quarry
         var offset = quarry.pos.minus(m_position);
         var distance = offset.length();
@@ -335,7 +336,7 @@ class Steer
     var m_forward : Vector;
     var m_radius : Float;
     var m_body : Body;
-	
+	var m_group : Int;
 	var m_speed : Float;
 	var m_maxForce : Float;
     

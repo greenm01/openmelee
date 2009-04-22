@@ -71,23 +71,20 @@ class AI
     // Elementary steering AI 
 	public function move() {
 
-        if(ship == null) return;
-        
-        var go = new GameObject(null);
-        var threat : Threat = {target:go, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
-                                minSeparation:0.0, relativePos:Vector.init(), relativeVel:Vector.init()}; 
-	    steer.update();
+        var threat : Threat = {target:null, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
+                                minSeparation:phx.Const.FMAX, relativePos:Vector.init(), relativeVel:Vector.init()}; 
+	    steer.update(); 
         steer.collisionThreat(threat);
         st = threat.steering;
 		
-		range = (ship.state.pos.minus(enemy.state.pos)).length(); 
+		range = (ship.state.pos.minus(enemy.state.pos)).length();
 		
 		if(st.x == 0.0 && st.y == 0.0) {
             if(avoidLeft || avoidRight) {
                 avoidLeft = avoidRight = false;
                 ship.rBody.w = 0.0;
             }
-            st = steer.targetEnemy(enemy.state, maxPredictionTime);
+            st = steer.target(enemy.state, maxPredictionTime);
             chase();
             return;
         } else {
@@ -95,8 +92,6 @@ class AI
             avoid();
             return;
         }
- 
-        throw "error";
     }
     
     function chase() {

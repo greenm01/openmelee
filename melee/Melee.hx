@@ -45,6 +45,7 @@ import ships.UrQuan;
 import ships.Orz;
 import ships.Planet;
 import ships.Asteroid;
+import ships.Marine;
 
 import ai.AI;
 import ai.Human;
@@ -54,7 +55,7 @@ class Melee
 {
     public var om : OpenMelee;
     
-    static var NUM_ASTROIDS : Int = 10;
+    static var NUM_ASTROIDS : Int = 5;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
@@ -64,6 +65,7 @@ class Melee
 	
     public var ship1 : Ship;
 	public var ship2 : Ship;
+	
     var planet : Planet;
 
     var running : Bool;
@@ -90,25 +92,27 @@ class Melee
         objectList.add(planet);
         objectList.add(ship1);
         objectList.add(ship2);
-        
+		
         render = new RenderFlash(this);
     }
 
      // Main game loop
     public function loop() {
-        
+   
         // Update Physics
         world.step(timeStep, 10);
 
         // Update screen
         render.update();
 
+		var i = 0;
         for(o in objectList) {
             if(o.checkDeath()) {
                 world.removeBody(o.rBody);
                 o = null;
                 continue;
             }
+			i++;
             o.updateState();
             o.applyGravity();
 			o.updateAI();
@@ -116,6 +120,7 @@ class Melee
     }
 
     private function initWorld() {
+		
 	    // Define world boundaries
         var left = 0;
         var top = 0;
@@ -128,10 +133,12 @@ class Melee
         world.gravity = new Vector(0.0,0.0);
         world.contactListener = contactListener;
         world.useIslands = false;
+		
 		ship2 = new UrQuan(this);
 		ship1 = new Orz(this);
 		ship2.initAI(ship1);
         planet = new Planet(this);
+		
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(this);
             objectList.add(asteroid);
@@ -150,24 +157,22 @@ class Melee
             }
         }
         
-        if(go1 == null || go2 == null || (go1.group == go2.group)) {
+		if(go1 == null || go2 == null) {
             return;
         }
-        
-        go1.health -= go2.damage;
-        go2.health -= go1.damage;
-        
-        if(go1.health <= 0) {
-            if(go1.destroy()) {
-                objectList.remove(go1);
-            }
-        }
-        
-        if(go2.health <= 0) {
-            if(go2.destroy()) {
-                objectList.remove(go2);
-            }
-        }
-	    
+		
+		if (go1.group == go2.group) {
+			go1.collect(go2);
+			go2.collect(go1);
+			return;
+		}
+		
+		if (go1.applyDamage(go2.damage)) {
+			objectList.remove(go1);
+		}
+		
+		if (go2.applyDamage(go1.damage)) {
+			objectList.remove(go2);
+		}	    
     }
 }

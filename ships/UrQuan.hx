@@ -48,7 +48,10 @@ class UrQuan extends Ship
     public function new(melee : Melee) {
 
         super(melee);
-        health = 30.0;
+		
+        crew = 42.0;
+		battery = 42.0;
+		
         scale = 0.025;
         offset = new Vector(0, 0);
         engineForce = new Vector(500, 0);
@@ -122,5 +125,11 @@ class UrQuan extends Ship
 	}
 	
 	public override function updateSpecial() {
-	  }
+	}
+	
+	/*
+	public override function updateAI() {
+		
+	}	
+	*/
 }

@@ -30,6 +30,8 @@
  */
 package ships;
 
+import haxe.FastList;
+
 import phx.Body;
 import phx.World;
 import phx.Polygon;
@@ -46,14 +48,20 @@ class Orz extends Ship
     var scale : Float;
     var offset : Vector;
     var howitzer : Body;
-    var primary : GameObject;
+    var primeWep : GameObject;
     public var turret : Body;
 	var tA : Float;
 	
+	public var marines : FastList<Marine>;
+	
     public function new(melee : Melee) {
         super(melee);
+		marines = new FastList<Marine>();
 		tA = 0.0;
-        health = 20.0;
+		
+        crew = 16.0;
+		battery = 20.0;
+		
         scale = 0.025;
         offset = Vector.init();
         engineForce = new Vector(300, 0);
@@ -61,9 +69,10 @@ class Orz extends Ship
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(410.0, 360.0);
+        var pos = new Vector(410.0, 300.0);
         props.maxMotion = 5e3;
         rBody = new Body(pos.x, pos.y, props);
+		rBody.v.x = 0.01;
 		
         // Body
         var body = new Array();
@@ -112,8 +121,8 @@ class Orz extends Ship
       }
       
       public override function fire() {
-          primary = new PrimaryWeapon(this, melee);
-		  primary.group = group;
+          primeWep = new PrimaryWeapon(this, melee);
+		  primeWep.group = group;
           var verts = new Array<Vector>();
           verts.push(new Vector(0.25,0.5));
           verts.push(new Vector(0.25,-0.5));
@@ -127,16 +136,24 @@ class Orz extends Ship
           howitzer.v = new Vector(0.0, 100.0).rotate(turret.a);
           howitzer.addShape(poly);
           world.addBody(howitzer);
-          primary.rBody = howitzer;
-          primary.lifetime = 2.5;
-          primary.damage = 10.0;
-          primary.health = 5.0;
-          melee.objectList.add(primary);
+          primeWep.rBody = howitzer;
+          primeWep.lifetime = 2.5;
+          primeWep.damage = 10.0;
+          primeWep.health = 5.0;
+          melee.objectList.add(primeWep);
       }
 	  
 	public override function uponDeath() {
 		for (s in turret.shapes) {
 			s.groups = 1;
+		}
+	}
+	
+	// Collide with own objects -> collect marines
+	public override function collect(o:GameObject) {
+		if(o != primeWep) {
+			crew++;
+			o.destroy();
 		}
 	}
 	  
@@ -149,11 +166,15 @@ class Orz extends Ship
 			tA += Math.PI / 32;
 		  } else if (turnR) {
 			tA -= Math.PI / 32;
-		  } else {
-			// Release a marine
-			var marine = new Marine(melee, this);
-			marine.group = group;
-			melee.objectList.add(marine);
+		  } else if (primary && crew > 1) {
+				// Release a marine
+				crew--;
+				var marine = new Marine(melee, this);
+				marine.group = group;
+				marine.initAI(melee.ship2);
+				marines.add(marine);
+				melee.objectList.add(marine);
+				fooMarine = marine;
 		  }
 	  }
 	  turret.a = rBody.a + Math.PI/2 + tA;

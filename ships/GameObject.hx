@@ -54,9 +54,7 @@
     public var health : Float;
     
     public function new(melee:Melee) {
-        if(melee != null) {
-            this.world = melee.world;
-        }
+        this.world = melee.world;
 		group = GROUP++;
         this.melee = melee;
         // Default properties
@@ -83,17 +81,26 @@
         }
     }
     
-    public function destroy() {
-        return false;    
-    }
-    
-    public function limitVelocity(){}
+	
+    public function applyDamage(damage:Float) {
+		health -= damage;
+		if (health <= 0) {
+			world.removeBody(rBody);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+    public function limitVelocity() { }
+	function destroy() {}
     public function updateState() {}
     public function applyGravity() {}
 	public function turnRight() {}
 	public function turnLeft() {}
-	public function thrust() { }
+	public function thrust() {}
 	public function updateAI() {}	
+	public function collect(o:GameObject) {}
     
  }
  

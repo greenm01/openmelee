@@ -39,11 +39,5 @@
     public function new(ship:Ship, melee:Melee){
         super(melee);
         this.ship = ship;
-    }    
-    
-    public override function destroy() {
-        world.removeBody(rBody);
-        return true;
-    }
-    
+    }        
 }

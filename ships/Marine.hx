@@ -30,43 +30,96 @@
  */
 package ships;
 
+import flash.geom.Vector3D;
 import phx.Vector;
 import phx.Polygon;
+import phx.Circle;
 import phx.Body;
 
 import melee.Melee;
 import ai.AI;
+import ai.Steer;
 
 // Autonomous Space Marine - Ooh-rah!
 class Marine extends Ship
 {
-	// The ship this Jarhead deploys from
+	// Jarhead's mothership
 	var motherShip : Orz;
 	// The enemy to kill
 	
 	public function new(melee:Melee, motherShip:Orz) {
 		super(melee);
-		props.maxMotion = 5e3;
 		this.motherShip = motherShip;
-		initAI(melee.ship2);
-		engineForce = new Vector(0, 300);
-        turnForce = new Vector(3000, 0);
-        rightTurnPoint = new Vector( -0.15, 0);
-		leftTurnPoint = new Vector(0.15, 0);
+		crew = 5.0;
+		lifetime = 45.0;
+		var scale = 3.0;
+		props.maxMotion = 5e3;
 		
+		/*
 		var verts = new Array<Vector>();
-		verts.push(new Vector(0.0,0.25));
-		verts.push(new Vector(0.15,0.0));
-		verts.push(new Vector( -0.15, 0.0));
+		verts.push(new Vector(0.0,0.25*scale));
+		verts.push(new Vector(0.15*scale,0.0));
+		verts.push(new Vector( -0.15*scale, 0.0));
 		var poly = new Polygon(verts, Vector.init());
+		*/
+		
+		var offset = Vector.init();
+		var poly = new Circle(scale * 0.15, offset);
+		state.radius = scale * 0.15;
+		
 		var localPos = new Vector(0, 1.25);
 		var worldPos = motherShip.turret.worldPoint(localPos);
 		rBody = new Body(worldPos.x, worldPos.y, props);
 		rBody.addShape(poly);
+		rBody.v.set(-motherShip.rBody.v.x, -motherShip.rBody.v.x);
 		world.addBody(rBody);
+		
+		engineForce = (new Vector(10, 0)).mult(rBody.mass);
+        turnForce = (new Vector(0, 10)).mult(rBody.mass);
+        rightTurnPoint = new Vector( -0.15*scale, 0);
+		leftTurnPoint = new Vector(0.15 * scale, 0);
+	}		
+	
+	public override function updateAI() {
+		
+		var time = flash.Lib.getTimer() / 1000;
+		
+		var threat : Threat = {target:null, steering:Vector.init(), distance:0.0, collisionTime:0.0, 
+                                minSeparation:phx.Const.FMAX, relativePos:Vector.init(), relativeVel:Vector.init() }; 
+								
+		var steer = new Steer(this, melee.objectList);
+		steer.update();
+		
+		var maxPredictionTime = 0.5;
+		
+		steer.collisionThreat(threat);
+		var st : Vector = threat.steering;
+		
+		if ((st.x == 0.0 && st.y == 0.0) || threat.target == enemy) {
+			if ((time-birthday) > 0.5 * lifetime) {
+				// Return to motherShip
+				enemy = motherShip;
+			}
+			st = steer.target(enemy.state, maxPredictionTime);
+			state.target = st;
+			//st = steer.steerForSeek(st);
+			st = rBody.localPoint(st);
+			st.normalize();
+			st = st.mult(500.0);
+			rBody.f.x += st.x * rBody.mass;
+			rBody.f.y += st.y * rBody.mass;
+		} else {
+			st = threat.target.state.pos;
+			st = rBody.localPoint(st);
+			st.normalize();
+			st = st.mult(-1000.00);
+			rBody.f.x += st.x * rBody.mass;
+			rBody.f.y += st.y * rBody.mass;
+		}
 	}
 	
 	public override function applyGravity() {
+		
 	}
-	
+
 }

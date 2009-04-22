@@ -46,8 +46,6 @@ import ai.AI;
 class Ship extends GameObject
 {
     
-    var shapeList : FastList<Shape>;
-    
     var engineForce : Vector;
     var turnForce : Vector;
     var leftTurnPoint : Vector;
@@ -58,18 +56,21 @@ class Ship extends GameObject
     public var turnR : Bool;
     public var engines : Bool;
     public var special : Bool;
-	public var primay : Bool;
+	public var primary : Bool;
 	
     var battery : Float;
+	var crew : Float;
+	
     var maxLinVel : Float;
     var maxAngVel : Float;
 
 	var ai : AI;
 	var enemy : Ship;
-
+	
+	public var fooMarine : Ship;
+	
     public function new(melee:Melee) {
         super(melee);
-        shapeList = new FastList<Shape>();
     }
 
     public override function thrust() {
@@ -100,6 +101,9 @@ class Ship extends GameObject
     }
 
     public override function updateState() {
+		if (primary && !special) {
+			fire();
+		}
 		updateSpecial();
         if(engines) {
             thrust();
@@ -122,7 +126,17 @@ class Ship extends GameObject
 		}
 	}
 
-    public override function destroy() {
+	public override function applyDamage(damage:Float) {
+		crew -= damage;
+		if (crew <= 0) {
+			destroy();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+    override function destroy() {
         for(s in rBody.shapes) {
             var debris = new Debris(melee);
             switch(s.type) {
@@ -140,11 +154,10 @@ class Ship extends GameObject
         }
 		uponDeath();
         world.removeBody(rBody);
-        return true;
+        return;
     }
-
+	
     public override function applyGravity() {
-        
         var minRadius = 0.1;
         var maxRadius = 50.0;
         var strength = 100.0;
@@ -175,5 +188,5 @@ class Ship extends GameObject
 	
 	public function uponDeath() {}
 	public function updateSpecial() {}
-    public function fire() { }
+    public function fire() {}
 }

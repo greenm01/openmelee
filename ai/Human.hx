@@ -66,13 +66,8 @@ class Human
 					}
                     ship.turnR = true;
             case 40: // DOWN
-            case 32: // SPACE
-                melee.ship2.destroy();
-                melee.ship2 = new UrQuan(melee);
-                melee.ship2.initAI(ship);
-                melee.render.ship2 = melee.ship2;
             case 190: // '.' (fire)
-                ship.fire();
+				ship.primary = true;
 			case 191: // '/' (special)
 				ship.special = true;
 		}
@@ -87,6 +82,8 @@ class Human
             ship.engines = false;
         } else if (key == 191) {
 			ship.special = false;
+		} else if (key == 190) {
+			ship.primary = false;
 		}
 	}
 }

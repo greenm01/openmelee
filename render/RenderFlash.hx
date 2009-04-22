@@ -195,12 +195,12 @@ class RenderFlash
         var point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
         var range = point1.minus(point2);
         var dist = range.length();
-        zoom = Util.clamp(500/dist, 1.0, 25.0);
+        zoom = Util.clamp(500/(dist+10), 1.0, 25.0);
         viewCenter = point1.minus(range.mult(0.5));
 
 		/*
-		if(ship1.numMarines > 0) {
-			var marine = ship1.marine;
+		if(ship1.fooMarine != null) {
+			var marine = ship1.fooMarine;
 			var z1 = new Vector(marine.rBody.x, marine.rBody.y);
 			var z2 = new Vector(marine.state.target.x, marine.state.target.y);
 			z1 = transform(z1);
@@ -211,8 +211,8 @@ class RenderFlash
 			g.lineTo(z2.x, z2.y);
 			g.lineTo(z1.x, z1.y);
 		}*/
-
-        dist = Util.clamp(dist, 20, 400);
+		
+        dist = Util.clamp(dist, 50, 400);
         var left = (viewCenter.x - dist);
         var right = (viewCenter.x + dist);
         var bottom = (viewCenter.y + dist);
