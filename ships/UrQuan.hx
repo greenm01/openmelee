@@ -54,14 +54,13 @@ class UrQuan extends Ship
 		
         scale = 0.025;
         offset = new Vector(0, 0);
-        engineForce = new Vector(500, 0);
-        turnForce = new Vector(0, 4000);
+        engineForce = new Vector(800, 0);
+        turnForce = new Vector(0, 3000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(410.0, 250);
-        props.maxMotion = 2e3;
-        rBody = new Body(pos.x, pos.y, props);
+        var pos = new Vector(410.0, 150.0);
+        rBody = new Body(pos.x, pos.y);
         rBody.a = Math.PI;
 		
         // Head
@@ -110,7 +109,6 @@ class UrQuan extends Ship
         
         
         // Bottom Wing
-        
         var bWing = new Array();
         bWing[0]=(new Vector(-70 * scale, -49 * scale));
         bWing[1]=(new Vector(28 * scale, -49 * scale));
@@ -119,6 +117,8 @@ class UrQuan extends Ship
         rBody.addShape(new Polygon(bWing, offset));
         
         world.addBody(rBody);
+		calcRadius();
+		// Add margin for collision avoidance
     }
 	
 	public override function uponDeath() {  
@@ -132,4 +132,6 @@ class UrQuan extends Ship
 		
 	}	
 	*/
+	
+
 }

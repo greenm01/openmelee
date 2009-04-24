@@ -27,7 +27,6 @@ package phx;
 class Circle extends Shape {
 
 	public var c:Vector;
-	public var r:Float;
 	public var tC:Vector;
 
 	public function new( radius, offset : Vector, ?material ) {

@@ -30,6 +30,7 @@
  */
 package ships;
 
+import flash.geom.Vector3D;
 import haxe.FastList;
 
 import phx.Vector;
@@ -59,7 +60,7 @@ class Ship extends GameObject
 	public var primary : Bool;
 	
     var battery : Float;
-	var crew : Float;
+	public var crew : Float;
 	
     var maxLinVel : Float;
     var maxAngVel : Float;
@@ -67,10 +68,10 @@ class Ship extends GameObject
 	var ai : AI;
 	var enemy : Ship;
 	
-	public var fooMarine : Ship;
-	
     public function new(melee:Melee) {
         super(melee);
+		maxLinVel = 30.0;
+		maxAngVel = 2.0;
     }
 
     public override function thrust() {
@@ -92,11 +93,11 @@ class Ship extends GameObject
     }
 
     public override function limitVelocity() {
-        var vx = rBody.x;
-        var vy = rBody.y;
+        var vx = rBody.v.x;
+        var vy = rBody.v.y;
         var omega = rBody.w;
-        rBody.x = Util.clamp(vx, -maxLinVel, maxLinVel);
-        rBody.y = Util.clamp(vy, -maxLinVel, maxLinVel);
+        rBody.v.x = Util.clamp(vx, -maxLinVel, maxLinVel);
+        rBody.v.y = Util.clamp(vy, -maxLinVel, maxLinVel);
         rBody.w = Util.clamp(omega, -maxAngVel, maxAngVel);
     }
 
@@ -154,6 +155,7 @@ class Ship extends GameObject
         }
 		uponDeath();
         world.removeBody(rBody);
+		dead = true;
         return;
     }
 	

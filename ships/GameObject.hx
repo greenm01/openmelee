@@ -52,7 +52,8 @@
     public var lifetime : Float;
     public var damage : Float;
     public var health : Float;
-    
+    public var dead : Bool;
+	
     public function new(melee:Melee) {
         this.world = melee.world;
 		group = GROUP++;
@@ -69,6 +70,8 @@
         lifetime = phx.Const.FMAX;
         damage = 5.0;
         health = phx.Const.FMAX;
+		dead = false;
+		radius = 0.0;
     }
     
     public inline function checkDeath() {
@@ -90,6 +93,24 @@
 		} else {
 			return false;
 		}
+	}
+	
+	function calcRadius() {
+		for (s in rBody.shapes) {
+			if (s.type == phx.Shape.CIRCLE) {
+				if (s.r > radius) radius = s.r;
+			} else {
+				// Polygon
+				var poly : phx.Polygon = cast(s);
+				var v = poly.verts;
+				while (v != null) {
+					var l = v.length();
+					if (l > radius) radius = l;
+					v = v.next;
+				}
+			}
+		}
+		state.radius = radius;
 	}
 	
     public function limitVelocity() { }

@@ -30,6 +30,7 @@
  */
 package ai;
 
+import flash.geom.Vector3D;
 import haxe.FastList;
 
 import phx.Vector;
@@ -89,46 +90,46 @@ class Steer
     }
     
     // Steer to avoid
-    public function collisionThreat(threat:Threat, maxLookAhead:Float = 10.0) {
+    public function collisionThreat(threat:Threat, maxLookAhead:Float = 0.15) : Vector {
 		
         // 1. Find the target closest to collision
         
         var radius = m_radius;
-        var rad = 0.0;
         var shortestTime = 1e99;
     
         // Loop through each target
         for(obstacle in objectList) {
 
-            var target = obstacle.rBody;
+            var target = obstacle.state;
             
-            if(target == m_body || target == null || m_group == obstacle.group) continue;
+            if(obstacle.rBody == m_body || obstacle.rBody == null || m_group == obstacle.group) {
+				continue;
+			}
             
             // Calculate the time to collision
-            var pos = new Vector(target.x, target.y);
+            var pos = target.pos;
             var relativePos = pos.minus(m_position);
-            var relativeVel = m_velocity.minus(target.v);
+            var relativeVel = m_velocity.minus(target.linVel);
             var relativeSpeed = relativeVel.length();
             // Time to closest point of approach
             var timeToCPA = relativePos.dot(relativeVel) /
                                     (relativeSpeed * relativeSpeed);
-                            
+									
             // Threat is separating 
-            if(timeToCPA < 0) {
+            if (timeToCPA < 0) {
                 continue;
-            } 
-            
+            }
+			
             var distance = relativePos.length();
-            
             // Clamp look ahead time
             timeToCPA = Util.clamp(timeToCPA, 0, maxLookAhead);
             
             // Calculate closest point of approach
             var cpa = m_position.plus(m_velocity.mult(timeToCPA));
-            var eCpa = pos.plus(target.v.mult(timeToCPA));
+            var eCpa = pos.plus(target.linVel.mult(timeToCPA));
             relativePos = (eCpa.minus(cpa));
             var dCPA = relativePos.length();
-            
+			
             // No collision
             if (dCPA > radius + obstacle.state.radius) continue;
 			
@@ -140,14 +141,15 @@ class Steer
                 threat.relativePos = relativePos;
                 threat.relativeVel = relativeVel;
                 threat.minSeparation = dCPA;
-                rad = obstacle.state.radius;
             }
         }
         
         // 2. Calculate the steering
 
         // If we have no target, then exit
-        if(threat.target == null) return;
+        if (threat.target == null) {
+			return null;
+		}
         
         // If we’re going to hit exactly, or if we’re already
         // colliding, then do the steering based on current
@@ -157,6 +159,8 @@ class Steer
         //} else {
             // Otherwise calculate the future relative position:
             threat.steering = threat.relativePos; 
+			return threat.relativePos;
+			//trace(threat.steering.x + "," + threat.steering.y);
         //}
     }
 	

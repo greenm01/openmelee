@@ -23,6 +23,7 @@
  * DAMAGE.
  */
 package phx;
+import flash.geom.Vector3D;
 
 class Shape {
 
@@ -44,7 +45,9 @@ class Shape {
 
 	public var material : Material;
 	public var area : Float;
-
+	// Radius
+	public var r:Float;
+	
 	public var groups : Int;
 
 	function new( type : Int, material : Material ) {

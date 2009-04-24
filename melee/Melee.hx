@@ -55,7 +55,7 @@ class Melee
 {
     public var om : OpenMelee;
     
-    static var NUM_ASTROIDS : Int = 5;
+    static var NUM_ASTROIDS : Int = 3;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
@@ -99,24 +99,23 @@ class Melee
      // Main game loop
     public function loop() {
    
-        // Update Physics
-        world.step(timeStep, 10);
-
-        // Update screen
-        render.update();
-
-		var i = 0;
-        for(o in objectList) {
+		for(o in objectList) {
             if(o.checkDeath()) {
                 world.removeBody(o.rBody);
                 o = null;
                 continue;
             }
-			i++;
+			o.limitVelocity();
             o.updateState();
             o.applyGravity();
 			o.updateAI();
         }
+		
+        // Update Physics
+        world.step(timeStep, 10);
+        // Update screen
+        render.update();
+
     }
 
     private function initWorld() {

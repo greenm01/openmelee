@@ -210,7 +210,8 @@ class RenderFlash
 			g.moveTo(z2.x, z2.y);
 			g.lineTo(z2.x, z2.y);
 			g.lineTo(z1.x, z1.y);
-		}*/
+		}
+		*/
 		
         dist = Util.clamp(dist, 50, 400);
         var left = (viewCenter.x - dist);

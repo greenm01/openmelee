@@ -30,8 +30,6 @@ class Segment extends Shape {
 	public var b : Vector;
 	public var n : Vector;
 
-	public var r : Float;
-
 	public var tA : Vector;
 	public var tB : Vector;
 	public var tN : Vector;

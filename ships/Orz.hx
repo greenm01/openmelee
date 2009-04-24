@@ -53,8 +53,10 @@ class Orz extends Ship
 	var tA : Float;
 	
 	public var marines : FastList<Marine>;
-	
+	public var numMarines : Int;
+
     public function new(melee : Melee) {
+		numMarines = 0;
         super(melee);
 		marines = new FastList<Marine>();
 		tA = 0.0;
@@ -64,14 +66,13 @@ class Orz extends Ship
 		
         scale = 0.025;
         offset = Vector.init();
-        engineForce = new Vector(300, 0);
-        turnForce = new Vector(0, 3000);
+        engineForce = new Vector(1000, 0);
+        turnForce = new Vector(0, 5000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
         var pos = new Vector(410.0, 300.0);
-        props.maxMotion = 5e3;
-        rBody = new Body(pos.x, pos.y, props);
+        rBody = new Body(pos.x, pos.y);
 		rBody.v.x = 0.01;
 		
         // Body
@@ -118,6 +119,7 @@ class Orz extends Ship
 		
 		world.addBody(turret);
         world.addBody(rBody);
+		calcRadius();
       }
       
       public override function fire() {
@@ -170,11 +172,10 @@ class Orz extends Ship
 				// Release a marine
 				crew--;
 				var marine = new Marine(melee, this);
-				marine.group = group;
+				numMarines++;
 				marine.initAI(melee.ship2);
 				marines.add(marine);
 				melee.objectList.add(marine);
-				fooMarine = marine;
 		  }
 	  }
 	  turret.a = rBody.a + Math.PI/2 + tA;
