@@ -59,7 +59,7 @@ class UrQuan extends Ship
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(410.0, 150.0);
+        var pos = new Vector(410.0, 200.0);
         rBody = new Body(pos.x, pos.y);
         rBody.a = Math.PI;
 		
@@ -121,17 +121,17 @@ class UrQuan extends Ship
 		// Add margin for collision avoidance
     }
 	
-	public override function uponDeath() {  
-	}
-	
-	public override function updateSpecial() {
-	}
-	
-	/*
-	public override function updateAI() {
-		
-	}	
-	*/
+    public override function uponDeath() {  
+    }
+    
+    public override function updateSpecial() {
+    }
+    
+    /*
+    public override function updateAI() {
+            
+    }	
+    */
 	
 
 }

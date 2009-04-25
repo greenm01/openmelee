@@ -44,103 +44,110 @@ import utils.Util;
 // Autonomous Space Marine - Ooh-rah!
 class Marine extends Ship
 {
-	// Jarhead's mothership
-	var motherShip : Orz;
-	// The enemy to kill
-	var steer : Steer;
-	
-	public function new(melee:Melee, motherShip:Orz) {
-		super(melee);
-		maxLinVel = 12.0;
-		maxAngVel = 0.0;
-		group = motherShip.group;
-		steer = new Steer(this, melee.objectList);
-		this.motherShip = motherShip;
-		crew = 5.0;
-		lifetime = 60.0;
-		var scale = 3.0;
-		
-		/*
-		var verts = new Array<Vector>();
-		verts.push(new Vector(0.0,0.25*scale));
-		verts.push(new Vector(0.15*scale,0.0));
-		verts.push(new Vector( -0.15*scale, 0.0));
-		var poly = new Polygon(verts, Vector.init());
-		*/
-		
-		var offset = Vector.init();
-		var poly = new Circle(scale * 0.15, offset);
-		
-		var localPos = new Vector(0, 1.25);
-		var worldPos = motherShip.turret.worldPoint(localPos);
-		rBody = new Body(worldPos.x, worldPos.y, props);
-		rBody.v.x = -motherShip.rBody.v.x;
-		rBody.v.y = -motherShip.rBody.v.y;
-		rBody.addShape(poly);
-		world.addBody(rBody);
-		
-		engineForce = (new Vector(10, 0)).mult(rBody.mass);
+    // Jarhead's mothership
+    var motherShip : Orz;
+    // The enemy to kill
+    var steer : Steer;
+    
+    public function new(melee:Melee, motherShip:Orz) {
+        super(melee);
+        maxLinVel = 12.0;
+        maxAngVel = 0.0;
+        group = motherShip.group;
+        steer = new Steer(this, melee.objectList);
+        this.motherShip = motherShip;
+        crew = 5.0;
+        lifetime = 60.0;
+        var scale = 3.0;
+        
+        /*
+        var verts = new Array<Vector>();
+        verts.push(new Vector(0.0,0.25*scale));
+        verts.push(new Vector(0.15*scale,0.0));
+        verts.push(new Vector( -0.15*scale, 0.0));
+        var poly = new Polygon(verts, Vector.init());
+        */
+        
+        var offset = Vector.init();
+        var poly = new Circle(scale * 0.15, offset);
+        
+        var localPos = new Vector(0, 1.25);
+        var worldPos = motherShip.turret.worldPoint(localPos);
+        rBody = new Body(worldPos.x, worldPos.y, props);
+        rBody.v.x = -motherShip.rBody.v.x;
+        rBody.v.y = -motherShip.rBody.v.y;
+        rBody.addShape(poly);
+        world.addBody(rBody);
+        
+        engineForce = (new Vector(10, 0)).mult(rBody.mass);
         turnForce = (new Vector(0, 10)).mult(rBody.mass);
         rightTurnPoint = new Vector( -0.15*scale, 0);
-		leftTurnPoint = new Vector(0.15 * scale, 0);
-		
-		calcRadius();
-		// Add some margin
-		radius += 10.0;
-	}		
-	
-	public override function updateAI() {
+        leftTurnPoint = new Vector(0.15 * scale, 0);
+        
+        calcRadius();
+        // Add some margin
+        radius += 2.0;
+    }        
+    
+    public override function updateAI() {
 
-		if(enemy == null) return;
-		
-		var time = flash.Lib.getTimer() / 1000;
-		var zeroVec = Vector.init();
-		
-		var threat : Threat = {target:null, steering:zeroVec, distance:0.0, collisionTime:0.0, 
+        if(enemy == null) return;
+        
+        var time = flash.Lib.getTimer() / 1000;
+        var zeroVec = Vector.init();
+        
+        var threat : Threat = {target:null, steering:zeroVec, distance:0.0, collisionTime:0.0, 
                                 minSeparation:phx.Const.FMAX, relativePos:zeroVec, relativeVel:zeroVec};
-		steer.update();
-		
-		var maxPredictionTime = 0.05;
-		var st = steer.collisionThreat(threat, 10.0);
-	
-		if (st == null || threat.target == enemy) {
-			if ((time-birthday) > 0.5 * lifetime || enemy.dead) {
-				// Return to motherShip
-				enemy = motherShip;
-			}
-			st = steer.target(enemy.state, maxPredictionTime);
-			state.target = st;
-			st = rBody.localPoint(st);
-			st.normalize();
-			st = st.mult(500.0);
-			rBody.f.x += st.x;
-			rBody.f.y += st.y;
-		} else {
-			// compute avoidance steering force: take offset from obstacle to me,
-			// take the component of that which is lateral (perpendicular to my
-			// forward direction), set length to maxForce, add a bit of forward
-			// component (we never want to slow down)
-			var offset = state.pos.minus(threat.target.state.pos);
-			var fwd = state.linVel.clone(); fwd.normalize();
-			var avoidance = Util.perpendicularComponent(offset, fwd);
-			avoidance.normalize();
-			var maxForce = 1000.0;
-			avoidance = avoidance.mult(maxForce);
-			avoidance.x += fwd.x * maxForce * 0.75;
-			avoidance.y += fwd.y * maxForce * 0.75;
-			rBody.f.x = avoidance.x;
-			rBody.f.y = avoidance.y;
-		}
-	}
+        steer.update();
+        
+        var maxPredictionTime = 0.05;
+        var st = steer.collisionThreat(threat, 10.0);
+    
+        var range = (state.pos.minus(melee.planet.state.pos)).length(); 
+        var margin = melee.planet.radius + radius;
+        
+        if ((st == null || threat.target == enemy) && range > margin) {
+            if ((time-birthday) > 0.5 * lifetime || enemy.dead) {
+                // Return to motherShip
+                enemy = motherShip;
+            }
+            st = steer.target(enemy.state, maxPredictionTime);
+            state.target = st;
+            st = rBody.localPoint(st);
+            st.normalize();
+            st = st.mult(200.0);
+            rBody.f.x += st.x;
+            rBody.f.y += st.y;
+        } else if(threat.target != null) {
+            // compute avoidance steering force: take offset from obstacle to me,
+            // take the component of that which is lateral (perpendicular to my
+            // forward direction), set length to maxForce, add a bit of forward
+            // component (we never want to slow down)
+            var offset = state.pos.minus(threat.target.state.pos);
+            var fwd = state.linVel.clone(); fwd.normalize();
+            var avoidance = Util.perpendicularComponent(offset, fwd);
+            avoidance.normalize();
+            var maxForce = 200.0;
+            avoidance = avoidance.mult(maxForce);
+            avoidance.x += fwd.x * maxForce * 0.75;
+            avoidance.y += fwd.y * maxForce * 0.75;
+            
+            // Make sure we apply force in correct direction
+            if(offset.cross(avoidance) < 0.0) {
+                avoidance = avoidance.rotateLeft90();
+            }
+            
+            rBody.f.x += avoidance.x;
+            rBody.f.y += avoidance.y;
+        }
+    }
 
-	public override function uponDeath() {
-		motherShip.numMarines--;
-	}
-	
-	/*
-	public override function applyGravity() {
-		
-	}
-	*/
+    public override function uponDeath() {
+        motherShip.numMarines--;
+    }
+    
+    public override function applyGravity() {
+        
+    }
 
 }

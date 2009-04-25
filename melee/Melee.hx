@@ -99,20 +99,20 @@ class Melee
      // Main game loop
     public function loop() {
    
-		for(o in objectList) {
+        for(o in objectList) {
             if(o.checkDeath()) {
                 world.removeBody(o.rBody);
-                o = null;
+                objectList.remove(o);
                 continue;
             }
-			o.limitVelocity();
+            o.limitVelocity();
             o.updateState();
             o.applyGravity();
-			o.updateAI();
+            o.updateAI();
         }
 		
         // Update Physics
-        world.step(timeStep, 10);
+        world.step(timeStep, 20);
         // Update screen
         render.update();
 
@@ -166,12 +166,17 @@ class Melee
 			return;
 		}
 		
-		if (go1.applyDamage(go2.damage)) {
+		var damage1 = go1.damage;
+		var damage2 = go2.damage;
+		
+		if (go1.applyDamage(damage2)) {
 			objectList.remove(go1);
+			go1 = null;
 		}
 		
-		if (go2.applyDamage(go1.damage)) {
+		if (go2.applyDamage(damage1)) {
 			objectList.remove(go2);
+			go2 = null;
 		}	    
     }
 }

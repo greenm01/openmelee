@@ -191,8 +191,21 @@ class RenderFlash
    
     function draw() {
 	
-		var point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
-        var point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
+		var point1 : Vector;
+        var point2 : Vector;
+		
+		if(ship1 == null) {
+			point1 = melee.planet.state.pos;
+		} else {
+			point1 = new Vector(ship1.rBody.x, ship1.rBody.y);
+		}
+	
+		if(ship2 == null) {
+			point2 = melee.planet.state.pos;
+		} else {
+			point2 = new Vector(ship2.rBody.x, ship2.rBody.y);
+		}
+			
         var range = point1.minus(point2);
         var dist = range.length();
         zoom = Util.clamp(500/(dist+10), 1.0, 25.0);
