@@ -51,7 +51,7 @@ class Marine extends Ship
 	
 	public function new(melee:Melee, motherShip:Orz) {
 		super(melee);
-		maxLinVel = 10.0;
+		maxLinVel = 12.0;
 		maxAngVel = 0.0;
 		group = motherShip.group;
 		steer = new Steer(this, melee.objectList);
@@ -74,6 +74,8 @@ class Marine extends Ship
 		var localPos = new Vector(0, 1.25);
 		var worldPos = motherShip.turret.worldPoint(localPos);
 		rBody = new Body(worldPos.x, worldPos.y, props);
+		rBody.v.x = -motherShip.rBody.v.x;
+		rBody.v.y = -motherShip.rBody.v.y;
 		rBody.addShape(poly);
 		world.addBody(rBody);
 		
@@ -84,7 +86,7 @@ class Marine extends Ship
 		
 		calcRadius();
 		// Add some margin
-		radius += 2.0;
+		radius += 10.0;
 	}		
 	
 	public override function updateAI() {
@@ -122,12 +124,12 @@ class Marine extends Ship
 			var fwd = state.linVel.clone(); fwd.normalize();
 			var avoidance = Util.perpendicularComponent(offset, fwd);
 			avoidance.normalize();
-			var maxForce = 800.0;
+			var maxForce = 1000.0;
 			avoidance = avoidance.mult(maxForce);
 			avoidance.x += fwd.x * maxForce * 0.75;
 			avoidance.y += fwd.y * maxForce * 0.75;
-			rBody.f.x += avoidance.x;
-			rBody.f.y += avoidance.y;
+			rBody.f.x = avoidance.x;
+			rBody.f.y = avoidance.y;
 		}
 	}
 
@@ -135,8 +137,10 @@ class Marine extends Ship
 		motherShip.numMarines--;
 	}
 	
+	/*
 	public override function applyGravity() {
 		
 	}
+	*/
 
 }
