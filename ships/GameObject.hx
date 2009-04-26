@@ -66,7 +66,7 @@
         var maxDist = 0.05;
         props = new Properties(linearFriction, angularFriction, biasCoef, maxMotion, maxDist );
         state = new State();
-        birthday = flash.Lib.getTimer() / 1000;
+        birthday = flash.Lib.getTimer() * 0.001;
         lifetime = phx.Const.FMAX;
         damage = 5.0;
         health = phx.Const.FMAX;
@@ -75,7 +75,7 @@
     }
     
     public inline function checkDeath() {
-        var time = flash.Lib.getTimer() / 1000;
+        var time = flash.Lib.getTimer() * 0.001;
         var dt = time - birthday;
         if(dt >= lifetime) {
             return true;

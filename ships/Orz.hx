@@ -61,6 +61,9 @@ class Orz extends Ship
 		marines = new FastList<Marine>();
 		tA = 0.0;
 		
+		pDelay = 0.5;
+		sDelay = 0.5;
+
         crew = 16.0;
 		battery = 20.0;
 		
@@ -122,7 +125,8 @@ class Orz extends Ship
 		calcRadius();
       }
       
-      public override function fire() {
+	public override function fire() {
+		if(!primaryTime()) return;	
           primeWep = new PrimaryWeapon(this, melee);
 		  primeWep.group = group;
           var verts = new Array<Vector>();

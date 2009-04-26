@@ -59,7 +59,17 @@ class Ship extends GameObject
     public var special : Bool;
 	public var primary : Bool;
 	
-    var battery : Float;
+	// Timing parameters (seconds)
+    // Primary delay
+	var pDelay : Float;
+	// Secondary delay
+	var sDelay : Float;
+	// Primary time
+	var pTime : Float;
+	// Secondary time
+	var sTime : Float;
+
+	var battery : Float;
 	public var crew : Float;
 	
     var maxLinVel : Float;
@@ -72,6 +82,7 @@ class Ship extends GameObject
         super(melee);
 		maxLinVel = 30.0;
 		maxAngVel = 2.0;
+		pTime = 0.0;
     }
 
     public override function thrust() {
@@ -187,6 +198,17 @@ class Ship extends GameObject
         rBody.f.y += ry * ratio * strength;
         
     }
+
+	inline function primaryTime() {
+		var time = flash.Lib.getTimer() * 0.001;
+		var dt = time - pTime;
+		if(dt >= pDelay) {
+			pTime = time;
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public function uponDeath() {}
 	public function updateSpecial() {}

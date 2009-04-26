@@ -45,10 +45,15 @@ class UrQuan extends Ship
     var scale : Float;
     var offset : Vector;
 
+	var primeWep : GameObject;
+
     public function new(melee : Melee) {
 
         super(melee);
 		
+		pDelay = 0.5;
+		sDelay = 0.5;
+
         crew = 42.0;
 		battery = 42.0;
 		
@@ -61,7 +66,7 @@ class UrQuan extends Ship
 
         var pos = new Vector(410.0, 200.0);
         rBody = new Body(pos.x, pos.y);
-        rBody.a = Math.PI;
+        rBody.a = -Math.PI;
 		
         // Head
         var head = new Array();
@@ -120,18 +125,36 @@ class UrQuan extends Ship
 		calcRadius();
 		// Add margin for collision avoidance
     }
+
+	 public override function fire() {
+		if(!primaryTime()) return;	
+          primeWep = new PrimaryWeapon(this, melee);
+		  primeWep.group = group;
+          var verts = new Array<Vector>();
+          verts.push(new Vector(0.25,0.5));
+          verts.push(new Vector(0.25,-0.5));
+          verts.push(new Vector(-0.25,-0.5));
+          verts.push(new Vector(-0.25,0.5));
+          var poly = new Polygon(verts, Vector.init());
+          var localPos = new Vector(1.5, -0.25);
+          var worldPos = rBody.worldPoint(localPos);
+          var howitzer = new Body(worldPos.x, worldPos.y);
+		  howitzer.a = rBody.a + Math.PI/2;
+          howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
+          howitzer.addShape(poly);
+          world.addBody(howitzer);
+          primeWep.rBody = howitzer;
+          primeWep.lifetime = 2.5;
+          primeWep.damage = 10.0;
+          primeWep.health = 5.0;
+          melee.objectList.add(primeWep);
+      }
+
 	
     public override function uponDeath() {  
     }
     
     public override function updateSpecial() {
     }
-    
-    /*
-    public override function updateAI() {
-            
-    }	
-    */
-	
 
 }

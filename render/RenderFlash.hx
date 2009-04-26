@@ -120,6 +120,20 @@ class RenderFlash
 		contact = { lineSize : 1., line : null, fill : null, alpha : 1. };
 		sleepingContact = { lineSize : 1., line : null, fill : null, alpha : 1. };
 		contactSize = { lineSize : 1., line : null, fill : null, alpha : 1. };
+
+		/*
+		var test = new flash.display.Shape();
+		test.graphics.lineStyle(1);
+		test.graphics.beginFill(0x0000FF, 0.5);
+		test.graphics.drawRect(0, 0, 150, 800);
+		test.x = 500;
+		test.y = 0;
+		stage.addChild(test);
+		var gg = test.graphics;
+		begin(shape);
+		gg.drawCircle(70,70,5);
+		end(shape);
+		*/
 		
     }
     
