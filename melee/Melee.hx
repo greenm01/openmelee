@@ -30,6 +30,7 @@
  */
 package melee;
 
+import flash.display.Sprite;
 import haxe.FastList;
 
 import phx.col.AABB;
@@ -49,20 +50,17 @@ import ships.Marine;
 
 import ai.AI;
 import ai.Human;
-import render.RenderFlash;
+import render.RenderMelee;
 
-class Melee 
+class Melee extends Sprite
 {
-    public var om : OpenMelee;
-    
     static var NUM_ASTROIDS : Int = 3;
     public var objectList : FastList<GameObject>;
     var timeStep : Float;
     var allowSleep : Bool;
-    public var render : RenderFlash;
+    public var render : RenderMelee;
 
     public var human : Human;
-	
     public var ship1 : Ship;
 	public var ship2 : Ship;
 	
@@ -75,9 +73,8 @@ class Melee
     
     var contactListener : ContactListener;
     
-    public function new(om:OpenMelee) {
-        
-        this.om = om;
+    public function init() {
+		
         contactListener = new ContactListener();
         contactListener.melee = this;
         
@@ -93,7 +90,7 @@ class Melee
         objectList.add(ship1);
         objectList.add(ship2);
 		
-        render = new RenderFlash(this);
+        render = new RenderMelee(this);
     }
 
      // Main game loop

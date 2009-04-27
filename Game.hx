@@ -37,10 +37,9 @@ class Game
     
     public function new(om:OpenMelee) {
         this.om = om;
-        melee = new Melee(om);
+        melee = new Melee();
+		om.root.addChild(melee);
+		melee.init();
     }
-    
-    public function run() {
-        //melee.run();
-    }
+
 }

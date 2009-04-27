@@ -54,13 +54,10 @@ typedef CX = {
 	public var alpha : Float;
 }
 
-class RenderFlash
+class RenderMelee
 {
-
-    var root : MovieClip;
 	var tf : TextField;
 	var g : Graphics;
-	var defaultFrameRate : Float;
 	
 	public var shape : CX;
 	public var staticShape : CX;
@@ -89,17 +86,12 @@ class RenderFlash
 
         this.melee = melee;
         scale = Vector.init();
-
-        this.root = melee.om.root;
-        g = root.graphics;
-        defaultFrameRate = root.stage.frameRate;
-
+		
+        g = melee.graphics;
         drawCircleRotation = false;
 		
-		var stage = root.stage;
-		stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+		var stage = melee.stage;
 		stage.addEventListener(flash.events.Event.ENTER_FRAME,function(_) melee.loop());
-		//stage.addEventListener(flash.events.MouseEvent.MOUSE_MOVE,function(_) mouseMove(root.mouseX, root.mouseY));
 		stage.addEventListener(flash.events.KeyboardEvent.KEY_DOWN,function(e:flash.events.KeyboardEvent) melee.human.onKeyDown(e.keyCode));
 		stage.addEventListener(flash.events.KeyboardEvent.KEY_UP,function(e:flash.events.KeyboardEvent) melee.human.onKeyUp(e.keyCode));
 		
