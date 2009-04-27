@@ -31,7 +31,6 @@
 package render;
 
 import flash.display.MovieClip;
-import flash.text.TextField;
 import flash.display.Graphics;
 
 import phx.World;
@@ -56,7 +55,7 @@ typedef CX = {
 
 class RenderMelee
 {
-	var tf : TextField;
+	
 	var g : Graphics;
 	
 	public var shape : CX;

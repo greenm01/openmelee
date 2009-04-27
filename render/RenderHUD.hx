@@ -30,12 +30,32 @@
  */
 package render;
 
+import flash.display.MovieClip;
+import flash.text.TextField;
+import flash.display.Graphics;
+
+import hud.HUD;
+
 class RenderHUD 
 {
 
-	public function new() 
+	var hud : HUD;
+	var tf : TextField;
+	var g : Graphics;
+	
+	public function new(hud:HUD) 
 	{
+		this.hud = hud;
+		this.g = hud.graphics;
 		
+		var stage = hud.stage;
+		stage.addEventListener(flash.events.Event.ENTER_FRAME, function(_) hud.loop());
+		
+		g.beginFill(0x707070, 1);
+		g.drawRect(500, 0, 150, 500);
+	}
+	
+	public function draw() {
 	}
 	
 }

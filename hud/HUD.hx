@@ -32,12 +32,21 @@ package hud;
 
 import flash.display.Sprite;
 
+import render.RenderHUD;
+
 class HUD extends Sprite
 {
 
-	public function new() 
+	var render : RenderHUD;
+	
+	public function init() 
 	{
-		
+		render = new RenderHUD(this);
+		render.draw();
+	}
+	
+	public function loop() {
+		//render.draw();
 	}
 	
 }

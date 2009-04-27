@@ -29,17 +29,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 import melee.Melee;
+import hud.HUD;
 
 class Game
 {
     var melee : Melee;
     var om : OpenMelee;
-    
+    var hud : HUD;
+	
     public function new(om:OpenMelee) {
         this.om = om;
         melee = new Melee();
+		hud = new HUD();
 		om.root.addChild(melee);
+		om.root.addChild(hud);
 		melee.init();
+		hud.init();
     }
 
 }
