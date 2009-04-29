@@ -31,12 +31,13 @@
 package render;
 
 import flash.display.MovieClip;
+import flash.display.Shape;
 import flash.text.TextField;
 import flash.display.Graphics;
-import flash.display.Loader;
-import flash.display.Bitmap;
+
 import flash.events.Event;
-import flash.net.URLRequest;
+
+import flash.display.Bitmap;
 
 import hud.HUD;
 
@@ -46,7 +47,6 @@ class RenderHUD
 	var hud : HUD;
 	var tf : TextField;
 	var g : Graphics;
-	var loader : Loader;
 	
 	public function new(hud:HUD) 
 	{
@@ -56,11 +56,11 @@ class RenderHUD
 		var stage = hud.stage;
 		stage.addEventListener(flash.events.Event.ENTER_FRAME, function(_) hud.loop());
 		
+		g.lineStyle(1.0, 0x999999);
 		g.beginFill(0x333333, 1);
 		g.drawRect(500, 0, 150, 500);
 		g.endFill();
-		
-		g.lineStyle(1.0, 0x999999);
+
 		g.moveTo(503, 3);
 		g.lineTo(503, 3);
 		g.lineTo(647, 3);
@@ -71,23 +71,8 @@ class RenderHUD
 		g.moveTo(503, 247);
 		g.lineTo(503, 247);
 		g.lineTo(647, 247);
-		
-		/*
-		loader = new Loader();
-		loader.contentLoaderInfo.addEventListener(Event.INIT, initListener);
-		loader.load(new URLRequest("tiles.png"));
-		*/
-
 	}
 	
-	// Triggered when the bitmap has been loaded and initialized
-	private function initListener (e:Event) {
-		// Add the loaded bitmap to display list
-		hud.addChild(loader.content);
-		// Retrieve the color value for
-		// the top-left pixel in the loaded bitmap
-		//trace(Bitmap(loader.content).bitmapData.getPixel(0, 0));
-	}
 	public function draw() {
 	}
 	

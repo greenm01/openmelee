@@ -68,7 +68,7 @@ class Melee extends Sprite
 
     var running : Bool;
 
-    var worldAABB : AABB;
+    public var worldAABB : AABB;
     public var world : World;
     
     var contactListener : ContactListener;

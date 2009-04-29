@@ -100,7 +100,7 @@ class RenderMelee
         screenSize = new Vector(800, 600);
         
         var color = new Color(1.0, 0.0, 0.0);
-        shape = { lineSize : 1.0, line : color.getColor(), fill : color.getColor(), alpha : 0.25 };
+        shape = { lineSize : 1.0, line : 0xFF0000, fill : 0xFF0000, alpha : 0.25 };
         color = new Color(0.0, 0.0, 0.5);
 		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 0.25 };
 		nemesis = { lineSize : 1.0, line : 0x6633FF, fill : 0x6633FF, alpha : 0.25 };
@@ -136,6 +136,7 @@ class RenderMelee
 	
     function drawCircle( c : Circle ) {
         var p = transform(c.tC);
+		//if (p.x > melee.worldAABB.r || p.y > melee.worldAABB.t) return;
 		g.drawCircle(p.x, p.y, c.r*zoom);
 		if( drawCircleRotation ) {
 			g.moveTo(c.tC.x, c.tC.y);
@@ -150,11 +151,9 @@ class RenderMelee
 		while( v != null ) {
 		    f = transform(v);
 			g.lineTo(f.x, f.y);
-			//trace(f.x + "," + f.y);
 			v = v.next;
 		}
-		v = p.tVerts;
-		f = transform(v);
+		f = transform(p.tVerts);
 		g.lineTo( f.x, f.y);
 	}
     

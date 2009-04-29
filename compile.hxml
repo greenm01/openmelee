@@ -3,3 +3,5 @@
 -swf9 om.swf
 -main OpenMelee
 -swf-header 650:500:60:000000
+-swf-version 9
+-swf-lib swflib.swf

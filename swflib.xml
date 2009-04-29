@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="iso-8859-1" ?>
+<movie version="9" width="55" height="30" framerate="12">
+  <background color="#000000"/>
+  <frame>
+	<library>
+	  <bitmap id="OrzNemesis" name="OrzNemesis" import="ships/orzcap.png"/>
+	  <bitmap id="KzerZa" name="KzerZa" import="ships/KzerZa.png"/>
+	</library>
+  </frame>
+</movie>

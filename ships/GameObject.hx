@@ -50,7 +50,7 @@
     public var state : State;
     public var birthday : Float;
     public var lifetime : Float;
-    public var damage : Float;
+    public var damage : Int;
     public var health : Float;
     public var dead : Bool;
 	
@@ -68,7 +68,7 @@
         state = new State();
         birthday = flash.Lib.getTimer() * 0.001;
         lifetime = phx.Const.FMAX;
-        damage = 5.0;
+        damage = 5;
         health = phx.Const.FMAX;
 		dead = false;
 		radius = 0.0;
@@ -85,7 +85,7 @@
     }
     
 	
-    public function applyDamage(damage:Float) {
+    public function applyDamage(damage:Int) {
 		health -= damage;
 		if (health <= 0) {
 			world.removeBody(rBody);

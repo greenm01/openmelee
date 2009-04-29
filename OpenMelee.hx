@@ -29,6 +29,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import flash.display.Bitmap;
+
+class OrzNemesis extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
+class KzerZa extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
  class OpenMelee
  {
 
@@ -41,7 +59,9 @@
     }
     
     function initGame() {
-        game = new Game(this);
+		var ship1 =  new OrzNemesis(); 
+		var ship2 =  new KzerZa();
+        game = new Game(this, ship1, ship2);
     }
     
     public static function main() {

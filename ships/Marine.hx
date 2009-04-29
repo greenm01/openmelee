@@ -56,7 +56,7 @@ class Marine extends Ship
         group = motherShip.group;
         steer = new Steer(this, melee.objectList);
         this.motherShip = motherShip;
-        crew = 5.0;
+        crew = 5;
         lifetime = 60.0;
         var scale = 3.0;
         

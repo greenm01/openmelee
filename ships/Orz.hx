@@ -56,7 +56,10 @@ class Orz extends Ship
 	public var numMarines : Int;
 
     public function new(melee : Melee) {
-		numMarines = 0;
+		
+		name = new String("Orz: Nemesis");
+		captain = new String("zzzzrrr");
+		
         super(melee);
 		marines = new FastList<Marine>();
 		tA = 0.0;
@@ -64,8 +67,10 @@ class Orz extends Ship
 		pDelay = 0.5;
 		sDelay = 0.5;
 
-        crew = 16.0;
-		battery = 20.0;
+		numMarines = 0;
+		
+		crewCapacity = crew = 16;
+		batteryCapacity = battery = 20;
 		
         scale = 0.025;
         offset = Vector.init();
@@ -144,7 +149,7 @@ class Orz extends Ship
           world.addBody(howitzer);
           primeWep.rBody = howitzer;
           primeWep.lifetime = 2.5;
-          primeWep.damage = 10.0;
+          primeWep.damage = 10;
           primeWep.health = 5.0;
           melee.objectList.add(primeWep);
       }

@@ -47,6 +47,9 @@ import ai.AI;
 class Ship extends GameObject
 {
     
+	public var name : String;
+	public var captain : String;
+	
     var engineForce : Vector;
     var turnForce : Vector;
     var leftTurnPoint : Vector;
@@ -69,8 +72,10 @@ class Ship extends GameObject
 	// Secondary time
 	var sTime : Float;
 
-	var battery : Float;
-	public var crew : Float;
+	public var batteryCapacity : Int;
+	public var battery : Int;
+	public var crewCapacity : Int;
+	public var crew : Int;
 	
     var maxLinVel : Float;
     var maxAngVel : Float;
@@ -138,7 +143,7 @@ class Ship extends GameObject
 		}
 	}
 
-	public override function applyDamage(damage:Float) {
+	public override function applyDamage(damage:Int) {
 		crew -= damage;
 		if (crew <= 0) {
 			destroy();

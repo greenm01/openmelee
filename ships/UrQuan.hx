@@ -49,13 +49,16 @@ class UrQuan extends Ship
 
     public function new(melee : Melee) {
 
+		name = new String("UrQuan: Kzer-Za");
+		captain = new String("Lord 999");
+		
         super(melee);
 		
 		pDelay = 0.5;
 		sDelay = 0.5;
 
-        crew = 42.0;
-		battery = 42.0;
+		crewCapacity = crew = 42;
+		batteryCapacity = battery = 42;
 		
         scale = 0.025;
         offset = new Vector(0, 0);
@@ -145,7 +148,7 @@ class UrQuan extends Ship
           world.addBody(howitzer);
           primeWep.rBody = howitzer;
           primeWep.lifetime = 2.5;
-          primeWep.damage = 10.0;
+          primeWep.damage = 10;
           primeWep.health = 5.0;
           melee.objectList.add(primeWep);
       }

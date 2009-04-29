@@ -28,6 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+import flash.display.Bitmap;
+
 import melee.Melee;
 import hud.HUD;
 
@@ -37,14 +40,17 @@ class Game
     var om : OpenMelee;
     var hud : HUD;
 	
-    public function new(om:OpenMelee) {
+    public function new(om:OpenMelee, ship1:Bitmap, ship2:Bitmap) {
         this.om = om;
         melee = new Melee();
 		hud = new HUD();
 		om.root.addChild(melee);
 		om.root.addChild(hud);
 		melee.init();
-		hud.init();
+		hud.ship1 = melee.ship1;
+		hud.ship2 = melee.ship2;
+		hud.init(ship1, ship2);
+		
     }
 
 }
