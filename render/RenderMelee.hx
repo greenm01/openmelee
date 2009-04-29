@@ -59,12 +59,9 @@ class RenderMelee
 	var g : Graphics;
 	
 	public var shape : CX;
-	public var staticShape : CX;
-	public var sleepingShape : CX;
-	public var boundingBox : CX;
-	public var contact : CX;
-	public var sleepingContact : CX;
-	public var contactSize : CX;
+	public var kzerZa : CX;
+	public var nemesis : CX;
+	public var planet : CX;
 	
     static var MAX_CIRCLE_RES = 32;
 	var zoom : Float;
@@ -105,27 +102,9 @@ class RenderMelee
         var color = new Color(1.0, 0.0, 0.0);
         shape = { lineSize : 1.0, line : color.getColor(), fill : color.getColor(), alpha : 0.25 };
         color = new Color(0.0, 0.0, 0.5);
-		staticShape = { lineSize : 2., line : 0x333333, fill : color.getColor(), alpha : 0.5 };
-		sleepingShape = { lineSize : 2., line : 0x333333, fill : 0x7FECEC, alpha : 1. };
-		boundingBox = { lineSize : 0., line : null, fill : null, alpha : 1. };
-		contact = { lineSize : 1., line : null, fill : null, alpha : 1. };
-		sleepingContact = { lineSize : 1., line : null, fill : null, alpha : 1. };
-		contactSize = { lineSize : 1., line : null, fill : null, alpha : 1. };
-
-		/*
-		var test = new flash.display.Shape();
-		test.graphics.lineStyle(1);
-		test.graphics.beginFill(0x0000FF, 0.5);
-		test.graphics.drawRect(0, 0, 150, 800);
-		test.x = 500;
-		test.y = 0;
-		stage.addChild(test);
-		var gg = test.graphics;
-		begin(shape);
-		gg.drawCircle(70,70,5);
-		end(shape);
-		*/
-		
+		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 0.25 };
+		nemesis = { lineSize : 1.0, line : 0x6633FF, fill : 0x6633FF, alpha : 0.25 };
+		kzerZa = { lineSize : 1.0, line : 0x00FF00, fill : 0x00FF00, alpha : 0.25 };		
     }
     
     function mouseMove(x:Float, y:Float) {
@@ -138,7 +117,10 @@ class RenderMelee
     }
 
     function selectColor( s : Shape ) {
-		return s.body.isStatic ? staticShape : (s.body.island != null && s.body.island.sleeping ? sleepingShape : shape);
+		if (s.body == ship1.rBody) return nemesis;
+		if (s.body == ship2.rBody) return kzerZa;
+		if (s.body == world.staticBody) return planet;
+		return shape;
 	}
 	
 	function begin( c : CX ) {

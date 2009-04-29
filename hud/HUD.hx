@@ -38,7 +38,7 @@ class HUD extends Sprite
 {
 
 	var render : RenderHUD;
-	
+
 	public function init() 
 	{
 		render = new RenderHUD(this);
@@ -46,7 +46,6 @@ class HUD extends Sprite
 	}
 	
 	public function loop() {
-		//render.draw();
 	}
 	
 }
