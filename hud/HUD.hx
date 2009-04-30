@@ -195,8 +195,7 @@ class HUD extends Sprite
 			g.lineStyle(1.0, color);
 			g.beginFill(color, 1.0);
 			g.drawRect(p.x, p.y - 5 * i, 4, 2);
-			c++;
-			if (c == num) break;
+			if (++c == num) break;
 			g.lineStyle(1.0, color);
 			g.beginFill(color, 1.0);
 			g.drawRect(p.x + 6, p.y - 5 * i, 4, 2);

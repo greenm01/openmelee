@@ -30,8 +30,17 @@
  */
 package render;
 
+import flash.display.Bitmap;
 import flash.display.MovieClip;
 import flash.display.Graphics;
+import flash.display.BitmapData;
+import flash.display.Bitmap;
+import flash.display.Sprite;
+import flash.display.BitmapDataChannel;
+import flash.geom.ColorTransform;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.display.BlendMode;
 
 import phx.World;
 import phx.Body;
@@ -77,14 +86,14 @@ class RenderMelee
     static public var running : Bool;
     
 	var melee : Melee;
-
+	var bitmapData : BitmapData;
+	var background : Bitmap;
+	var d : flash.display.Shape;
+	
     public function new(melee:Melee) {
 
         this.melee = melee;
         scale = Vector.init();
-		
-        g = melee.graphics;
-        drawCircleRotation = false;
 		
 		var stage = melee.stage;
 		stage.addEventListener(flash.events.Event.ENTER_FRAME,function(_) melee.loop());
@@ -102,20 +111,65 @@ class RenderMelee
         var color = new Color(1.0, 0.0, 0.0);
         shape = { lineSize : 1.0, line : 0xFF0000, fill : 0xFF0000, alpha : 0.25 };
         color = new Color(0.0, 0.0, 0.5);
-		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 0.25 };
-		nemesis = { lineSize : 1.0, line : 0x6633FF, fill : 0x6633FF, alpha : 0.25 };
-		kzerZa = { lineSize : 1.0, line : 0x00FF00, fill : 0x00FF00, alpha : 0.25 };		
-    }
-    
-    function mouseMove(x:Float, y:Float) {
-        trace(x + "," + y);
+		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 1.0 };
+		nemesis = { lineSize : 1.0, line : 0x6633FF, fill : 0x6633FF, alpha : 0.50 };
+		kzerZa = { lineSize : 1.0, line : 0x00FF00, fill : 0x00FF00, alpha : 0.50 };
+		
+		bitmapData = new BitmapData(500, 500);
+		addStars();
+		background = new Bitmap(bitmapData);
+		melee.addChild(background);
+		d = new flash.display.Shape();
+		g = d.graphics;
+		melee.addChild(d);
     }
     
     public function update() {
-        g.clear();
+		g.clear();
         draw();
     }
 
+	public function addStars(nbStars:Int=2000, r:Float=1.5, g:Float=0.01, b:Float=1.5, a:Float=0.5) {
+		var stageWidth = 500;
+		var stageHeight = 500;
+		var perlin = new BitmapData(stageWidth, stageHeight, true, 0);
+		perlin.perlinNoise(200, 200, 10, Math.round(Math.random() * 100), false, true);
+		
+		var bd = new BitmapData(stageWidth, stageHeight, true, 0);
+		bd.copyChannel(perlin, perlin.rect, new Point(), BitmapDataChannel.GREEN, BitmapDataChannel.ALPHA);
+		bd.colorTransform(bd.rect, new ColorTransform(0.1,2,0.1,1));
+		var bStars = new BitmapData(stageWidth, stageHeight, true, 0);
+		var star = new flash.display.Shape();
+		star.graphics.beginFill(0xFFFFFF, 1);
+		
+		var i = 0;
+		while (i < stageWidth) {
+			var j = 0;
+			while(j < stageHeight) {
+				var decal = bd.getPixel32(i, j) >> 24;
+				var t = Util.randomRange(0, 127)+decal;
+				var t2 = Util.randomRange(0, 5000-nbStars);
+				if((t>t2)) star.graphics.drawCircle(i+Util.randomRange(1,5), j+Util.randomRange(1, 5), Util.randomRange(0.5, 12)/10);
+				if (Math.abs(decal) < 5) j += decal;
+				j += 5;
+			}
+			i += 5;
+		}
+		
+		bStars.lock();
+		bStars.draw(star);
+		bitmapData = perlin;
+		bitmapData.lock();
+		bitmapData.draw(bd, null, null, BlendMode.NORMAL);
+		bitmapData.colorTransform(bitmapData.rect, new ColorTransform(r, g, b, a));
+		bitmapData.draw(bStars, null, null, BlendMode.LIGHTEN);
+		
+		//blendMode = BlendMode.LIGHTEN;
+		//alpha = 0.8;
+		bStars.unlock();
+		bitmapData.unlock();
+	}
+	
     function selectColor( s : Shape ) {
 		if (s.body == ship1.rBody) return nemesis;
 		if (s.body == ship2.rBody) return kzerZa;
@@ -136,7 +190,6 @@ class RenderMelee
 	
     function drawCircle( c : Circle ) {
         var p = transform(c.tC);
-		//if (p.x > melee.worldAABB.r || p.y > melee.worldAABB.t) return;
 		g.drawCircle(p.x, p.y, c.r*zoom);
 		if( drawCircleRotation ) {
 			g.moveTo(c.tC.x, c.tC.y);
@@ -174,9 +227,9 @@ class RenderMelee
 			drawShape(s);
 		}
 	}
-   
-    function draw() {
 	
+    function draw() {
+		
 		var point1 : Vector;
         var point2 : Vector;
 		
