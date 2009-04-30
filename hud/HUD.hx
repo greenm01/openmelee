@@ -186,20 +186,21 @@ class HUD extends Sprite
 		g.clear();
 		g.lineStyle(1);
 		g.beginFill(0x000000, 1);
-		var height = (max / 2) * 5 + 2;
+		var height = (max * 0.5) * 5 + 2;
 		g.drawRect(p.x, p.y - height, 13, height);
 		p.x += 2;
 		p.y -= 4;
 		var c = 0;
-		for (i in 0...Math.ceil(num/2)) {
-			c++;
+		for (i in 0...Math.ceil(num*0.5)) {
 			g.lineStyle(1.0, color);
 			g.beginFill(color, 1.0);
 			g.drawRect(p.x, p.y - 5 * i, 4, 2);
+			c++;
 			if (c == num) break;
 			g.lineStyle(1.0, color);
 			g.beginFill(color, 1.0);
 			g.drawRect(p.x + 6, p.y - 5 * i, 4, 2);
+			c++;
 		}
 	}
 	
