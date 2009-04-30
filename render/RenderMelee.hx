@@ -190,6 +190,7 @@ class RenderMelee
 	
     function drawCircle( c : Circle ) {
         var p = transform(c.tC);
+		if(p.x > 500 || p.y > 500) return;
 		g.drawCircle(p.x, p.y, c.r*zoom);
 		if( drawCircleRotation ) {
 			g.moveTo(c.tC.x, c.tC.y);
@@ -200,6 +201,7 @@ class RenderMelee
     function drawPoly( p : Polygon ) {
 		var v = p.tVerts;
 		var f = transform(v);
+		if(f.x > 500 || f.y > 500) return;
 		g.moveTo(f.x, f.y);
 		while( v != null ) {
 		    f = transform(v);

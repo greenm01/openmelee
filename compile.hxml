@@ -1,7 +1,5 @@
-#-neko om.n
-#-lib opengl
--swf9 om.swf
 -main OpenMelee
+-swf-version 10
+-swf om.swf
 -swf-header 650:500:60:000000
--swf-version 9
 -swf-lib swflib.swf
