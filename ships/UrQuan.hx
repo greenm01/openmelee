@@ -54,11 +54,14 @@ class UrQuan extends Ship
 		
         super(melee);
 		
-		pDelay = 0.5;
+		pDelay = 0.1;
 		sDelay = 0.5;
+		bDelay = 0.25;
 
 		crewCapacity = crew = 42;
 		batteryCapacity = battery = 42;
+		pEnergy = 8;
+		sEnergy = 6;
 		
         scale = 0.025;
         offset = new Vector(0, 0);
@@ -67,7 +70,7 @@ class UrQuan extends Ship
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
-        var pos = new Vector(410.0, 200.0);
+        var pos = new Vector(300.0, 200.0);
         rBody = new Body(pos.x, pos.y);
         rBody.a = -Math.PI;
 		
@@ -129,29 +132,30 @@ class UrQuan extends Ship
 		// Add margin for collision avoidance
     }
 
-	 public override function fire() {
-		if(!primaryTime()) return;	
-          primeWep = new PrimaryWeapon(this, melee);
-		  primeWep.group = group;
-          var verts = new Array<Vector>();
-          verts.push(new Vector(0.25,0.5));
-          verts.push(new Vector(0.25,-0.5));
-          verts.push(new Vector(-0.25,-0.5));
-          verts.push(new Vector(-0.25,0.5));
-          var poly = new Polygon(verts, Vector.init());
-          var localPos = new Vector(1.5, -0.25);
-          var worldPos = rBody.worldPoint(localPos);
-          var howitzer = new Body(worldPos.x, worldPos.y);
-		  howitzer.a = rBody.a + Math.PI/2;
-          howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
-          howitzer.addShape(poly);
-          world.addBody(howitzer);
-          primeWep.rBody = howitzer;
-          primeWep.lifetime = 2.5;
-          primeWep.damage = 10;
-          primeWep.health = 5.0;
-          melee.objectList.add(primeWep);
-      }
+	public override function fire() {
+		if(!primaryTime() || battery <= pEnergy) return;	
+		batteryCost(pEnergy);
+        primeWep = new PrimaryWeapon(this, melee);
+		primeWep.group = group;
+        var verts = new Array<Vector>();
+        verts.push(new Vector(0.25,0.5));
+        verts.push(new Vector(0.25,-0.5));
+        verts.push(new Vector(-0.25,-0.5));
+        verts.push(new Vector(-0.25,0.5));
+        var poly = new Polygon(verts, Vector.init());
+        var localPos = new Vector(1.5, -0.25);
+        var worldPos = rBody.worldPoint(localPos);
+        var howitzer = new Body(worldPos.x, worldPos.y);
+		howitzer.a = rBody.a + Math.PI/2;
+        howitzer.v = new Vector(100.0, 0.0).rotate(rBody.a);
+        howitzer.addShape(poly);
+        world.addBody(howitzer);
+        primeWep.rBody = howitzer;
+        primeWep.lifetime = 2.5;
+        primeWep.damage = 10;
+        primeWep.health = 5.0;
+        melee.objectList.add(primeWep);
+	}
 
 	
     public override function uponDeath() {  

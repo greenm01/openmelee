@@ -63,6 +63,7 @@ class Ship extends GameObject
 	public var primary : Bool;
 	
 	// Timing parameters (seconds)
+	var time : Float;
     // Primary delay
 	var pDelay : Float;
 	// Secondary delay
@@ -71,9 +72,18 @@ class Ship extends GameObject
 	var pTime : Float;
 	// Secondary time
 	var sTime : Float;
+	// Battery refresh delay
+	var bDelay : Float;
+	// Battery time
+	var bTime : Float;
 
 	public var batteryCapacity : Int;
 	public var battery : Int;
+	// Primary battery cost
+	var pEnergy : Int;
+	// Secondary battery cost
+	var sEnergy : Int;
+
 	public var crewCapacity : Int;
 	public var crew : Int;
 	
@@ -88,6 +98,8 @@ class Ship extends GameObject
 		maxLinVel = 30.0;
 		maxAngVel = 2.0;
 		pTime = 0.0;
+		bTime = 0.0;
+		sTime = 0.0;
     }
 
     public override function thrust() {
@@ -118,6 +130,8 @@ class Ship extends GameObject
     }
 
     public override function updateState() {
+		time = flash.Lib.getTimer() * 0.001;
+		rechargeBattery();
 		if (primary && !special) {
 			fire();
 		}
@@ -205,7 +219,6 @@ class Ship extends GameObject
     }
 
 	inline function primaryTime() {
-		var time = flash.Lib.getTimer() * 0.001;
 		var dt = time - pTime;
 		if(dt >= pDelay) {
 			pTime = time;
@@ -213,6 +226,19 @@ class Ship extends GameObject
 		} else {
 			return false;
 		}
+	}
+
+	function rechargeBattery() {
+		var dt = time - bTime;
+		if(dt >= bDelay && battery < batteryCapacity) {
+			bTime = time;
+			battery += 1;
+		}
+	}
+
+	inline function batteryCost(cost:Int) {
+		var b = battery - cost;
+		battery = cast(Util.clamp(b, 0, batteryCapacity), Int);
 	}
 	
 	public function uponDeath() {}

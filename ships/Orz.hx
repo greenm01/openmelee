@@ -64,13 +64,17 @@ class Orz extends Ship
 		marines = new FastList<Marine>();
 		tA = 0.0;
 		
-		pDelay = 0.5;
+		pDelay = 0.15;
 		sDelay = 0.5;
+		bDelay = 0.25;
 
 		numMarines = 0;
 		
 		crewCapacity = crew = 16;
 		batteryCapacity = battery = 20;
+		pEnergy = 5;
+		sEnergy = 6;
+
 		
         scale = 0.025;
         offset = Vector.init();
@@ -81,7 +85,7 @@ class Orz extends Ship
 
         var pos = new Vector(410.0, 300.0);
         rBody = new Body(pos.x, pos.y);
-		rBody.v.x = 0.01;
+		rBody.v.x = 10.0;
 		
         // Body
         var body = new Array();
@@ -131,27 +135,28 @@ class Orz extends Ship
       }
       
 	public override function fire() {
-		if(!primaryTime()) return;	
-          primeWep = new PrimaryWeapon(this, melee);
-		  primeWep.group = group;
-          var verts = new Array<Vector>();
-          verts.push(new Vector(0.25,0.5));
-          verts.push(new Vector(0.25,-0.5));
-          verts.push(new Vector(-0.25,-0.5));
-          verts.push(new Vector(-0.25,0.5));
-          var poly = new Polygon(verts, Vector.init());
-          var localPos = new Vector(0, 1.25);
-          var worldPos = turret.worldPoint(localPos);
-          howitzer = new Body(worldPos.x, worldPos.y);
-		  howitzer.a = turret.a;
-          howitzer.v = new Vector(0.0, 100.0).rotate(turret.a);
-          howitzer.addShape(poly);
-          world.addBody(howitzer);
-          primeWep.rBody = howitzer;
-          primeWep.lifetime = 2.5;
-          primeWep.damage = 10;
-          primeWep.health = 5.0;
-          melee.objectList.add(primeWep);
+		if(!primaryTime() || battery < pEnergy) return;	
+			batteryCost(pEnergy);
+			primeWep = new PrimaryWeapon(this, melee);
+		  	primeWep.group = group;
+          	var verts = new Array<Vector>();
+          	verts.push(new Vector(0.25,0.5));
+          	verts.push(new Vector(0.25,-0.5));
+          	verts.push(new Vector(-0.25,-0.5));
+          	verts.push(new Vector(-0.25,0.5));
+          	var poly = new Polygon(verts, Vector.init());
+          	var localPos = new Vector(0, 1.25);
+          	var worldPos = turret.worldPoint(localPos);
+          	howitzer = new Body(worldPos.x, worldPos.y);
+		  	howitzer.a = turret.a;
+          	howitzer.v = new Vector(0.0, 100.0).rotate(turret.a);
+          	howitzer.addShape(poly);
+          	world.addBody(howitzer);
+          	primeWep.rBody = howitzer;
+          	primeWep.lifetime = 2.5;
+          	primeWep.damage = 10;
+          	primeWep.health = 5.0;
+          	melee.objectList.add(primeWep);
       }
 	  
 	public override function uponDeath() {
@@ -178,13 +183,19 @@ class Orz extends Ship
 		  } else if (turnR) {
 			tA -= Math.PI / 32;
 		  } else if (primary && crew > 1) {
-				// Release a marine
-				crew--;
-				var marine = new Marine(melee, this);
-				numMarines++;
-				marine.initAI(melee.ship2);
-				marines.add(marine);
-				melee.objectList.add(marine);
+				var time = flash.Lib.getTimer() * 0.001;
+				var dt = time - sTime;
+				if(dt >= sDelay) {
+					sTime = time;
+					// Release a marine
+					batteryCost(sEnergy);
+					crew--;
+					var marine = new Marine(melee, this);
+					numMarines++;
+					marine.initAI(melee.ship2);
+					marines.add(marine);
+					melee.objectList.add(marine);
+				}
 		  }
 	  }
 	  turret.a = rBody.a + Math.PI/2 + tA;

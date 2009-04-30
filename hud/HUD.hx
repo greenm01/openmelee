@@ -203,20 +203,6 @@ class HUD extends Sprite
 		}
 	}
 	
-	/*
-	function updateState(sprite:Sprite, num:Int) {
-		var c1 = sprite.numChildren;
-		var delta = c1 - num;
-		if(delta > 0) {
-			for (i in 0...delta) {
-				sprite.removeChildAt(c1 - 1 - i);
-			}
-		} else {
-			// TODO: add crew/battery back
-		}
-	}
-	*/
-	
 	function drawShape(g:Graphics, s:phx.Shape, color:Int) {
 		g.lineStyle(1.0, color);
 		g.beginFill(color, 0.25);

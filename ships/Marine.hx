@@ -71,7 +71,7 @@ class Marine extends Ship
         var offset = Vector.init();
         var poly = new Circle(scale * 0.15, offset);
         
-        var localPos = new Vector(0, 1.25);
+        var localPos = new Vector(0, 3.25);
         var worldPos = motherShip.turret.worldPoint(localPos);
         rBody = new Body(worldPos.x, worldPos.y, props);
         rBody.v.x = -motherShip.rBody.v.x;
