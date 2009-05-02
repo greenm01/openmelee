@@ -36,37 +36,51 @@ import flash.display.BitmapDataChannel;
 import flash.events.Event;
 import flash.display.BlendMode;
 import flash.display.BitmapData;
+import flash.display.Bitmap;
 import flash.geom.ColorTransform;
 import flash.geom.Point;
+import flash.geom.Rectangle;
+
+import phx.col.AABB;
 
 import utils.Util;
 
-class Nebula extends Sprite
+class Nebula extends MovieClip
 {
 
-	var bitmapData : BitmapData;
+	public var bitmapData : BitmapData;
+	var bStars : BitmapData;
+	var background : Bitmap;
+	var stageWidth: Int;
+	var stageHeight : Int;
 	
-	function new () {
+	public function new () {
 		super();
-		this.addEventListener(flash.events.Event.ENTER_FRAME,function(_) frameHandler());
-		bitmapData = new BitmapData(500, 500);
+		stageWidth = 500;
+		stageHeight = 500;
+		bitmapData = new BitmapData(stageWidth, stageHeight, false, 0x00FF0000);
 		addStars();
+		background = new Bitmap(bitmapData);
+		var starField = new Bitmap(bStars);
+		addChild(background);
+		addChild(starField);
 	}
 	
-	function frameHandler () {
-		this.x++;
+	public inline function scrollStars (x:Float, y:Float) {
+		scrollBitmap(bStars, Std.int(x), Std.int(y));
+		scrollBitmap(bitmapData, -Std.int(x*0.5), -Std.int(y*0.5));
 	}
 	
-	function addStars(nbStars:Int=2000, r:Float=1.5, g:Float=0.01, b:Float=1.5, a:Float=0.5) {
-		var stageWidth = 500;
-		var stageHeight = 500;
+	function addStars(nbStars:Int=2000, r:Float=1.5, g:Float=0.01, b:Float=1.5, a:Float=0.4) {
+	
 		var perlin = new BitmapData(stageWidth, stageHeight, true, 0);
-		perlin.perlinNoise(200, 200, 10, Math.round(Math.random() * 100), false, true);
+		perlin.perlinNoise(200, 200, 10, Math.round(Math.random() * 100), true, false);
 		
 		var bd = new BitmapData(stageWidth, stageHeight, true, 0);
 		bd.copyChannel(perlin, perlin.rect, new Point(), BitmapDataChannel.GREEN, BitmapDataChannel.ALPHA);
 		bd.colorTransform(bd.rect, new ColorTransform(0.1,2,0.1,1));
-		var bStars = new BitmapData(stageWidth, stageHeight, true, 0);
+
+		bStars = new BitmapData(stageWidth, stageHeight, true, 0);
 		var star = new flash.display.Shape();
 		star.graphics.beginFill(0xFFFFFF, 1);
 		
@@ -90,11 +104,43 @@ class Nebula extends Sprite
 		bitmapData.lock();
 		bitmapData.draw(bd, null, null, BlendMode.NORMAL);
 		bitmapData.colorTransform(bitmapData.rect, new ColorTransform(r, g, b, a));
-		bitmapData.draw(bStars, null, null, BlendMode.LIGHTEN);
-		
-		//blendMode = BlendMode.LIGHTEN;
-		//alpha = 0.8;
 		bStars.unlock();
 		bitmapData.unlock();
+	}
+	
+	// function to scroll a seamless bitmap and loop pixels around 
+	inline function scrollBitmap(bmd:BitmapData, scrollX:Int,scrollY:Int) {     
+		
+		var width = bmd.width;
+		var height = bmd.height;
+		
+		// wrap values     
+		while(scrollX > width) scrollX -= width;     
+		while(scrollX < -width) scrollX += width;     
+		while(scrollY > height) scrollY -= height;     
+		while(scrollY < -height) scrollY += height;   
+		      
+		// the 4 edges of the bitmap     
+		var xPixels = Math.abs(scrollX), yPixels = Math.abs(scrollY);     
+		var rectR:Rectangle = new Rectangle(width-xPixels,0,xPixels,height);     
+		var rectL:Rectangle = new Rectangle(0,0,xPixels,height);     
+		var rectT:Rectangle = new Rectangle(0,0,width,yPixels);     
+		var rectB:Rectangle = new Rectangle(0,height-yPixels,width,yPixels);     
+		var pointL:Point = new Point(0,0);     
+		var pointR:Point = new Point(width-xPixels,0);     
+		var pointT:Point = new Point(0,0);     
+		var pointB:Point = new Point(0,height-yPixels);         
+		var tmp = new BitmapData(width,height,bmd.transparent,0x000000); 
+		        
+		// copy column, scroll, paste     
+		scrollX > 0 ? tmp.copyPixels(bmd,rectR, pointL) : tmp.copyPixels(bmd,rectL, pointR);     
+		bmd.scroll(scrollX,0);     
+		scrollX > 0 ? bmd.copyPixels(tmp,rectL, pointL) : bmd.copyPixels(tmp,rectR, pointR);  
+		       
+		// copy row, scroll, paste     
+		scrollY > 0 ? tmp.copyPixels(bmd,rectB, pointT) : tmp.copyPixels(bmd,rectT, pointB);     
+		bmd.scroll(0,scrollY);     
+		scrollY > 0 ? bmd.copyPixels(tmp,rectT, pointT) : bmd.copyPixels(tmp,rectB, pointB);         
+		tmp.dispose(); 
 	}
 }

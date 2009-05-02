@@ -47,30 +47,30 @@ class KzerZa extends Bitmap
     }
 }
 
- class OpenMelee
- {
+class OpenMelee
+{
 
-    static var game : Game;
-    public var root : flash.display.MovieClip;
-    public static var inst : OpenMelee;
-    
-    public function new(root) {
-        this.root = root;
-    }
-    
-    function initGame() {
+   static var game : Game;
+   public var root : flash.display.MovieClip;
+   public static var inst : OpenMelee;
+ 
+   public function new(root) {
+       this.root = root;
+   }
+ 
+   function initGame() {
 		var ship1 =  new OrzNemesis(); 
 		var ship2 =  new KzerZa();
-        game = new Game(this, ship1, ship2);
-    }
-    
-    public static function main() {
-        flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		var root = flash.Lib.current;
-        inst = new OpenMelee(root);
-        inst.initGame();
-    }
+		game = new Game(this, ship1, ship2);
+   }
+ 
+   public static function main() {
+       //flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+	var root = flash.Lib.current;
+       inst = new OpenMelee(root);
+       inst.initGame();
+   }
 
- }
+}
  
  

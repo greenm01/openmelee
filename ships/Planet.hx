@@ -57,5 +57,4 @@ class Planet extends GameObject
         state.pos.y = 250.0;
         calcRadius();
     }
-    
 }

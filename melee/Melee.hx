@@ -31,6 +31,7 @@
 package melee;
 
 import flash.display.Sprite;
+
 import haxe.FastList;
 
 import phx.col.AABB;

@@ -30,7 +30,6 @@
  */
 
 import flash.display.Bitmap;
-import flash.geom.Point;
 
 import melee.Melee;
 import hud.HUD;
@@ -44,16 +43,12 @@ class Game
     public function new(om:OpenMelee, ship1:Bitmap, ship2:Bitmap) {
         this.om = om;
         melee = new Melee();
-		//melee.transform.perspectiveProjection.projectionCenter = new Point(0, 0);	
-		//melee.transform.perspectiveProjection.focalLength = 500.0;	
 		hud = new HUD();
 		om.root.addChild(melee);
 		om.root.addChild(hud);
 		melee.init();
 		hud.ship1 = melee.ship1;
 		hud.ship2 = melee.ship2;
-		hud.init(ship1, ship2);
-		
+		hud.init(ship1, ship2);	
     }
-
 }
