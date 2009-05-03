@@ -39,6 +39,8 @@ import flash.display.Sprite;
 import flash.display.BitmapDataChannel;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
+import flash.filters.BevelFilter;
+import flash.filters.DropShadowFilter;
 
 import flash.geom.ColorTransform;
 import flash.geom.Point;
@@ -127,6 +129,7 @@ class RenderMelee
 		d = new flash.display.Shape();
 		g = d.graphics;
 		melee.addChild(d);
+		d.filters = [new BevelFilter(5)]; 
     }
     
     public function update() {

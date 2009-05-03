@@ -35,6 +35,7 @@ import flash.display.Bitmap;
 import flash.display.Graphics;
 import flash.display.Shape;
 import flash.display.Sprite;
+import flash.filters.BevelFilter;
 import flash.geom.Vector3D;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
@@ -129,6 +130,7 @@ class HUD extends Sprite
 			drawShape(s1.graphics, s.polygon, 0x6633FF );
 		}
 		addChild(s1);
+		s1.filters = [new BevelFilter(5)]; 
 		
 		orz = cast(ship1, Orz);
 		s1Special = new flash.display.Shape();
@@ -139,6 +141,7 @@ class HUD extends Sprite
 			drawShape(s1Special.graphics, s, red);
 		}
 		addChild(s1Special);
+		s1Special.filters = [new BevelFilter(5)]; 
 		
 		// Ship 2
 		print(new Vector(505, 249), ship2.name, white);
@@ -169,7 +172,7 @@ class HUD extends Sprite
 			drawShape(s2.graphics, s.polygon, limeGreen);
 		}
 		addChild(s2);
-		
+		s2.filters = [new BevelFilter(5)]; 
 	}
 	
 	public function loop() {
