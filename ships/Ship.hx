@@ -46,9 +46,10 @@ import ai.AI;
 
 class Ship extends GameObject
 {
-    
-	public var name : String;
 	public var captain : String;
+	
+	public var primeWep : GameObject;
+	public var secondWep : GameObject;
 	
     var engineForce : Vector;
     var turnForce : Vector;
@@ -241,7 +242,7 @@ class Ship extends GameObject
 		battery = cast(Util.clamp(b, 0, batteryCapacity), Int);
 	}
 	
-	public function uponDeath() {}
+	override function uponDeath() {}
 	public function updateSpecial() {}
     public function fire() {}
 }

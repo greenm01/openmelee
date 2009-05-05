@@ -174,6 +174,4 @@ class Body {
 		v.y += (j.y * invMass);
 		w += invInertia * (r.x * j.y - r.y * j.x);
 	}
-
-
 }

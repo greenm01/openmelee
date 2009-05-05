@@ -47,26 +47,26 @@ class Asteroid extends GameObject
     }
 
     function init() {
-		{
-		    var radius = 1.0;
-            var offset = new Vector(-1.0, 1.0);
-			var s1 = new Circle(radius, offset);
-            
-            offset.set(1.0,1.0);
-			var s2 = new Circle(radius, offset);
-            
-            var x = Util.randomRange(-100.0, 100.0);
-            var y = Util.randomRange(-100.0, 100.0);
-            var angle = Util.randomRange(-Math.PI, Math.PI);
-            var asteroid = new Body(x,y, props);
-            
-            asteroid.v.x = x;
-            asteroid.v.y = y;
-            asteroid.a = angle;
-            
-            asteroid.addShape(s1);
-            asteroid.addShape(s2);
-            world.addBody(asteroid);
-		}
+		var radius = 1.0;
+		var offset = new Vector(-1.0, 1.0);
+		var s1 = new Circle(radius, offset);
+		
+		offset.set(1.0,1.0);
+		var s2 = new Circle(radius, offset);
+		
+		var x = Util.randomRange(-100.0, 100.0);
+		var y = Util.randomRange(-100.0, 100.0);
+		var angle = Util.randomRange(-Math.PI, Math.PI);
+		var asteroid = new Body(x,y, props);
+		
+		asteroid.v.x = x;
+		asteroid.v.y = y;
+		asteroid.a = angle;
+		
+		asteroid.addShape(s1);
+		asteroid.addShape(s2);
+		world.addBody(asteroid);
+		rBody = asteroid;
+		draw(0xFF0000);
 	}
 }

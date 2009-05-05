@@ -38,7 +38,6 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.display.BitmapDataChannel;
 import flash.events.Event;
-import flash.events.KeyboardEvent;
 import flash.filters.BevelFilter;
 import flash.filters.DropShadowFilter;
 
@@ -70,10 +69,7 @@ typedef CX = {
 
 class RenderMelee
 {
-	
-	var nebula : Nebula;
-	var g : Graphics;
-	
+
 	public var shape : CX;
 	public var kzerZa : CX;
 	public var nemesis : CX;
@@ -90,113 +86,65 @@ class RenderMelee
     
     var ship1 : Ship;
     public var ship2 : Ship;
-    static public var running : Bool;
     
-	var melee : Melee;
-	var d : flash.display.Shape;
-	
+	public var melee : Melee;
 	var oldPos : Vector;
 	
     public function new(melee:Melee) {
-
+		
         this.melee = melee;
         scale = Vector.init();
+		viewCenter = new Vector(0, 0);
+        screenSize = new Vector(800, 600);
+		oldPos = new Vector(0, 0);
+		zoom = 20;
+		
+        var color = new Color(1.0, 0.0, 0.0);
+        shape = { lineSize : 1.0, line : null, fill : 0xFF0000, alpha : 1.0 };
+        color = new Color(0.0, 0.0, 0.5);
+		nemesis = { lineSize : 1.0, line : null, fill : 0x6633FF, alpha : 0.75 };
+		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 1.0 };
+		kzerZa = { lineSize : 1.0, line : null, fill : 0x00FF00, alpha : 0.75 };
 
-		oldPos = new Vector(0,0);
-		
-		var stage = melee.stage;
-		stage.addEventListener(Event.ENTER_FRAME,function(_) melee.loop());
-		stage.addEventListener(KeyboardEvent.KEY_DOWN,function(e:KeyboardEvent) melee.human.onKeyDown(e.keyCode));
-		stage.addEventListener(KeyboardEvent.KEY_UP,function(e:KeyboardEvent) melee.human.onKeyUp(e.keyCode));
-		
-        zoom = 20;
-        running = true;
-        world = melee.world;
+		world = melee.world;
         ship1 = melee.ship1;
         ship2 = melee.ship2;
-        viewCenter = new Vector(0, 0);
-        screenSize = new Vector(800, 600);
-        
-        var color = new Color(1.0, 0.0, 0.0);
-        shape = { lineSize : 1.0, line : 0xFF0000, fill : 0xFF0000, alpha : 0.25 };
-        color = new Color(0.0, 0.0, 0.5);
-		planet = { lineSize : 2.0, line : 0x333333, fill : color.getColor(), alpha : 1.0 };
-		nemesis = { lineSize : 1.0, line : 0x6633FF, fill : 0x6633FF, alpha : 0.50 };
-		kzerZa = { lineSize : 1.0, line : 0x00FF00, fill : 0x00FF00, alpha : 0.50 };
-		
-		nebula = new Nebula();
-		melee.addChild(nebula);
-		d = new flash.display.Shape();
-		g = d.graphics;
-		melee.addChild(d);
-		d.filters = [new BevelFilter(5)]; 
-    }
-    
-    public function update() {
-		g.clear();
-        draw();
     }
 
-    function selectColor( s : Shape ) {
-		if (s.body == ship1.rBody) return nemesis;
-		if (s.body == ship2.rBody) return kzerZa;
-		if (s.body == world.staticBody) return planet;
-		return shape;
-	}
-	
-	function begin( c : CX ) {
-		if( c == null || (c.line == null && c.fill == null) ) return false;
-		if( c.line == null ) g.lineStyle() else g.lineStyle(c.lineSize,c.line);
-		if( c.fill != null ) g.beginFill(c.fill,c.alpha);
-		return true;
-	}
-
-	function end( c : CX ) {
-		if( c.fill != null ) g.endFill();
-	}
-	
-    function drawCircle( c : Circle ) {
-        var p = transform(c.tC);
-		if(p.x > 500 || p.y > 500) return;
-		g.drawCircle(p.x, p.y, c.r*zoom);
-		if( drawCircleRotation ) {
-			g.moveTo(c.tC.x, c.tC.y);
-			g.lineTo(c.tC.x + c.body.rcos * c.r, c.tC.y + c.body.rsin * c.r);
+    static inline function drawShape(g:Graphics, s:phx.Shape, color:Int) {
+		g.lineStyle(1/20, color);
+		g.beginFill(color, 0.75);
+		switch( s.type ) {
+			case phx.Shape.CIRCLE: drawCircle(g, s.circle);
+			case phx.Shape.POLYGON: drawPoly(g, s.polygon);
 		}
+		g.endFill();
+    }
+	
+	static inline function drawCircle(g:Graphics, c:Circle) {
+		var p = c.c;
+		g.moveTo(p.x, p.y);
+		g.drawCircle(p.x, p.y, c.r);
 	}
-
-    function drawPoly( p : Polygon ) {
-		var v = p.tVerts;
-		var f = transform(v);
-		if(f.x > 500 || f.y > 500) return;
-		g.moveTo(f.x, f.y);
-		while( v != null ) {
-		    f = transform(v);
-			g.lineTo(f.x, f.y);
+	
+	static inline function drawPoly(g:Graphics, p:Polygon) {
+		var v = p.verts;
+		g.moveTo(v.x, v.y);
+		while ( v != null ) {
+			g.lineTo(v.x, v.y);
 			v = v.next;
 		}
-		f = transform(p.tVerts);
-		g.lineTo( f.x, f.y);
+		v = p.verts;
+		g.lineTo(v.x, v.y);
 	}
     
-    function drawShape(s : Shape) {
-        var c = selectColor(s);
-        if( begin(c) ) {
-            switch( s.type ) {
-                case Shape.CIRCLE: drawCircle(s.circle);
-                case Shape.POLYGON: drawPoly(s.polygon);
-            }
-            end(c);
-        }
-    }
-    
-    public function drawBody( b : Body ) {
+    public static inline function drawBody(g:Graphics, b : Body, color:Int ) {
 		for( s in b.shapes ) {
-			drawShape(s);
+			drawShape(g, s, color);
 		}
 	}
 	
-    function draw() {
+    public inline function update() {
 		
 		var point1 : Vector;
         var point2 : Vector;
@@ -214,13 +162,13 @@ class RenderMelee
 		}
 			
         var range = point1.minus(point2);
-        var dist = range.length();
-        zoom = Util.clamp(500/(dist+10), 1.0, 25.0);
+        var dist = range.length() + 10;
+        zoom = Util.clamp(500/(dist), 1.0, 25.0);
         viewCenter = point1.minus(range.mult(0.5));
 		
 		var x = (oldPos.x - point1.x) * 5.0; 
 		var y = -(oldPos.y - point1.y) * 5.0;
-		nebula.scrollStars(x, y);
+		melee.scroll.set(x, y);
 		oldPos = point1.clone();
 		
         dist = Util.clamp(dist, 50, 400);
@@ -228,33 +176,26 @@ class RenderMelee
         var right = (viewCenter.x + dist);
         var bottom = (viewCenter.y + dist);
         var top = (viewCenter.y - dist);
-        
+		
         var aabb = new AABB(left, top, right, bottom);
         
-        var d = false;
-        // Draw static bodies
-        for(s in world.staticBody.shapes) {
-            if(aabb.intersects2(s.aabb)) {
-                d = true;
-                break;
-            }
-        }
-        if(d) {
-            drawBody(world.staticBody);
-        }
-        
-        // Draw dynamic bodies
-        d = false;
-        for(b in world.bodies) {
-            for(s in b.shapes) {
+        // Update bodies
+		
+        for (o in melee.objectList) {
+            for(s in o.rBody.shapes) {
                 if(aabb.intersects2(s.aabb)) {
-                    d = true;
-                }
+                    o.visible = true;
+					var trans = transform(o.state.pos);
+					o.x = trans.x;
+					o.y = trans.y;
+					o.rotation = -o.rBody.a * 57.2957795;
+					o.scaleX = o.scaleY = zoom;
+					break;
+                } else {
+					o.visible = false;
+					break;
+				}
             }
-            if(d) {
-                drawBody(b);
-            }
-            d = false;
         }
     }
     

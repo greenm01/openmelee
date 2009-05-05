@@ -48,13 +48,18 @@ class Planet extends GameObject
     function init() {
         // Create planet
         group = -1;
+		damage = 3;
         var radius = 7.0;
-        var offset = new Vector(400, 250);
+        var offset = Vector.init();
         var planet = new Circle(radius, offset);
-        world.addStaticShape(planet);
-        rBody = world.staticBody;
+		rBody = new Body(400, 250);
+		rBody.addShape(planet);
+		rBody.isStatic = true;
+        world.addBody(rBody);
+        
         state.pos.x = 400.0;
         state.pos.y = 250.0;
         calcRadius();
+		draw(0x0022aa);
     }
 }

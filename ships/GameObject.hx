@@ -30,14 +30,16 @@
  */
  package ships;
  
+ import flash.display.Sprite;
  import phx.Body;
  import phx.Vector;
  import phx.World;
  import phx.Properties;
  
  import melee.Melee;
- 
- class GameObject
+ import render.RenderMelee;
+
+ class GameObject extends Sprite
  {
 	
 	static var GROUP = 0;
@@ -55,9 +57,11 @@
     public var dead : Bool;
 	
     public function new(melee:Melee) {
+		super();
         this.world = melee.world;
 		group = GROUP++;
         this.melee = melee;
+		melee.objectList.add(this);
         // Default properties
         var linearFriction = 0.999; 
         var angularFriction = 0.999;
@@ -77,7 +81,9 @@
     public inline function checkDeath() {
         var time = flash.Lib.getTimer() * 0.001;
         var dt = time - birthday;
-        if(dt >= lifetime) {
+        if (dt >= lifetime) {
+			uponDeath();
+			world.removeBody(rBody);
             return true;
         } else {
             return false;
@@ -88,6 +94,7 @@
     public function applyDamage(damage:Int) {
 		health -= damage;
 		if (health <= 0) {
+			uponDeath();
 			world.removeBody(rBody);
 			return true;
 		} else {
@@ -113,16 +120,21 @@
 		state.radius = radius;
 	}
 	
+	public function draw(color:Int) {
+		RenderMelee.drawBody(graphics, rBody, color);
+		melee.addChild(this);
+	}
+	
     public function limitVelocity() { }
-	function destroy() {}
+	function destroy() { }
+	function uponDeath() {}
     public function updateState() {}
     public function applyGravity() {}
 	public function turnRight() {}
 	public function turnLeft() {}
 	public function thrust() {}
 	public function updateAI() {}	
-	public function collect(o:GameObject) {}
-    
+	public function collect(o:GameObject) { }
  }
  
 class State

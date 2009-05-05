@@ -31,6 +31,10 @@
 package melee;
 
 import flash.display.Sprite;
+import flash.display.Bitmap;
+import flash.geom.Vector3D;
+import flash.events.Event;
+import flash.events.KeyboardEvent;
 
 import haxe.FastList;
 
@@ -52,6 +56,8 @@ import ships.Marine;
 import ai.AI;
 import ai.Human;
 import render.RenderMelee;
+import render.Nebula;
+import hud.HUD;
 
 class Melee extends Sprite
 {
@@ -66,42 +72,46 @@ class Melee extends Sprite
 	public var ship2 : Ship;
 	
     public var planet : Planet;
-
-    var running : Bool;
-
     public var worldAABB : AABB;
     public var world : World;
     
+    var nebula : Nebula;
+	var hud : HUD;
+	
     var contactListener : ContactListener;
+	
+	public var scroll : Vector;
     
-    public function init() {
-		
+    public function new(s1bm:Bitmap, s2bm:Bitmap) {
+		super();
+		scroll = Vector.init();
         contactListener = new ContactListener();
         contactListener.melee = this;
-        
         timeStep = 1.0/60.0;
         objectList = new FastList<GameObject>();
-        
         initWorld();
-        running = true;
-
         human = new Human(ship1, this);
-        
-        objectList.add(planet);
-        objectList.add(ship1);
-        objectList.add(ship2);
-		
-        render = new RenderMelee(this);
+		hud = new HUD(ship1, s1bm, ship2, s2bm);
+		nebula = new Nebula(this);
+		render = new RenderMelee(this);
+		addChild(nebula);
+		addChild(hud);
     }
+	
+	public function init() {
+		stage.addEventListener(Event.ENTER_FRAME, loop);
+		stage.addEventListener(Event.ENTER_FRAME, nebula.scroll);
+		stage.addEventListener(Event.ENTER_FRAME, hud.update);
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, human.onKeyDown);
+		stage.addEventListener(KeyboardEvent.KEY_UP, human.onKeyUp);
+	}
 
-     // Main game loop
-    public function loop() {
-   
+   inline function loop(event:Event) {
+	
         for(o in objectList) {
             if(o.checkDeath()) {
-                world.removeBody(o.rBody);
                 objectList.remove(o);
-                continue;
+				continue;
             }
             o.limitVelocity();
             o.updateState();
@@ -110,10 +120,9 @@ class Melee extends Sprite
         }
 		
         // Update Physics
-        world.step(timeStep, 20);
+        world.step(timeStep, 10);
         // Update screen
         render.update();
-
     }
 
     private function initWorld() {
@@ -138,11 +147,12 @@ class Melee extends Sprite
 		
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(this);
-            objectList.add(asteroid);
         }
 	}
 	
 	public function handleContact(rb1:Body, rb2:Body) {
+		// TODO: Fix this
+		return;
 	    var go1,go2 : GameObject;
 	    go1 = go2 = null;
 	    // Find the associated game object
@@ -169,12 +179,10 @@ class Melee extends Sprite
 		
 		if (go1.applyDamage(damage2)) {
 			objectList.remove(go1);
-			go1 = null;
 		}
 		
 		if (go2.applyDamage(damage1)) {
 			objectList.remove(go2);
-			go2 = null;
-		}	    
+		}   
     }
 }

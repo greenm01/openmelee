@@ -32,23 +32,17 @@
 import flash.display.Bitmap;
 
 import melee.Melee;
-import hud.HUD;
 
 class Game
 {
+	
     var melee : Melee;
     var om : OpenMelee;
-    var hud : HUD;
 	
-    public function new(om:OpenMelee, ship1:Bitmap, ship2:Bitmap) {
+    public function new(om:OpenMelee, s1bm:Bitmap, s2bm:Bitmap) {
         this.om = om;
-        melee = new Melee();
-		hud = new HUD();
+        melee = new Melee(s1bm, s2bm);
 		om.root.addChild(melee);
-		om.root.addChild(hud);
 		melee.init();
-		hud.ship1 = melee.ship1;
-		hud.ship2 = melee.ship2;
-		hud.init(ship1, ship2);	
     }
 }

@@ -51,28 +51,20 @@ class Marine extends Ship
     
     public function new(melee:Melee, motherShip:Orz) {
         super(melee);
+		this.motherShip = motherShip;
         maxLinVel = 12.0;
         maxAngVel = 0.0;
         group = motherShip.group;
         steer = new Steer(this, melee.objectList);
-        this.motherShip = motherShip;
         crew = 5;
         lifetime = 60.0;
         var scale = 3.0;
-        
-        /*
-        var verts = new Array<Vector>();
-        verts.push(new Vector(0.0,0.25*scale));
-        verts.push(new Vector(0.15*scale,0.0));
-        verts.push(new Vector( -0.15*scale, 0.0));
-        var poly = new Polygon(verts, Vector.init());
-        */
         
         var offset = Vector.init();
         var poly = new Circle(scale * 0.15, offset);
         
         var localPos = new Vector(0, 3.25);
-        var worldPos = motherShip.turret.worldPoint(localPos);
+        var worldPos = motherShip.secondWep.rBody.worldPoint(localPos);
         rBody = new Body(worldPos.x, worldPos.y, props);
         rBody.v.x = -motherShip.rBody.v.x;
         rBody.v.y = -motherShip.rBody.v.y;
@@ -142,7 +134,7 @@ class Marine extends Ship
         }
     }
 
-    public override function uponDeath() {
+    override function uponDeath() {
         motherShip.numMarines--;
     }
     

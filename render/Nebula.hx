@@ -30,10 +30,9 @@
  */
 package render;
 
-import flash.display.Sprite;
-import flash.display.MovieClip;
-import flash.display.BitmapDataChannel;
 import flash.events.Event;
+import flash.display.Sprite;
+import flash.display.BitmapDataChannel;
 import flash.display.BlendMode;
 import flash.display.BitmapData;
 import flash.display.Bitmap;
@@ -44,8 +43,9 @@ import flash.geom.Rectangle;
 import phx.col.AABB;
 
 import utils.Util;
+import melee.Melee;
 
-class Nebula extends MovieClip
+class Nebula extends Sprite
 {
 
 	public var bitmapData : BitmapData;
@@ -53,9 +53,11 @@ class Nebula extends MovieClip
 	var background : Bitmap;
 	var stageWidth: Int;
 	var stageHeight : Int;
+	var melee : Melee;
 	
-	public function new () {
+	public function new (melee:Melee) {
 		super();
+		this.melee = melee;
 		stageWidth = 500;
 		stageHeight = 500;
 		bitmapData = new BitmapData(stageWidth, stageHeight, false, 0x00FF0000);
@@ -64,11 +66,13 @@ class Nebula extends MovieClip
 		var starField = new Bitmap(bStars);
 		addChild(background);
 		addChild(starField);
+		
 	}
 	
-	public inline function scrollStars (x:Float, y:Float) {
-		scrollBitmap(bStars, Std.int(x), Std.int(y));
-		scrollBitmap(bitmapData, -Std.int(x*0.5), -Std.int(y*0.5));
+	public inline function scroll(event:Event) {
+		var p = melee.scroll;
+		scrollBitmap(bStars,  Std.int(p.x), Std.int(p.y));
+		scrollBitmap(bitmapData, -Std.int(p.x*0.5), -Std.int(p.y*0.5));
 	}
 	
 	function addStars(nbStars:Int=2000, r:Float=1.5, g:Float=0.01, b:Float=1.5, a:Float=0.4) {
@@ -109,7 +113,7 @@ class Nebula extends MovieClip
 	}
 	
 	// function to scroll a seamless bitmap and loop pixels around 
-	inline function scrollBitmap(bmd:BitmapData, scrollX:Int,scrollY:Int) {     
+	inline function scrollBitmap(bmd:BitmapData, scrollX:Int, scrollY:Int) {     
 		
 		var width = bmd.width;
 		var height = bmd.height;

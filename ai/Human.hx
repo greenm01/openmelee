@@ -30,6 +30,8 @@
  */
 package ai;
 
+import flash.events.KeyboardEvent;
+
 import ships.Ship;
 import ships.UrQuan;
 import melee.Melee;
@@ -46,7 +48,8 @@ class Human
         this.ship = ship;
 	}
 
-	public function onKeyDown(key:Int) {
+	public function onKeyDown(event:KeyboardEvent) {
+		var key = event.keyCode;
         switch (key) {
             case 29: // ESC
                 quit = true;
@@ -73,7 +76,8 @@ class Human
 		}
     }
     
-    public function onKeyUp(key:Int) {
+    public function onKeyUp(event:KeyboardEvent) {
+		var key = event.keyCode;
         if (key == 65 || key == 68) {
             ship.turnR = false;
             ship.turnL = false;

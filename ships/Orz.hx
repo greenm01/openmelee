@@ -30,6 +30,8 @@
  */
 package ships;
 
+import flash.filters.BevelFilter;
+
 import haxe.FastList;
 
 import phx.Body;
@@ -48,8 +50,6 @@ class Orz extends Ship
     var scale : Float;
     var offset : Vector;
     var howitzer : Body;
-    var primeWep : GameObject;
-    public var turret : Body;
 	var tA : Float;
 	
 	public var marines : FastList<Marine>;
@@ -114,7 +114,9 @@ class Orz extends Ship
         rBody.addShape(new Polygon(bWing, offset));
         
 		// Turret
-		turret = new Body(pos.x, pos.y, props);
+		secondWep = new SecondaryWeapon(this, melee);
+		var turret = secondWep;
+		turret.rBody = new Body(pos.x, pos.y, props);
 		offset.set(0, -0.05);
 		var base = new Circle(0.6, offset);
 		pos = pos.plus(offset);
@@ -126,14 +128,18 @@ class Orz extends Ship
 		offset.set(0.0, 0.5);
 		var barrel = new Polygon(verts, offset);
 		base.groups = barrel.groups = 2;
-		turret.addShape(base);
-		turret.addShape(barrel);
+		turret.rBody.addShape(base);
+		turret.rBody.addShape(barrel);
 		
-		world.addBody(turret);
+		world.addBody(turret.rBody);
         world.addBody(rBody);
+		
 		calcRadius();
+		draw(0x6633FF);
+		turret.draw(0xFF0000);
+		filters = [new BevelFilter(2)];
       }
-      
+	
 	public override function fire() {
 		if(!primaryTime() || battery < pEnergy) return;	
 			batteryCost(pEnergy);
@@ -146,21 +152,21 @@ class Orz extends Ship
           	verts.push(new Vector(-0.25,0.5));
           	var poly = new Polygon(verts, Vector.init());
           	var localPos = new Vector(0, 1.25);
-          	var worldPos = turret.worldPoint(localPos);
+          	var worldPos = secondWep.rBody.worldPoint(localPos);
           	howitzer = new Body(worldPos.x, worldPos.y);
-		  	howitzer.a = turret.a;
-          	howitzer.v = new Vector(0.0, 100.0).rotate(turret.a);
+		  	howitzer.a = secondWep.rBody.a;
+          	howitzer.v = new Vector(0.0, 100.0).rotate(howitzer.a);
           	howitzer.addShape(poly);
           	world.addBody(howitzer);
           	primeWep.rBody = howitzer;
           	primeWep.lifetime = 2.5;
           	primeWep.damage = 10;
           	primeWep.health = 5.0;
-          	melee.objectList.add(primeWep);
+			primeWep.draw(0xFF0000);
       }
 	  
-	public override function uponDeath() {
-		for (s in turret.shapes) {
+	override function uponDeath() {
+		for (s in secondWep.rBody.shapes) {
 			s.groups = 1;
 		}
 	}
@@ -169,15 +175,19 @@ class Orz extends Ship
 	public override function collect(o:GameObject) {
 		if(o != primeWep) {
 			crew++;
-			o.destroy();
+			o.uponDeath();
+			world.removeBody(o.rBody);
+			melee.objectList.remove(o);
 		}
 	}
 	  
 	public override function updateSpecial() {
-	  turret.v = rBody.v;
-	  turret.x = rBody.x;
-	  turret.y = rBody.y;
-	  if (special) {
+		
+		var turret = secondWep.rBody;
+		turret.v = rBody.v;
+		turret.x = rBody.x;
+		turret.y = rBody.y;
+		if (special) {
 		  if (turnL) {
 			tA += Math.PI / 32;
 		  } else if (turnR) {
@@ -194,10 +204,10 @@ class Orz extends Ship
 					numMarines++;
 					marine.initAI(melee.ship2);
 					marines.add(marine);
-					melee.objectList.add(marine);
+					marine.draw(0xFF0000);
 				}
 		  }
-	  }
-	  turret.a = rBody.a + Math.PI/2 + tA;
+		}
+		turret.a = rBody.a + Math.PI/2 + tA;
 	}
 }

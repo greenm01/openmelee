@@ -35,6 +35,7 @@ import flash.display.Bitmap;
 import flash.display.Graphics;
 import flash.display.Shape;
 import flash.display.Sprite;
+import flash.events.Event;
 import flash.filters.BevelFilter;
 import flash.geom.Vector3D;
 import flash.text.TextField;
@@ -45,15 +46,13 @@ import phx.Vector;
 import phx.Circle;
 import phx.Polygon;
 
-import render.RenderHUD;
+import render.RenderMelee;
 import ships.Ship;
 import ships.Orz;
 
 class HUD extends Sprite
 {
 
-	var render : RenderHUD;
-	
 	var orz : Orz;
 	public var ship1: Ship;
 	var ship1Icon : Bitmap;
@@ -79,27 +78,45 @@ class HUD extends Sprite
 	var white : Int;
 	var green : Int;
 	var red : Int;
+	var blue : Int;
 	var limeGreen : Int;
 
-	public function new() {
+	public function new(s1:Ship, s1bm:Bitmap, s2:Ship, s2bm:Bitmap) {
 		super();
+		ship1 = s1;
+		ship1Icon = s1bm;
+		ship2 = s2;
+		ship2Icon = s2bm;
 		white = 0xFFFFFF;
 		green = 0x33CC11;
 		red = 0xFF0000;
+		blue = 0x6633FF;
 		limeGreen = 0x00FF00;
 		crew1Pos =  new Vector(515, 152);
 		bat1Pos =  new Vector(625, 152);
 		crew2Pos = new Vector(515, 402);
 		bat2Pos =  new Vector(625, 402);
+		init();
 	}
 	
-	public function init(ship1Icon:Bitmap, ship2Icon:Bitmap) {
+	function init() {
+		// Draw HUD menu
+		var g = graphics;
+		g.lineStyle(1.0, 0x999999);
+		g.beginFill(0x333333, 1);
+		g.drawRect(500, 0, 150, 500);
+		g.endFill();
+
+		g.moveTo(503, 3);
+		g.lineTo(503, 3);
+		g.lineTo(647, 3);
+		g.lineTo(647, 497);
+		g.lineTo(503, 497);
+		g.lineTo(503, 3);
 		
-		render = new RenderHUD(this);
-		render.draw();
-		
-		this.ship1Icon = ship1Icon;
-		this.ship2Icon = ship2Icon;
+		g.moveTo(503, 247);
+		g.lineTo(503, 247);
+		g.lineTo(647, 247);
 
 		// Ship 1
 		print(new Vector(505, 5), ship1.name, white);
@@ -126,22 +143,20 @@ class HUD extends Sprite
 		s1.x = 575.0;
 		s1.y = 85.0;
 		s1.rotation = -90;
-		for (s in ship1.rBody.shapes) {
-			drawShape(s1.graphics, s.polygon, 0x6633FF );
-		}
+		s1.scaleX = s1.scaleY = 20.0;
+		RenderMelee.drawBody(s1.graphics, ship1.rBody, blue);
 		addChild(s1);
-		s1.filters = [new BevelFilter(5)]; 
+		s1.filters = [new BevelFilter(2)]; 
 		
 		orz = cast(ship1, Orz);
 		s1Special = new flash.display.Shape();
 		s1Special.x = 575.0;
 		s1Special.y = 85.0;
 		s1Special.rotation = -90;
-		for (s in orz.turret.shapes) {
-			drawShape(s1Special.graphics, s, red);
-		}
+		RenderMelee.drawBody(s1Special.graphics, ship1.secondWep.rBody, red);
+		s1Special.scaleX = s1Special.scaleY = 20.0;
 		addChild(s1Special);
-		s1Special.filters = [new BevelFilter(5)]; 
+		s1Special.filters = [new BevelFilter(2)]; 
 		
 		// Ship 2
 		print(new Vector(505, 249), ship2.name, white);
@@ -168,14 +183,14 @@ class HUD extends Sprite
 		s2.x = 575.0;
 		s2.y = 340.0;
 		s2.rotation = -90;
-		for (s in ship2.rBody.shapes) {
-			drawShape(s2.graphics, s.polygon, limeGreen);
-		}
+		s2.scaleX = s2.scaleY = 20.0;
+		RenderMelee.drawBody(s2.graphics, ship2.rBody, green);
+		s2.graphics.endFill();
 		addChild(s2);
-		s2.filters = [new BevelFilter(5)]; 
+		s2.filters = [new BevelFilter(2)]; 
 	}
 	
-	public function loop() {
+	public inline function update(event:Event) {
 		updateState(ship1Crew, ship1.crewCapacity, ship1.crew, crew1Pos, green);
 		updateState(ship1Bat, ship1.batteryCapacity, ship1.battery, bat1Pos, red);
 		updateState(ship2Crew, ship2.crewCapacity, ship2.crew, crew2Pos, green);
@@ -183,7 +198,7 @@ class HUD extends Sprite
 		updateSpecial();
 	}
 	
-	function updateState(sprite:Sprite, max:Int, num:Int, pos:Vector, color:Int) {
+	inline function updateState(sprite:Sprite, max:Int, num:Int, pos:Vector, color:Int) {
 		var p = pos.clone();
 		var g = sprite.graphics;
 		g.clear();
@@ -206,37 +221,6 @@ class HUD extends Sprite
 		}
 	}
 	
-	function drawShape(g:Graphics, s:phx.Shape, color:Int) {
-		g.lineStyle(1.0, color);
-		g.beginFill(color, 0.25);
-		switch( s.type ) {
-			case phx.Shape.CIRCLE: drawCircle(g, s.circle);
-			case phx.Shape.POLYGON: drawPoly(g, s.polygon);
-		}
-		g.endFill();
-    }
-	
-	inline function drawCircle(g:Graphics, c:Circle) {
-        var zoom = 20.0;
-		var p = c.c;
-		g.moveTo(p.x, p.y);
-		g.drawCircle(p.x, p.y, c.r * zoom);
-	}
-	
-	inline function drawPoly(g:Graphics, p:Polygon) {
-		var zoom = 20.0;
-		var v = p.verts;
-		var f = v.mult(zoom);
-		g.moveTo(f.x, f.y);
-		while ( v != null ) {
-			f = v.mult(zoom);
-			g.lineTo(f.x, f.y);
-			v = v.next;
-		}
-		f = p.verts.mult(zoom);
-		g.lineTo(f.x, f.y);
-	}
-	
 	inline function print(pos:Vector, text:String, color:Int) {
 		var message = new TextField();
 		message.text = text;
@@ -250,7 +234,7 @@ class HUD extends Sprite
 	}
 	
 	inline function updateSpecial() {
-		s1Special.rotation = (orz.turret.a - orz.rBody.a - Math.PI/2) * 57.2957795;
+		s1Special.rotation = (orz.secondWep.rBody.a - orz.rBody.a - Math.PI/2) * 57.2957795;
 	}
 	
 }

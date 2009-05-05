@@ -30,6 +30,8 @@
  */
 package ships;
 
+import flash.filters.BevelFilter;
+
 import phx.Body;
 import phx.World;
 import phx.Polygon;
@@ -44,8 +46,6 @@ class UrQuan extends Ship
 
     var scale : Float;
     var offset : Vector;
-
-	var primeWep : GameObject;
 
     public function new(melee : Melee) {
 
@@ -129,7 +129,8 @@ class UrQuan extends Ship
         
         world.addBody(rBody);
 		calcRadius();
-		// Add margin for collision avoidance
+		draw(0x00FF00);
+		filters = [new BevelFilter(2)];
     }
 
 	public override function fire() {
@@ -154,11 +155,11 @@ class UrQuan extends Ship
         primeWep.lifetime = 2.5;
         primeWep.damage = 10;
         primeWep.health = 5.0;
-        melee.objectList.add(primeWep);
+		primeWep.draw(0xFF0000);
 	}
 
 	
-    public override function uponDeath() {  
+    override function uponDeath() {  
     }
     
     public override function updateSpecial() {
