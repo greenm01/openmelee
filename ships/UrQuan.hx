@@ -72,7 +72,7 @@ class UrQuan extends Ship
 
         var pos = new Vector(300.0, 200.0);
         rBody = new Body(pos.x, pos.y);
-        rBody.a = -Math.PI;
+        //rBody.a = -Math.PI;
 		
         // Head
         var head = new Array();
@@ -130,7 +130,7 @@ class UrQuan extends Ship
         world.addBody(rBody);
 		calcRadius();
 		draw(0x00FF00);
-		filters = [new BevelFilter(2)];
+		filters = [new BevelFilter(4)];
 		init();
     }
 

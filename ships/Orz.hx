@@ -76,7 +76,7 @@ class Orz extends Ship
         scale = 0.025;
         offset = Vector.init();
         engineForce = new Vector(1000, 0);
-        turnForce = new Vector(0, 5000);
+        turnForce = new Vector(0, -5000);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 		
@@ -133,7 +133,7 @@ class Orz extends Ship
 		init();
 		draw(0x6633FF);
 		secondWep.draw(0xFF0000);
-		filters = [new BevelFilter(2)];
+		filters = [new BevelFilter(4)];
       }
 	
 	public override function fire() {
@@ -151,7 +151,7 @@ class Orz extends Ship
           	var worldPos = secondWep.rBody.worldPoint(localPos);
           	howitzer = new Body(worldPos.x, worldPos.y);
 		  	howitzer.a = secondWep.rBody.a;
-          	howitzer.v = new Vector(0.0, -100.0).rotate(howitzer.a);
+          	howitzer.v = new Vector(0.0, 100.0).rotate(howitzer.a);
           	howitzer.addShape(poly);
           	world.addBody(howitzer);
           	primeWep.rBody = howitzer;

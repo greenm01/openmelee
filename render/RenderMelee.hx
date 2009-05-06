@@ -168,7 +168,7 @@ class RenderMelee
 		
 		var x = (oldPos.x - point1.x) * 5.0; 
 		var y = -(oldPos.y - point1.y) * 5.0;
-		melee.scroll.set(x, y);
+		melee.scroll.set(x, -y);
 		oldPos = point1.clone();
 		
         dist = Util.clamp(dist, 50, 400);
@@ -184,12 +184,16 @@ class RenderMelee
 			var o = cast(melee.gameObjects.getChildAt(i), ships.GameObject);
             for(s in o.rBody.shapes) {
                 if (aabb.intersects2(s.aabb)) {
-                    o.visible = true;
 					var trans = transform(o.state.pos);
 					o.x = trans.x;
 					o.y = trans.y;
-					o.rotation = -o.rBody.a * 57.2957795;
+					if(o.x > melee.worldAABB.r || o.y > melee.worldAABB.b) {
+						o.visible = false;
+						break;
+					}
+					o.rotation = o.rBody.a * 57.2957795;
 					o.scaleX = o.scaleY = zoom;
+					o.visible = true;
 					break;
                 } else {
 					o.visible = false;
@@ -209,7 +213,7 @@ class RenderMelee
 		var d = new Vector(v.x - viewCenter.x, v.y - viewCenter.y);
 		var col1 = new Vector(1,0);
 		var col2 = new Vector(0,1);
-		return new Vector(d.dot(col1), -d.dot(col2));
+		return new Vector(d.dot(col1), d.dot(col2));
     }
     
     inline function worldPoint(v:Vector) {

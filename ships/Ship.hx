@@ -93,7 +93,7 @@ class Ship extends GameObject
 	
     public function new(melee:Melee) {
         super(melee);
-		maxLinVel = 30.0;
+		maxLinVel = 35.0;
 		maxAngVel = 2.0;
 		pTime = 0.0;
 		bTime = 0.0;
@@ -107,14 +107,14 @@ class Ship extends GameObject
     }
 
     public override function turnLeft() {
-        var lp = leftTurnPoint.rotate(rBody.a);
-        var tf = turnForce.rotate(rBody.a);
+        var lp = leftTurnPoint; 
+        var tf = turnForce; 
         rBody.t += lp.cross(tf);
     }
 
     public override function turnRight() {
-        var rp = rightTurnPoint.rotate(rBody.a);
-        var tf = turnForce.rotate(rBody.a);
+        var rp = rightTurnPoint; 
+        var tf = turnForce; 
         rBody.t += rp.cross(tf);
     }
 
@@ -176,7 +176,7 @@ class Ship extends GameObject
     public override function applyGravity() {
         var minRadius = 0.1;
         var maxRadius = 50.0;
-        var strength = 100.0;
+        var strength = 75.0;
         var center = new Vector(400.0, 250.0);
         
         var rx = center.x - rBody.x;
