@@ -131,6 +131,7 @@ class UrQuan extends Ship
 		calcRadius();
 		draw(0x00FF00);
 		filters = [new BevelFilter(2)];
+		init();
     }
 
 	public override function fire() {
@@ -154,13 +155,10 @@ class UrQuan extends Ship
         primeWep.rBody = howitzer;
         primeWep.lifetime = 2.5;
         primeWep.damage = 10;
-        primeWep.health = 5.0;
+        primeWep.crew = 5;
 		primeWep.draw(0xFF0000);
+		primeWep.init();
 	}
-
-	
-    override function uponDeath() {  
-    }
     
     public override function updateSpecial() {
     }

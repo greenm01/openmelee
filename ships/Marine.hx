@@ -54,8 +54,9 @@ class Marine extends Ship
 		this.motherShip = motherShip;
         maxLinVel = 12.0;
         maxAngVel = 0.0;
+		damage = 3;
         group = motherShip.group;
-        steer = new Steer(this, melee.objectList);
+        steer = new Steer(this, melee.gameObjects);
         crew = 5;
         lifetime = 60.0;
         var scale = 3.0;
@@ -76,8 +77,9 @@ class Marine extends Ship
         rightTurnPoint = new Vector( -0.15*scale, 0);
         leftTurnPoint = new Vector(0.15 * scale, 0);
         
-        calcRadius();
-        // Add some margin
+		draw(0xFF0000);
+		init();
+		// Add some margin
         radius += 2.0;
     }        
     
@@ -134,8 +136,8 @@ class Marine extends Ship
         }
     }
 
-    override function uponDeath() {
-        motherShip.numMarines--;
+    override function destroy() {
+        //motherShip.numMarines--;
     }
     
     public override function applyGravity() {

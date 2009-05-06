@@ -32,6 +32,8 @@ package ai;
 
 import haxe.FastList;
 
+import flash.display.Sprite;
+
 import phx.Vector;
 import phx.World;
 
@@ -58,9 +60,9 @@ class AI
 	var st : Vector;
     var range : Float;
 	
-	public function new(ship : GameObject, objectList : FastList<GameObject>) {
+	public function new(ship:GameObject, gameObjects:Sprite) {
 		this.ship = ship;
-		steer = new Steer(ship, objectList);
+		steer = new Steer(ship, gameObjects);
         maxPredictionTime = 0.25;
 	}
 	

@@ -53,15 +53,15 @@
     public var birthday : Float;
     public var lifetime : Float;
     public var damage : Int;
-    public var health : Float;
+    public var crewCapacity : Int;
+	public var crew : Int;
     public var dead : Bool;
 	
     public function new(melee:Melee) {
 		super();
+		this.melee = melee;
         this.world = melee.world;
 		group = GROUP++;
-        this.melee = melee;
-		melee.objectList.add(this);
         // Default properties
         var linearFriction = 0.999; 
         var angularFriction = 0.999;
@@ -73,33 +73,45 @@
         birthday = flash.Lib.getTimer() * 0.001;
         lifetime = phx.Const.FMAX;
         damage = 5;
-        health = phx.Const.FMAX;
+        crew = crewCapacity = 2147483648;
 		dead = false;
 		radius = 0.0;
+		melee.gameObjects.addChild(this);
     }
+	
+	inline function init() {
+		rBody.object = this;
+		x = rBody.x;
+		y = rBody.y;
+		rotation = rBody.a * 57.2957795;
+		calcRadius();
+	}
+	
+	public function updateState() {
+		state.pos.set(rBody.x, rBody.y);
+		state.linVel = rBody.v;
+	}
     
     public inline function checkDeath() {
         var time = flash.Lib.getTimer() * 0.001;
         var dt = time - birthday;
         if (dt >= lifetime) {
-			uponDeath();
-			world.removeBody(rBody);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-	
-    public function applyDamage(damage:Int) {
-		health -= damage;
-		if (health <= 0) {
-			uponDeath();
-			world.removeBody(rBody);
+			destroy();
+			dead = true;
+			melee.destroyList.set(rBody);
 			return true;
-		} else {
+        } else {
 			return false;
 		}
+    }
+    
+    public function applyDamage(damage:Int) {
+		crew -= damage;
+		if (crew <= 0) {
+			destroy();
+			dead = true;
+			melee.destroyList.set(rBody);
+		} 
 	}
 	
 	function calcRadius() {
@@ -122,13 +134,11 @@
 	
 	public function draw(color:Int) {
 		RenderMelee.drawBody(graphics, rBody, color);
-		melee.addChild(this);
 	}
 	
     public function limitVelocity() { }
 	function destroy() { }
 	function uponDeath() {}
-    public function updateState() {}
     public function applyGravity() {}
 	public function turnRight() {}
 	public function turnLeft() {}

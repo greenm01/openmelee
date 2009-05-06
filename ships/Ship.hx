@@ -85,9 +85,6 @@ class Ship extends GameObject
 	// Secondary battery cost
 	var sEnergy : Int;
 
-	public var crewCapacity : Int;
-	public var crew : Int;
-	
     var maxLinVel : Float;
     var maxAngVel : Float;
 
@@ -148,7 +145,7 @@ class Ship extends GameObject
     }
 	
 	public function initAI(enemy:Ship) {
-		ai = new AI(this, melee.objectList);
+		ai = new AI(this, melee.gameObjects);
 		this.enemy = ai.enemy = enemy;
 	}
 	
@@ -158,16 +155,6 @@ class Ship extends GameObject
 		}
 	}
 
-	public override function applyDamage(damage:Int) {
-		crew -= damage;
-		if (crew <= 0) {
-			destroy();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
     override function destroy() {
         for(s in rBody.shapes) {
             var debris = new Debris(melee);
@@ -184,10 +171,6 @@ class Ship extends GameObject
                 case Shape.CIRCLE:
             }
         }
-		uponDeath();
-        world.removeBody(rBody);
-		dead = true;
-        return;
     }
 	
     public override function applyGravity() {
@@ -242,7 +225,6 @@ class Ship extends GameObject
 		battery = cast(Util.clamp(b, 0, batteryCapacity), Int);
 	}
 	
-	override function uponDeath() {}
 	public function updateSpecial() {}
     public function fire() {}
 }

@@ -24,6 +24,8 @@
  */
 package phx;
 
+import ships.GameObject;
+
 class Body {
 
 	static var ID = 0;
@@ -57,6 +59,8 @@ class Body {
 	public var properties : Properties;
     
     public var world : World;
+	
+	public var object : GameObject;
 
 	public function new( x, y, ?props ) {
 		id = ID++;

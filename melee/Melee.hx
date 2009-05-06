@@ -58,11 +58,12 @@ import ai.Human;
 import render.RenderMelee;
 import render.Nebula;
 import hud.HUD;
+import utils.Set;
 
 class Melee extends Sprite
 {
-    static var NUM_ASTROIDS : Int = 3;
-    public var objectList : FastList<GameObject>;
+    static var NUM_ASTROIDS : Int = 10;
+	public var destroyList : Set<Body>;
     var timeStep : Float;
     var allowSleep : Bool;
     public var render : RenderMelee;
@@ -77,6 +78,7 @@ class Melee extends Sprite
     
     var nebula : Nebula;
 	var hud : HUD;
+	public var gameObjects : Sprite;
 	
     var contactListener : ContactListener;
 	
@@ -87,14 +89,15 @@ class Melee extends Sprite
 		scroll = Vector.init();
         contactListener = new ContactListener();
         contactListener.melee = this;
-        timeStep = 1.0/60.0;
-        objectList = new FastList<GameObject>();
+        timeStep = 1.0 / 60.0;
+		gameObjects = new Sprite();
         initWorld();
         human = new Human(ship1, this);
 		hud = new HUD(ship1, s1bm, ship2, s2bm);
 		nebula = new Nebula(this);
 		render = new RenderMelee(this);
 		addChild(nebula);
+		addChild(gameObjects);
 		addChild(hud);
     }
 	
@@ -108,9 +111,16 @@ class Melee extends Sprite
 
    inline function loop(event:Event) {
 	
-        for(o in objectList) {
+		destroyList = new Set<Body>();
+		
+		// Update Physics
+		world.step(timeStep, 10);
+		// Update screen
+		render.update();
+		
+        for (i in 0...gameObjects.numChildren) {
+			var o = cast(gameObjects.getChildAt(i), ships.GameObject);
             if(o.checkDeath()) {
-                objectList.remove(o);
 				continue;
             }
             o.limitVelocity();
@@ -119,10 +129,10 @@ class Melee extends Sprite
             o.updateAI();
         }
 		
-        // Update Physics
-        world.step(timeStep, 10);
-        // Update screen
-        render.update();
+		for (b in destroyList) {
+			gameObjects.removeChild(b.object);
+			world.removeBody(b);
+		}
     }
 
     private function initWorld() {
@@ -151,22 +161,9 @@ class Melee extends Sprite
 	}
 	
 	public function handleContact(rb1:Body, rb2:Body) {
-		// TODO: Fix this
-		return;
-	    var go1,go2 : GameObject;
-	    go1 = go2 = null;
-	    // Find the associated game object
-	    for(o in objectList) {
-	        if(o.rBody == rb1) {
-	            go1 = o;
-            } else if(o.rBody == rb2) {
-                go2 = o;
-            }
-        }
-        
-		if(go1 == null || go2 == null) {
-            return;
-        }
+
+		var go1 = rb1.object;
+		var go2 = rb2.object;
 		
 		if (go1.group == go2.group) {
 			go1.collect(go2);
@@ -174,15 +171,7 @@ class Melee extends Sprite
 			return;
 		}
 		
-		var damage1 = go1.damage;
-		var damage2 = go2.damage;
-		
-		if (go1.applyDamage(damage2)) {
-			objectList.remove(go1);
-		}
-		
-		if (go2.applyDamage(damage1)) {
-			objectList.remove(go2);
-		}   
+		go1.applyDamage(go2.damage);
+		go2.applyDamage(go1.damage);
     }
 }

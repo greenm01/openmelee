@@ -34,10 +34,10 @@
  
  class PrimaryWeapon extends GameObject
 {
-    var ship : Ship;
+    var motherShip : Ship;
     
     public function new(ship:Ship, melee:Melee){
         super(melee);
-        this.ship = ship;
+        motherShip = ship;
     }        
 }

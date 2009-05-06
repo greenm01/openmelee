@@ -58,6 +58,7 @@ class Debris extends GameObject
         lifetime = 2.0;
         rBody = shrapnel;
 		draw(0xFF0000);
+		init();
     }
     
     public function initCircle() {

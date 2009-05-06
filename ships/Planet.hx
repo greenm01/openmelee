@@ -42,10 +42,6 @@ class Planet extends GameObject
    
     public function new(melee:Melee) {
         super(melee);
-        init();
-    }
-    
-    function init() {
         // Create planet
         group = -1;
 		damage = 3;
@@ -61,5 +57,6 @@ class Planet extends GameObject
         state.pos.y = 250.0;
         calcRadius();
 		draw(0x0022aa);
+		init();
     }
 }

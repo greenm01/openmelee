@@ -30,7 +30,8 @@
  */
 package ai;
 
-import flash.geom.Vector3D;
+import flash.display.Sprite;
+
 import haxe.FastList;
 
 import phx.Vector;
@@ -45,12 +46,11 @@ import utils.Util;
 class Steer 
 {
 
-    var objectList:FastList<GameObject>;
+    var gameObjects : Sprite;
     
     // Constructor: initializes state
-    public function new (ship:GameObject, objectList:FastList<GameObject>)
-    {
-        this.objectList = objectList;
+    public function new (ship:GameObject, gameObjects:Sprite) {
+        this.gameObjects = gameObjects;
         m_ship = ship;
         m_body = ship.rBody;
     }
@@ -98,8 +98,9 @@ class Steer
         var shortestTime = 1e99;
     
         // Loop through each target
-        for(obstacle in objectList) {
+        for(i in 0...gameObjects.numChildren) {
 
+			var obstacle = cast(gameObjects.getChildAt(i), ships.GameObject);
             var target = obstacle.state;
             
             if(obstacle.rBody == m_body || obstacle.rBody == null || m_group == obstacle.group) {

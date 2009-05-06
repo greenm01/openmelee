@@ -113,7 +113,7 @@ class RenderMelee
 
     static inline function drawShape(g:Graphics, s:phx.Shape, color:Int) {
 		g.lineStyle(1/20, color);
-		g.beginFill(color, 0.75);
+		g.beginFill(color, 0.5);
 		switch( s.type ) {
 			case phx.Shape.CIRCLE: drawCircle(g, s.circle);
 			case phx.Shape.POLYGON: drawPoly(g, s.polygon);
@@ -180,10 +180,10 @@ class RenderMelee
         var aabb = new AABB(left, top, right, bottom);
         
         // Update bodies
-		
-        for (o in melee.objectList) {
+        for (i in 0...melee.gameObjects.numChildren) {
+			var o = cast(melee.gameObjects.getChildAt(i), ships.GameObject);
             for(s in o.rBody.shapes) {
-                if(aabb.intersects2(s.aabb)) {
+                if (aabb.intersects2(s.aabb)) {
                     o.visible = true;
 					var trans = transform(o.state.pos);
 					o.x = trans.x;

@@ -43,11 +43,7 @@ class Asteroid extends GameObject
     
     public function new(melee:Melee) {
         super(melee);
-        init();
-    }
-
-    function init() {
-		var radius = 1.0;
+        var radius = 1.0;
 		var offset = new Vector(-1.0, 1.0);
 		var s1 = new Circle(radius, offset);
 		
@@ -57,16 +53,16 @@ class Asteroid extends GameObject
 		var x = Util.randomRange(-100.0, 100.0);
 		var y = Util.randomRange(-100.0, 100.0);
 		var angle = Util.randomRange(-Math.PI, Math.PI);
-		var asteroid = new Body(x,y, props);
+		rBody = new Body(x,y, props);
+		rBody.v.x = x;
+		rBody.v.y = y;
+		rBody.a = angle;
+		rBody.addShape(s1);
+		rBody.addShape(s2);
 		
-		asteroid.v.x = x;
-		asteroid.v.y = y;
-		asteroid.a = angle;
-		
-		asteroid.addShape(s1);
-		asteroid.addShape(s2);
-		world.addBody(asteroid);
-		rBody = asteroid;
+		world.addBody(rBody);
 		draw(0xFF0000);
-	}
+		init();
+    }
+
 }
