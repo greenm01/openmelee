@@ -62,7 +62,7 @@ import utils.Set;
 
 class Melee extends Sprite
 {
-    static var NUM_ASTROIDS : Int = 10;
+    static var NUM_ASTROIDS : Int = 5;
 	public var destroyList : Set<Body>;
     var timeStep : Float;
     var allowSleep : Bool;
@@ -83,9 +83,11 @@ class Melee extends Sprite
     var contactListener : ContactListener;
 	
 	public var scroll : Vector;
-    
-    public function new(s1bm:Bitmap, s2bm:Bitmap) {
+    var pbm : Bitmap;
+
+    public function new(s1bm:Bitmap, s2bm:Bitmap, pbm:Bitmap) {
 		super();
+		this.pbm = pbm;
 		scroll = Vector.init();
         contactListener = new ContactListener();
         contactListener.melee = this;
@@ -153,7 +155,7 @@ class Melee extends Sprite
 		ship2 = new UrQuan(this);
 		ship1 = new Orz(this);
 		ship2.initAI(ship1);
-        planet = new Planet(this);
+        planet = new Planet(this, pbm);
 		
         for(i in 0...NUM_ASTROIDS) {
             var asteroid = new Asteroid(this);

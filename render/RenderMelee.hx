@@ -178,7 +178,7 @@ class RenderMelee
         var top = (viewCenter.y - dist);
 		
         var aabb = new AABB(left, top, right, bottom);
-        
+		
         // Update bodies
         for (i in 0...melee.gameObjects.numChildren) {
 			var o = cast(melee.gameObjects.getChildAt(i), ships.GameObject);

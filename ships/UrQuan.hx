@@ -130,7 +130,7 @@ class UrQuan extends Ship
         world.addBody(rBody);
 		calcRadius();
 		draw(0x00FF00);
-		filters = [new BevelFilter(4)];
+		filters = [new BevelFilter(2)];
 		init();
     }
 

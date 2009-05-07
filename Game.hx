@@ -39,9 +39,9 @@ class Game
     var melee : Melee;
     var om : OpenMelee;
 	
-    public function new(om:OpenMelee, s1bm:Bitmap, s2bm:Bitmap) {
+    public function new(om:OpenMelee, s1bm:Bitmap, s2bm:Bitmap, pbm:Bitmap) {
         this.om = om;
-        melee = new Melee(s1bm, s2bm);
+        melee = new Melee(s1bm, s2bm, pbm);
 		om.root.addChild(melee);
 		melee.init();
     }

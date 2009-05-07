@@ -5,7 +5,7 @@
 	<library>
 	  <bitmap id="OrzNemesis" name="OrzNemesis" import="ships/orzcap.png"/>
 	  <bitmap id="KzerZa" name="KzerZa" import="ships/KzerZa.png"/>
-	  <bitmap id="Planet" name="Planet" import="ships/earth.png"/>
+	  <bitmap id="Planet" name="Planet" import="ships/planet1.png"/>
 	  <!--<clip id="library" import="org/aswing/library.swf"/> -->
 	</library>
   </frame>

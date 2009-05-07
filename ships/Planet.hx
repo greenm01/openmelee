@@ -30,6 +30,9 @@
  */
 package ships;
 
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+
 import phx.Body;
 import phx.World;
 import phx.Circle;
@@ -40,8 +43,11 @@ import melee.Melee;
 class Planet extends GameObject
 {
    
-    public function new(melee:Melee) {
+	public var pbm : Bitmap;
+
+    public function new(melee:Melee, pbm:Bitmap) {
         super(melee);
+		this.pbm = pbm;
         // Create planet
         group = -1;
 		damage = 3;
@@ -56,7 +62,11 @@ class Planet extends GameObject
         state.pos.x = 400.0;
         state.pos.y = 250.0;
         calcRadius();
-		draw(0x0022aa);
+		//draw(0x0022aa);
 		init();
+		addChild(pbm);
+		pbm.scaleX = pbm.scaleY = 0.059;
+		pbm.x = -8.6;
+		pbm.y = -8.5;
     }
 }

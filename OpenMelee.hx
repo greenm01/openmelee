@@ -47,6 +47,14 @@ class KzerZa extends Bitmap
     }
 }
 
+class Planet extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
 class OpenMelee
 {
 
@@ -61,7 +69,8 @@ class OpenMelee
    function initGame() {
 		var ship1 =  new OrzNemesis(); 
 		var ship2 =  new KzerZa();
-		game = new Game(this, ship1, ship2);
+		var planet = new Planet();
+		game = new Game(this, ship1, ship2, planet);
    }
  
    public static function main() {

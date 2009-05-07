@@ -133,7 +133,7 @@ class Orz extends Ship
 		init();
 		draw(0x6633FF);
 		secondWep.draw(0xFF0000);
-		filters = [new BevelFilter(4)];
+		filters = [new BevelFilter(2)];
       }
 	
 	public override function fire() {
