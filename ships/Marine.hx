@@ -30,7 +30,6 @@
  */
 package ships;
 
-import flash.geom.Vector3D;
 import phx.Vector;
 import phx.Polygon;
 import phx.Circle;

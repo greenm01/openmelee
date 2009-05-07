@@ -32,7 +32,6 @@ package melee;
 
 import flash.display.Sprite;
 import flash.display.Bitmap;
-import flash.geom.Vector3D;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
 

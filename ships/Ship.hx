@@ -30,7 +30,6 @@
  */
 package ships;
 
-import flash.geom.Vector3D;
 import haxe.FastList;
 
 import phx.Vector;

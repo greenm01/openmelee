@@ -23,7 +23,6 @@
  * DAMAGE.
  */
 package phx;
-import flash.geom.Vector3D;
 
 class Shape {
 

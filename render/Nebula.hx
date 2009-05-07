@@ -32,7 +32,6 @@ package render;
 
 import flash.events.Event;
 import flash.display.Sprite;
-import flash.display.BitmapDataChannel;
 import flash.display.BlendMode;
 import flash.display.BitmapData;
 import flash.display.Bitmap;
@@ -81,7 +80,7 @@ class Nebula extends Sprite
 		perlin.perlinNoise(200, 200, 10, Math.round(Math.random() * 100), true, false);
 		
 		var bd = new BitmapData(stageWidth, stageHeight, true, 0);
-		bd.copyChannel(perlin, perlin.rect, new Point(), BitmapDataChannel.GREEN, BitmapDataChannel.ALPHA);
+		bd.copyChannel(perlin, perlin.rect, new Point(), 2, 8);
 		bd.colorTransform(bd.rect, new ColorTransform(0.1,2,0.1,1));
 
 		bStars = new BitmapData(stageWidth, stageHeight, true, 0);

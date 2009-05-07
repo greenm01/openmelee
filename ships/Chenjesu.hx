@@ -1,4 +1,4 @@
-/* OpenMelee
+﻿/* OpenMelee
  * Copyright (c) 2009, Mason Green 
  * http://github.com/zzzzrrr/openmelee
  *
@@ -44,8 +44,8 @@ import phx.Vector;
 import ships.Ship;
 import melee.Melee;
 
-// Orz Nemesis
-class Orz extends Ship
+// Chenjesu Broodhome
+class Chenjesu extends Ship
 {
     var scale : Float;
     var offset : Vector;
@@ -59,7 +59,7 @@ class Orz extends Ship
 		
 		super(melee);
 		
-		name = new String("Orz: Nemesis");
+		name = new String("Chenjesu: Broodhome");
 		captain = new String("zzzzrrr");
 		marines = new FastList<Marine>();
 		

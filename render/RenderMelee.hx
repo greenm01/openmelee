@@ -36,9 +36,7 @@ import flash.display.Graphics;
 import flash.display.BitmapData;
 import flash.display.Bitmap;
 import flash.display.Sprite;
-import flash.display.BitmapDataChannel;
 import flash.events.Event;
-import flash.filters.BevelFilter;
 import flash.filters.DropShadowFilter;
 
 import flash.geom.ColorTransform;

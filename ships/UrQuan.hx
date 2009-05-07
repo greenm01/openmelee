@@ -63,10 +63,10 @@ class UrQuan extends Ship
 		pEnergy = 8;
 		sEnergy = 6;
 		
-        scale = 0.025;
+        scale = 0.035;
         offset = new Vector(0, 0);
-        engineForce = new Vector(800, 0);
-        turnForce = new Vector(0, 3000);
+        engineForce = new Vector(0, 8000);
+        turnForce = new Vector(3000, 0);
         rightTurnPoint = new Vector(-0.5, 0);
         leftTurnPoint = new Vector(0.5, 0);
 
@@ -76,6 +76,7 @@ class UrQuan extends Ship
 		
         // Head
         var head = new Array();
+		/*
         head[0]=(new Vector(42 * scale, 49 * scale));
         head[1]=(new Vector(63 * scale, 49 * scale));
         head[2]=(new Vector(70 * scale, 45.5 * scale));
@@ -84,32 +85,63 @@ class UrQuan extends Ship
         head[5]=(new Vector(70 * scale, -49 * scale));
         head[6]=(new Vector(63 * scale, -56 * scale));
         head[7]=(new Vector(42 * scale, -56 * scale));
+		*/
+		head[0]=(new Vector(-6.5 * scale, 47.75 * scale));
+        head[1]=(new Vector(6.5 * scale, 47.75 * scale));
+        head[2]=(new Vector(24.25 * scale, 31.25 * scale));
+        head[3]=(new Vector(24.25 * scale, 26 * scale));
+        head[4]=(new Vector(11.75 * scale, 16 * scale));
+        head[5]=(new Vector(-11.75 * scale, 16 * scale));
+        head[6]=(new Vector(-23.5 * scale, 25.5 * scale));
+        head[7]=(new Vector(-23.5 * scale, 32.75 * scale));
         rBody.addShape(new Polygon(head, offset));
         
         // Body
         var body = new Array();
+		/*
         body[0]=(new Vector(-70 * scale, -30.5 * scale));
         body[1]=(new Vector(-70 * scale, 24.5 * scale));
         body[2]=(new Vector(42 * scale, 24.5 * scale));
         body[3]=(new Vector(42 * scale, -30.5 * scale));
+		*/
+		
+		body[0]=(new Vector(-11.5 * scale, 15.5 * scale));
+        body[1]=(new Vector(11.5 * scale, 15.75 * scale));
+        body[2]=(new Vector(11.75 * scale, -47.75 * scale));
+        body[3]=(new Vector(-11.5 * scale, -47.75 * scale));
         rBody.addShape(new Polygon(body, offset));
 
-        // Top Strut
+        // Middle Strut
+		/*
         var tStrut = new Array();
         tStrut[0]=(new Vector(0 * scale, 24.5 * scale));
         tStrut[1]=(new Vector(-28 * scale, 24.5 * scale));
         tStrut[2]=(new Vector(-28 * scale, 42 * scale));
         tStrut[3]=(new Vector(0 * scale, 42 * scale));
         rBody.addShape(new Polygon(tStrut, offset));
-
-        // Top Wing
-        var tWing = new Array();
+		*/
+		var strut = new Array();
+        strut[0]=(new Vector(-25 * scale, -10 * scale));
+        strut[1]=(new Vector(25 * scale, -10 * scale));
+        strut[2]=(new Vector(25 * scale, -17.5 * scale));
+        strut[3]=(new Vector(-25 * scale, -17.5 * scale));
+        rBody.addShape(new Polygon(strut, offset));
+		
+        // Left Wing
+        var lWing = new Array();
+		/*
         tWing[0]=(new Vector(-70 * scale, 42 * scale));
         tWing[1]=(new Vector(-49 * scale, 63 * scale));
         tWing[2]=(new Vector(28 * scale, 63 * scale));
         tWing[3]=(new Vector(28 * scale, 42 * scale));
-        rBody.addShape(new Polygon(tWing, offset));
+		*/
+		lWing[0]=(new Vector(-36.75 * scale, 21.5 * scale));
+        lWing[1]=(new Vector(-25 * scale, 21.5 * scale));
+        lWing[2]=(new Vector(-25 * scale, -40.5 * scale));
+        lWing[3]=(new Vector(-36.75 * scale, -23 * scale));
+        rBody.addShape(new Polygon(lWing, offset));
 
+		/*
         // Bottom Strut
         var bStrut = new Array();
         bStrut[0]=(new Vector(0 * scale, -31.5 * scale));
@@ -117,15 +149,23 @@ class UrQuan extends Ship
         bStrut[2]=(new Vector(-28 * scale, -49 * scale));
         bStrut[3]=(new Vector(-28 * scale, -31.5 * scale));
         rBody.addShape(new Polygon(bStrut, offset));
+		*/
         
         
-        // Bottom Wing
-        var bWing = new Array();
+        // Right Wing
+        var rWing = new Array();
+		/*
         bWing[0]=(new Vector(-70 * scale, -49 * scale));
         bWing[1]=(new Vector(28 * scale, -49 * scale));
         bWing[2]=(new Vector(28 * scale, -70 * scale));
         bWing[3]=(new Vector(-42 * scale, -70 * scale));
-        rBody.addShape(new Polygon(bWing, offset));
+		*/
+		
+		rWing[0]=(new Vector(25.75 * scale, 21.5 * scale));
+        rWing[1]=(new Vector(36.5 * scale, 21.5 * scale));
+        rWing[2]=(new Vector(36.5 * scale, -24.5 * scale));
+        rWing[3]=(new Vector(25.75 * scale, -41.75 * scale));
+        rBody.addShape(new Polygon(rWing, offset));
         
         world.addBody(rBody);
 		calcRadius();

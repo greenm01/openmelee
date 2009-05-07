@@ -30,14 +30,12 @@
  */
 package hud;
 
-import flash.accessibility.Accessibility;
 import flash.display.Bitmap;
 import flash.display.Graphics;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.filters.BevelFilter;
-import flash.geom.Vector3D;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 
@@ -156,7 +154,7 @@ class HUD extends Sprite
 		RenderMelee.drawBody(s1Special.graphics, ship1.secondWep.rBody, red);
 		s1Special.scaleX = s1Special.scaleY = 20.0;
 		addChild(s1Special);
-		//s1Special.filters = [new BevelFilter(1)]; 
+		s1Special.filters = [new BevelFilter(1)]; 
 		
 		// Ship 2
 		print(new Vector(505, 249), ship2.name, white);
