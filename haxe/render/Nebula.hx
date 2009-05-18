@@ -42,6 +42,7 @@ import flash.geom.Rectangle;
 import phx.col.AABB;
 
 import utils.Util;
+import utils.OptimizedPerlin;
 import melee.Melee;
 
 class Nebula extends Sprite
@@ -78,7 +79,7 @@ class Nebula extends Sprite
 	
 		var perlin = new BitmapData(stageWidth, stageHeight, true, 0);
 		perlin.perlinNoise(200, 200, 10, Math.round(Math.random() * 100), true, false);
-		
+	
 		var bd = new BitmapData(stageWidth, stageHeight, true, 0);
 		bd.copyChannel(perlin, perlin.rect, new Point(), 2, 8);
 		bd.colorTransform(bd.rect, new ColorTransform(0.1,2,0.1,1));

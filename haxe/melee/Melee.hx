@@ -83,9 +83,11 @@ class Melee extends Sprite
 	
 	public var scroll : Vector;
     var pbm : Bitmap;
-
-    public function new(s1bm:Bitmap, s2bm:Bitmap, pbm:Bitmap) {
+	var dread : Bitmap;
+	
+    public function new(s1bm:Bitmap, s2bm:Bitmap, pbm:Bitmap, dread:Bitmap) {
 		super();
+		this.dread = dread;
 		this.pbm = pbm;
 		scroll = Vector.init();
         contactListener = new ContactListener();
@@ -116,9 +118,8 @@ class Melee extends Sprite
 		
 		// Update Physics
 		world.step(timeStep, 10);
-		// Update screen
-		render.update();
 		
+		// Update game objects
         for (i in 0...gameObjects.numChildren) {
 			var o = cast(gameObjects.getChildAt(i), ships.GameObject);
             if(o.checkDeath()) {
@@ -130,10 +131,15 @@ class Melee extends Sprite
             o.updateAI();
         }
 		
+		// Update screen
+		render.update();
+		
+		// Clean kill list
 		for (b in destroyList) {
 			gameObjects.removeChild(b.object);
 			world.removeBody(b);
 		}
+		
     }
 
     private function initWorld() {
@@ -151,7 +157,7 @@ class Melee extends Sprite
         world.contactListener = contactListener;
         world.useIslands = false;
 		
-		ship2 = new UrQuan(this);
+		ship2 = new UrQuan(this, dread);
 		ship1 = new Orz(this);
 		ship2.initAI(ship1);
         planet = new Planet(this, pbm);

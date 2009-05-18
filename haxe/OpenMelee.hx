@@ -1,4 +1,4 @@
-﻿/* OpenMelee
+/* OpenMelee
  * Copyright (c) 2009, Mason Green 
  * http://github.com/zzzzrrr/openmelee
  *
@@ -28,16 +28,75 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- package ships;
- 
- import melee.Melee;
- 
-class SecondaryWeapon extends GameObject
+
+import flash.display.Bitmap;
+
+class OrzNemesis extends Bitmap
 {
-    var ship : Ship;
-    
-    public function new(ship:Ship, melee:Melee){
-        super(melee);
-        this.ship = ship;
-    }        
+    public function new()
+    {
+        super();
+    }
 }
+
+class KzerZa extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
+class Planet extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
+class Dreadnought extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
+class Chenjesu extends Bitmap
+{
+    public function new()
+    {
+        super();
+    }
+}
+
+class OpenMelee
+{
+
+   static var game : Game;
+   public var root : flash.display.MovieClip;
+   public static var inst : OpenMelee;
+ 
+   public function new(root) {
+       this.root = root;
+   }
+ 
+   function initGame() {
+		var ship1 =  new OrzNemesis(); 
+		var ship2 =  new KzerZa();
+		var planet = new Planet();
+		var dreadnought = new Dreadnought();
+		game = new Game(this, ship1, ship2, planet, dreadnought);
+   }
+ 
+   public static function main() {
+       //flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
+	var root = flash.Lib.current;
+       inst = new OpenMelee(root);
+       inst.initGame();
+   }
+
+}
+ 
+ 

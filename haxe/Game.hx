@@ -31,55 +31,18 @@
 
 import flash.display.Bitmap;
 
-class OrzNemesis extends Bitmap
+import melee.Melee;
+
+class Game
 {
-    public function new()
-    {
-        super();
+	
+    var melee : Melee;
+    var om : OpenMelee;
+	
+    public function new(om:OpenMelee, s1bm:Bitmap, s2bm:Bitmap, pbm:Bitmap, dread:Bitmap) {
+        this.om = om;
+        melee = new Melee(s1bm, s2bm, pbm, dread);
+		om.root.addChild(melee);
+		melee.init();
     }
 }
-
-class KzerZa extends Bitmap
-{
-    public function new()
-    {
-        super();
-    }
-}
-
-class Planet extends Bitmap
-{
-    public function new()
-    {
-        super();
-    }
-}
-
-class OpenMelee
-{
-
-   static var game : Game;
-   public var root : flash.display.MovieClip;
-   public static var inst : OpenMelee;
- 
-   public function new(root) {
-       this.root = root;
-   }
- 
-   function initGame() {
-		var ship1 =  new OrzNemesis(); 
-		var ship2 =  new KzerZa();
-		var planet = new Planet();
-		game = new Game(this, ship1, ship2, planet);
-   }
- 
-   public static function main() {
-       //flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-	var root = flash.Lib.current;
-       inst = new OpenMelee(root);
-       inst.initGame();
-   }
-
-}
- 
- 
