@@ -7,9 +7,9 @@
 
 package org.openmelee.melee
 
-import org.jbox2d.collision.AABB
-import org.jbox2d.dynamics.World
-import org.jbox2d.common.Vec2
+import org.villane.box2d.shapes.AABB
+import org.villane.box2d.dynamics.World
+import org.villane.vecmath.Vector2f
 
 import org.openmelee.render.Render
 import org.openmelee.objects.ships.Orz
@@ -19,14 +19,12 @@ class Melee() {
     val width = 640
     val height = 480
     
-    val min = new Vec2(-200, -100)
-	val max = new Vec2(200, 200)
+    val min = new Vector2f(-200f, -100f)
+	val max = new Vector2f(200f, 200f)
 	val worldAABB = new AABB(min, max)
-	val gravity = new Vec2(0, -9.81f)
+	val gravity = new Vector2f(0f, 0f)
 	val world = new World(worldAABB, gravity, true)
     val orz = new Orz(this)
     val render = new Render(width, height, this)
     
 }
-
-

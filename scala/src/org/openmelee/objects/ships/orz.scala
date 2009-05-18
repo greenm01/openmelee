@@ -30,11 +30,11 @@
  */
 package org.openmelee.objects.ships
 
-import org.jbox2d.dynamics.BodyDef
-import org.jbox2d.dynamics.World
-import org.jbox2d.collision.PolygonDef
-import org.jbox2d.collision.CircleDef
-import org.jbox2d.common.Vec2
+import org.villane.box2d.dynamics.BodyDef
+import org.villane.box2d.dynamics.World
+import org.villane.box2d.shapes.PolygonDef
+import org.villane.box2d.shapes.CircleDef
+import org.villane.vecmath.Vector2f
 
 import openmelee.melee.Melee;
 
@@ -43,7 +43,7 @@ class Orz(melee:Melee) extends Ship(melee)
 {
 
     private var scale : Float = _
-    private var offset : Vec2 = _
+    private var offset : Vector2f = _
 	private var tA : Float = _
 
     name = new String("Orz: Nemesis")
@@ -61,48 +61,48 @@ class Orz(melee:Melee) extends Ship(melee)
     sEnergy = 6
 
     scale = 0.025f
-    engineForce = new Vec2(1000, 0)
-    turnForce = new Vec2(0, -5000)
-    rightTurnPoint = new Vec2(-0.5f, 0f)
-    leftTurnPoint = new Vec2(0.5f, 0f)
+    engineForce = new Vector2f(1000f, 0f)
+    turnForce = new Vector2f(0f, -5000f)
+    rightTurnPoint = new Vector2f(-0.5f, 0f)
+    leftTurnPoint = new Vector2f(0.5f, 0f)
 
     val bodyDef = new BodyDef
-    bodyDef.position.set(-10,10)
+    bodyDef.pos = new Vector2f(-10f, 10f)
     bodyDef.angle = 3.14159f/4f
     body = melee.world.createBody(bodyDef)
-    var linVel = new Vec2(10f,0f)
-    body.setLinearVelocity(linVel)
+    var linVel = new Vector2f(10f,0f)
+    //body.linearVelocity = linVel
 
     // Body
     val pd = new PolygonDef
     pd.density = 5.0f
-    pd.vertices.add(new Vec2(42 * scale, 14 * scale))
-    pd.vertices.add(new Vec2(-28 * scale, 21 * scale))
-    pd.vertices.add(new Vec2(-28 * scale, -28 * scale))
-    pd.vertices.add(new Vec2(42 * scale, -21 * scale))
+    pd.vertices = Array( point(42, 14),
+                         point(-28, 21),
+                         point(-28, -28),
+                         point(42, -21))
     body.createShape(pd)
 
     // Top Wing
     var tWing = new PolygonDef
     tWing.density = 5.0f
-    tWing.vertices.add(new Vec2(-28 * scale, 21 * scale))
-    tWing.vertices.add(new Vec2(-70 * scale, 63 * scale))
-    tWing.vertices.add(new Vec2(-49 * scale, 63 * scale))
-    tWing.vertices.add(new Vec2(70 * scale, 14 * scale))
-    tWing.vertices.add(new Vec2(42 * scale, 14 * scale))
-    body.createShape(tWing);
+    tWing.vertices = Array(point(-28, 21),
+                           point(42, 14),
+                           point(70, 14),
+                           point(-49, 63),
+                           point(-70, 63))
+    body.createShape(tWing)
 
     // Bottom Wing
     var bWing = new PolygonDef
     bWing.density = 5f
-    bWing.vertices.add(new Vec2(-28 * scale, -28 * scale))
-    bWing.vertices.add(new Vec2(-70 * scale, -63 * scale))
-    bWing.vertices.add(new Vec2(-49 * scale, -63 * scale))
-    bWing.vertices.add(new Vec2(70 * scale, -21 * scale))
-    bWing.vertices.add(new Vec2(42 * scale, -21 * scale))
+    bWing.vertices = Array(point(-28, -28),
+                           point(-70, -63),
+                           point(-49, -63),
+                           point(70, -21),
+                           point(42, -21))
     body.createShape(bWing)
-
-    body.setMassFromShapes()
+   
+    body.computeMassFromShapes
     
     /*
     // Turret
@@ -111,11 +111,11 @@ class Orz(melee:Melee) extends Ship(melee)
     secondWep.rBody = new Body(pos.x, pos.y, props);
     offset.set(0, -0.05);
     var base = new Circle(0.6, offset);
-    var verts = new Array<Vec2>();
-    verts.push(new Vec2(0.15,0.75));
-    verts.push(new Vec2(0.15,-0.5));
-    verts.push(new Vec2(-0.15,-0.5));
-    verts.push(new Vec2( -0.15, 0.75));
+    var verts = new Array<Vector2f>();
+    verts.push(new Vector2f(0.15,0.75));
+    verts.push(new Vector2f(0.15,-0.5));
+    verts.push(new Vector2f(-0.15,-0.5));
+    verts.push(new Vector2f( -0.15, 0.75));
     offset.set(0.0, 0.5);
     var barrel = new Polygon(verts, offset);
     base.groups = barrel.groups = 2;
@@ -123,24 +123,29 @@ class Orz(melee:Melee) extends Ship(melee)
     secondWep.rBody.addShape(barrel);
     secondWep.init();
     */
-    
+
+    def point(x:Float, y:Float) = {
+        val p = new Vector2f(x*scale,y*scale)
+        p
+    }
+
 	override def fire() {
         /*
 		if (!primaryTime() || battery < pEnergy) return;
 			batteryCost(pEnergy);
 			primeWep = new PrimaryWeapon(this, melee);
 		  	primeWep.group = group;
-          	var verts = new Array<Vec2>();
-          	verts.push(new Vec2(0.25,0.5));
-          	verts.push(new Vec2(0.25,-0.5));
-          	verts.push(new Vec2(-0.25,-0.5));
-          	verts.push(new Vec2(-0.25,0.5));
-          	var poly = new Polygon(verts, Vec2.init());
-          	var localPos = new Vec2(0, 1.25);
+          	var verts = new Array<Vector2f>();
+          	verts.push(new Vector2f(0.25,0.5));
+          	verts.push(new Vector2f(0.25,-0.5));
+          	verts.push(new Vector2f(-0.25,-0.5));
+          	verts.push(new Vector2f(-0.25,0.5));
+          	var poly = new Polygon(verts, Vector2f.init());
+          	var localPos = new Vector2f(0, 1.25);
           	var worldPos = secondWep.rBody.worldPoint(localPos);
           	howitzer = new Body(worldPos.x, worldPos.y);
 		  	howitzer.a = secondWep.rBody.a;
-          	howitzer.v = new Vec2(0.0, 100.0).rotate(howitzer.a);
+          	howitzer.v = new Vector2f(0.0, 100.0).rotate(howitzer.a);
           	howitzer.addShape(poly);
           	world.addBody(howitzer);
           	primeWep.rBody = howitzer;
@@ -184,7 +189,7 @@ class Orz(melee:Melee) extends Ship(melee)
 					var marine = new Marine(melee, this);
 					numMarines++;
 					marine.initAI(melee.ship2);
-					marines.add(marine);
+					marines.map(marine);
 				}
 		  }
 		}

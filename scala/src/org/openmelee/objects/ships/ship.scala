@@ -30,11 +30,10 @@
  */
 package org.openmelee.objects.ships;
 
-import org.jbox2d.common.Vec2
-import org.jbox2d.dynamics.World
-import org.jbox2d.collision.Shape
-import org.jbox2d.dynamics.World
-import org.jbox2d.collision.PolygonShape
+import org.villane.box2d.dynamics.World
+import org.villane.box2d.shapes.Shape
+import org.villane.box2d.shapes.Polygon
+import org.villane.vecmath.Vector2f
 
 import org.openmelee.objects.GameObject
 //import utils.Util;
@@ -49,10 +48,10 @@ abstract class Ship(melee:Melee) extends GameObject
 	//var primeWep : GameObject = _
 	//var secondWep : GameObject = _
 
-    protected var engineForce : Vec2 = _
-    protected var turnForce : Vec2 = _
-    protected var leftTurnPoint : Vec2 = _
-    protected var rightTurnPoint : Vec2 = _
+    protected var engineForce : Vector2f = _
+    protected var turnForce : Vector2f = _
+    protected var leftTurnPoint : Vector2f = _
+    protected var rightTurnPoint : Vector2f = _
 
     // Control commands
     var turnL : Boolean = _
@@ -94,14 +93,13 @@ abstract class Ship(melee:Melee) extends GameObject
 	private var enemy : Ship = null
 
     @inline def thrust() {
-        body.m_force.x += engineForce.x
-        body.m_force.y += engineForce.y
+        body.force += engineForce
     }
 
     @inline def turnLeft() {
         var lp = leftTurnPoint;
         var tf = turnForce;
-        body.m_torque += Vec2.cross(lp,tf)
+        body.torque += lp×tf
     }
 
     /*
@@ -153,13 +151,13 @@ abstract class Ship(melee:Melee) extends GameObject
             var debris = new Debris(melee);
             switch(s.type) {
                 case Shape.POLYGON:
-                    var verts = new Array<Vec2>();
+                    var verts = new Array<Vector2f>();
                     var v = s.polygon.verts;
                     while(v != null) {
                         verts.push(v.clone());
                         v = v.next;
                     }
-                    var pos = new Vec2(body.x, body.y);
+                    var pos = new Vector2f(body.x, body.y);
                     debris.initPoly(verts, pos, s.offset);
                 case Shape.CIRCLE:
             }
@@ -170,7 +168,7 @@ abstract class Ship(melee:Melee) extends GameObject
         var minRadius = 0.1;
         var maxRadius = 50.0;
         var strength = 75.0;
-        var center = new Vec2(400.0, 250.0);
+        var center = new Vector2f(400.0, 250.0);
 
         var rx = center.x - body.x;
         var ry = center.y - body.y;
