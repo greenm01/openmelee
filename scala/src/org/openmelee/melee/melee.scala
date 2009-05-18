@@ -11,20 +11,43 @@ import org.villane.box2d.shapes.AABB
 import org.villane.box2d.dynamics.World
 import org.villane.vecmath.Vector2f
 
-import org.openmelee.render.Render
-import org.openmelee.objects.ships.Orz
+import processing.core.PApplet
+import processing.core.PConstants
 
-class Melee() {
+import render.Render
+import objects.ships.Orz
+import ai.Human
 
-    val width = 640
-    val height = 480
-    
+class Melee extends PApplet {
+
     val min = new Vector2f(-200f, -100f)
 	val max = new Vector2f(200f, 200f)
 	val worldAABB = new AABB(min, max)
 	val gravity = new Vector2f(0f, 0f)
 	val world = new World(worldAABB, gravity, true)
     val orz = new Orz(this)
-    val render = new Render(width, height, this)
+    val human = new Human(orz, this)
+    val render = new Render(this)
+
+    val timeStep = 1f/60f
+    val iterations = 10
+
+    override def setup() {
+        width = 640
+        height = 480
+		val targetFPS = 60
+		size(width, height, PConstants.P3D)
+		frameRate(targetFPS)
+	}
+
+	override def draw() {
+		background(0xFAF0E6)
+        world.step(timeStep, iterations)
+        render update world
+	}
+
+    override def keyPressed() {
+        human.onKeyDown(keyCode)
+    }
     
 }

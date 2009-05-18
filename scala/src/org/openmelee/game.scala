@@ -15,7 +15,7 @@ class Game {
     def init() = {
         val melee = new Melee
         val frame = new javax.swing.JFrame("Test")
-        val applet = melee.render
+        val applet = melee
         frame.getContentPane().add(applet)
         applet.init
         frame.pack

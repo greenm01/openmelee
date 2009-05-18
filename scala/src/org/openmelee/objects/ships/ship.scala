@@ -97,18 +97,14 @@ abstract class Ship(melee:Melee) extends GameObject
     }
 
     @inline def turnLeft() {
-        var lp = leftTurnPoint;
-        var tf = turnForce;
-        body.torque += lp×tf
+        body.torque += leftTurnPoint cross turnForce
+    }
+
+    @inline def turnRight() {
+        body.torque += rightTurnPoint cross turnForce
     }
 
     /*
-    @inline def turnRight() {
-        var rp = rightTurnPoint;
-        var tf = turnForce;
-        body.t += rp.cross(tf);
-    }
-
     def limitVelocity() {
         var vx = body.v.x;
         var vy = body.v.y;

@@ -14,43 +14,31 @@ import org.villane.vecmath.Vector2f
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Transform2f
+import org.villane.box2d.dynamics.World
 
-import processing.core._
+import processing.core.PApplet
 
-import org.openmelee.melee.Melee
+import melee.Melee
 
-class Render(width:Int, height:Int, melee:Melee) extends PApplet {
-    
+class Render(g:PApplet) {
+
     // World 0,0 maps to transX, transY on screen
-    var transX = 320.0f;
-    var transY = 240.0f;
+    var transX = 0f;
+    var transY = 0f;
     var scaleFactor = 15.0f;
     val yFlip = -1.0f; //flip y coordinate
 
-    val timeStep = 1f/60f
-    val iterations = 10
-    
     def setCamera(x:Float, y:Float, scale:Float) {
-    	transX = PApplet.map(x,0.0f,-1.0f,width*.5f,width*.5f+scale);
-    	transY = PApplet.map(y,0.0f,yFlip*1.0f,height*0.5f,height*0.5f+scale);
+    	transX = PApplet.map(x,0.0f,-1.0f,g.width*.5f,g.width*.5f+scale);
+    	transY = PApplet.map(y,0.0f,yFlip*1.0f,g.height*0.5f,g.height*0.5f+scale);
     	scaleFactor = scale;
     }
 
-    override def setup() {
-		val targetFPS = 60
-		size(width, height, PConstants.P3D)
-		frameRate(targetFPS)
-	}
-
-	override def draw() {
-		background(0xFAF0E6)
-        melee.world.step(timeStep, iterations)
-        update
-	}
-
-    private def update() {
+    def update(world:World) {
+        transX = g.width * 0.5f;
+        transY = g.height * 0.5f;
         val color = new Color3f(1,1,0)
-        for(b <- melee.world.bodyList) {
+        for(b <- world.bodyList) {
             for(s <- b.shapes) {
                 s match {
                     case poly => drawPolygon(s, b.transform, color)
@@ -64,15 +52,15 @@ class Render(width:Int, height:Int, melee:Melee) extends PApplet {
         val poly = shape.asInstanceOf[Polygon]
         val vertices = poly.vertices
 
-		stroke(color.r, color.g, color.b)
-		noFill();
+		g.stroke(color.r, color.g, color.b)
+		g.noFill();
         val vertexCount = vertices.length
 
 		for(i <- 0 until vertexCount) {
 			val ind = if(i+1<vertexCount) i+1 else (i+1-vertexCount)
 			val v1 = worldToScreen(xf*vertices(i))
 			val v2 = worldToScreen(xf*vertices(ind))
-			line(v1.x, v1.y, v2.x, v2.y)
+			g.line(v1.x, v1.y, v2.x, v2.y)
         }
 	}
 
