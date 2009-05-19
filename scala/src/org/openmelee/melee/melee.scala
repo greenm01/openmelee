@@ -24,7 +24,7 @@ class Melee extends PApplet {
 	val max = new Vector2f(200f, 200f)
 	val worldAABB = new AABB(min, max)
 	val gravity = new Vector2f(0f, 0f)
-	val world = new World(worldAABB, gravity, true)
+	val world = new World(worldAABB, gravity, false)
     val orz = new Orz(this)
     val human = new Human(orz, this)
     val render = new Render(this)
@@ -40,14 +40,21 @@ class Melee extends PApplet {
 		frameRate(targetFPS)
 	}
 
+    // Main processing loop
 	override def draw() {
 		background(0xFAF0E6)
+        orz.updateState()
         world.step(timeStep, iterations)
         render update world
+
 	}
 
     override def keyPressed() {
         human.onKeyDown(keyCode)
+    }
+
+    override def keyReleased() {
+        human.onKeyUp(keyCode)
     }
     
 }

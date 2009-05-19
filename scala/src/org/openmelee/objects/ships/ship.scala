@@ -34,9 +34,10 @@ import org.villane.box2d.dynamics.World
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Vector2f
+import org.villane.vecmath.MathUtil
 
 import org.openmelee.objects.GameObject
-//import utils.Util;
+import utils.Util;
 import org.openmelee.melee.Melee
 //import ai.AI;
 
@@ -54,11 +55,11 @@ abstract class Ship(melee:Melee) extends GameObject
     protected var rightTurnPoint : Vector2f = _
 
     // Control commands
-    var turnL : Boolean = _
-    var turnR : Boolean = _
-    var engines : Boolean = _
-    var special : Boolean = _
-	var primary : Boolean = _
+    var turnL  = false
+    var turnR  = false
+    var engines = false
+    var special = false
+	var primary = false
 	
 	// Timing parameters (seconds)
 	var time : Float = _
@@ -78,22 +79,22 @@ abstract class Ship(melee:Melee) extends GameObject
     var crewCapacity : Int = _
     var crew : Int = _
     
-	var batteryCapacity : Int = 0
-	var battery : Int = 0
+	var batteryCapacity : Int = _
+	var battery : Int = _
 
 	// Primary battery cost
 	protected var pEnergy : Int = _
 	// Secondary battery cost
 	protected var sEnergy : Int = _
 
-    private var maxLinVel : Float = 35
+    private var maxLinVel  = new Vector2f(35,35)
     private var maxAngVel : Float = 2
 
 	//private var ai : AI;
 	private var enemy : Ship = null
 
     @inline def thrust() {
-        body.force += engineForce
+        body.force += Util.rotate(engineForce, body.angle);
     }
 
     @inline def turnLeft() {
@@ -104,33 +105,35 @@ abstract class Ship(melee:Melee) extends GameObject
         body.torque += rightTurnPoint cross turnForce
     }
 
-    /*
     def limitVelocity() {
-        var vx = body.v.x;
-        var vy = body.v.y;
-        var omega = body.w;
-        body.v.x = Util.clamp(vx, -maxLinVel, maxLinVel);
-        body.v.y = Util.clamp(vy, -maxLinVel, maxLinVel);
-        body.w = Util.clamp(omega, -maxAngVel, maxAngVel);
+        val v = body.linearVelocity
+        body.linearVelocity = v.clamp(-maxLinVel, maxLinVel)
+        val omega = body.angularVelocity
+        body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel);
     }
 
     def updateState() {
+        /*
 		time = flash.Lib.getTimer() * 0.001;
 		rechargeBattery();
 		if (primary && !special) {
 			fire();
 		}
 		updateSpecial();
+        */
         if(engines) {
-            thrust();
+            thrust
         }
+        /*
         state.linVel.set(body.v.x, body.v.y);
         state.speed = state.linVel.length();
         state.pos.x = body.x;
         state.pos.y = body.y;
         state.forward = engineForce.rotate(body.a);
+        */
     }
 
+    /*
 	def initAI(enemy:Ship) {
 		ai = new AI(this, melee.gameObjects);
 		this.enemy = ai.enemy = enemy;

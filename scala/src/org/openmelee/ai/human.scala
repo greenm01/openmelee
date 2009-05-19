@@ -69,7 +69,7 @@ class Human (ship : Ship, melee : Melee)
         if (key == 65 || key == 68) {
             ship.turnR = false
             ship.turnL = false
-            ship.body.sweep.a = 0
+            ship.body.angularVelocity = 0
         } else if(key == 87) {
             ship.engines = false
         } else if (key == 191) {

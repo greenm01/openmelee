@@ -62,7 +62,7 @@ class Orz(melee:Melee) extends Ship(melee)
 
     scale = 0.025f
     engineForce = new Vector2f(1000f, 0f)
-    turnForce = new Vector2f(0f, -5000f)
+    turnForce = new Vector2f(0f, 5000f)
     rightTurnPoint = new Vector2f(-0.5f, 0f)
     leftTurnPoint = new Vector2f(0.5f, 0f)
 
