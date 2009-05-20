@@ -32,12 +32,18 @@ class Melee extends PApplet {
     val timeStep = 1f/60f
     val iterations = 10
 
+    def go = PApplet.main(Array("org.openmelee.melee.Melee"))
+    
     override def setup() {
         width = 640
         height = 480
 		val targetFPS = 60
 		size(width, height, PConstants.P3D)
 		frameRate(targetFPS)
+        for (i <- 0 until 100) {
+    		requestFocus
+    	}
+        frame.setTitle("OpenMelee")
 	}
 
     // Main processing loop
