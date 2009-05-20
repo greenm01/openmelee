@@ -1,8 +1,10 @@
 package org.openmelee
 
-object Main {
+import scala.Application
 
-	def main(args: Array[String]) = {
+object Main extends Application {
+
+	override def main(args: Array[String]) = {
         val game = new Game
         game init
 	}

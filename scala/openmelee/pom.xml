@@ -15,22 +15,12 @@
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
-        <repository>
-            <id>processing.org</id>
-            <name>Processing Maven2 Repository</name>
-            <url>http://cytoscape.wodaklab.org/nexus/content/repositories/releases/</url>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>processing.org</id>
-            <name>Processing Maven2 Repository</name>
-            <url>http://cytoscape.wodaklab.org/nexus/content/repositories/releases/</url>
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
