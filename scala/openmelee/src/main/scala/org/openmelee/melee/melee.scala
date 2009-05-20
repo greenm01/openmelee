@@ -12,6 +12,7 @@ import org.villane.box2d.dynamics.World
 import org.villane.vecmath.Vector2f
 
 import processing.core.PApplet
+import processing.core.PShape
 import processing.core.PConstants
 
 import render.Render
@@ -25,6 +26,7 @@ class Melee extends PApplet {
 	val worldAABB = new AABB(min, max)
 	val gravity = new Vector2f(0f, 0f)
 	val world = new World(worldAABB, gravity, false)
+
     val orz = new Orz(this)
     val human = new Human(orz, this)
     val render = new Render(this)
@@ -33,8 +35,11 @@ class Melee extends PApplet {
     val iterations = 10
 
     def go = PApplet.main(Array("org.openmelee.melee.Melee"))
+    var kzerZa : PShape = null;
     
     override def setup() {
+        kzerZa = loadShape("/ships/Kzer-Za.svg")
+        kzerZa.scale(0.15f)
         width = 640
         height = 480
 		val targetFPS = 60
@@ -48,11 +53,12 @@ class Melee extends PApplet {
 
     // Main processing loop
 	override def draw() {
-		background(0xFAF0E6)
+        kzerZa.rotate(0.01f)
+        background(0xFAF0E6)
+        shape(kzerZa, 320, 240)
         orz.updateState()
         world.step(timeStep, iterations)
         render update world
-
 	}
 
     override def keyPressed() {

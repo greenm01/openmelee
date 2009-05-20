@@ -46,8 +46,8 @@ abstract class Ship(melee:Melee) extends GameObject
 
     var name : String = _
 	var captain : String = _
-	//var primeWep : GameObject = _
-	//var secondWep : GameObject = _
+	var primeWep : GameObject = _
+	var secondWep : GameObject = _
 
     protected var engineForce : Vector2f = _
     protected var turnForce : Vector2f = _
@@ -62,19 +62,19 @@ abstract class Ship(melee:Melee) extends GameObject
 	var primary = false
 	
 	// Timing parameters (seconds)
-	var time : Float = _
+	var time = System.currentTimeMillis * 0.001f
     // Primary delay
-	var pDelay : Float = _
+	var pDelay = 0f
 	// Secondary delay
-	var sDelay : Float = _
+	var sDelay = 0f
 	// Primary time
-	var pTime : Float = _
+	var pTime = 0f
 	// Secondary time
-	var sTime : Float = _
+	var sTime = 0f
 	// Battery refresh delay
-	var bDelay : Float = _
+	var bDelay = 0f
 	// Battery time
-	var bTime : Float = _
+	var bTime = 0f
 
     var crewCapacity : Int = _
     var crew : Int = _
@@ -94,7 +94,7 @@ abstract class Ship(melee:Melee) extends GameObject
 	private var enemy : Ship = null
 
     @inline def thrust() {
-        body.force += Util.rotate(engineForce, body.angle);
+        body.force += Util.rotate(engineForce, body.angle)
     }
 
     @inline def turnLeft() {
@@ -105,32 +105,19 @@ abstract class Ship(melee:Melee) extends GameObject
         body.torque += rightTurnPoint cross turnForce
     }
 
-    def limitVelocity() {
+    @inline def limitVelocity() {
         val v = body.linearVelocity
         body.linearVelocity = v.clamp(-maxLinVel, maxLinVel)
         val omega = body.angularVelocity
-        body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel);
+        body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel)
     }
 
-    def updateState() {
-        /*
-		time = flash.Lib.getTimer() * 0.001;
-		rechargeBattery();
-		if (primary && !special) {
-			fire();
-		}
-		updateSpecial();
-        */
-        if(engines) {
-            thrust
-        }
-        /*
-        state.linVel.set(body.v.x, body.v.y);
-        state.speed = state.linVel.length();
-        state.pos.x = body.x;
-        state.pos.y = body.y;
-        state.forward = engineForce.rotate(body.a);
-        */
+    @inline def updateState() {
+		time = System.currentTimeMillis * 0.001f
+		rechargeBattery
+		if (primary && !special) fire
+		updateSpecial
+        if(engines) thrust
     }
 
     /*
@@ -162,60 +149,52 @@ abstract class Ship(melee:Melee) extends GameObject
             }
         }
     }
-
-    def applyGravity() {
-        var minRadius = 0.1;
-        var maxRadius = 50.0;
-        var strength = 75.0;
-        var center = new Vector2f(400.0, 250.0);
-
-        var rx = center.x - body.x;
-        var ry = center.y - body.y;
-
-        var d = Math.sqrt(rx * rx + ry * ry);
-        if (d < 1e-7)
-            return;
-        else {
-            rx /= d;
-            ry /= d;
-        }
-
-        var ratio = (d - minRadius) / (maxRadius - minRadius);
-        if (ratio < 0)
-            ratio = 0;
-        else
-            if (ratio > 1)
-                ratio = 1;
-
-        body.f.x += rx * ratio * strength;
-        body.f.y += ry * ratio * strength;
-
-    }
-
-	def primaryTime() {
-		var dt = time - pTime;
-		if(dt >= pDelay) {
-			pTime = time;
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	def rechargeBattery() {
-		var dt = time - bTime;
-		if(dt >= bDelay && battery < batteryCapacity) {
-			bTime = time;
-			battery += 1;
-		}
-	}
-
-	def batteryCost(cost:Int) {
-		var b = battery - cost;
-		battery = cast(Util.clamp(b, 0, batteryCapacity), Int);
-	}
     */
 
+    @inline def applyPlanetGravity() {
+
+        val minRadius = 0.1f
+        val maxRadius = 50f
+        val strength = 75f
+
+        // TODO: Correct center
+        val center = new Vector2f(400f, 250f)
+        var r = center - body.pos
+        val d = Math.sqrt(r.x * r.x + r.y * r.y).toFloat
+        r /= d
+        var ratio = (d - minRadius) / (maxRadius - minRadius)
+
+        if (ratio < 0)
+            ratio = 0f
+        else if (ratio > 1)
+            ratio = 1f
+
+        body.force += r * ratio * strength
+    }
+
+	@inline def primaryTime = {
+		var dt = time - pTime
+		if(dt >= pDelay) {
+			pTime = time
+			true
+		} else {
+			false
+		}
+    }
+
+	@inline def rechargeBattery() {
+		var dt = time - bTime
+		if(dt >= bDelay && battery < batteryCapacity) {
+			bTime = time
+			battery += 1
+		}
+	}
+
+	@inline def batteryCost(cost:Int) {
+		var b = battery - cost
+		battery = MathUtil.clamp(b.toFloat, 0f, batteryCapacity.toFloat).toInt
+	}
+    
 	def updateSpecial
     def fire
 }

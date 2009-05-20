@@ -14,7 +14,7 @@ class Game {
     val melee = new Melee
 
     def init() = {
-        melee.init()
+        melee.init
         melee go
     }
 

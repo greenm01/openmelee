@@ -129,7 +129,7 @@ class Orz(melee:Melee) extends Ship(melee)
         p
     }
 
-	override def fire() {
+	override def fire = {
         /*
 		if (!primaryTime() || battery < pEnergy) return;
 			batteryCost(pEnergy);
@@ -167,7 +167,7 @@ class Orz(melee:Melee) extends Ship(melee)
         */
 	}
 
-	override def updateSpecial() {
+	override def updateSpecial = {
         /*
 		var turret = secondWep.rBody;
 		turret.v = rBody.v;
