@@ -54,6 +54,7 @@
                 </executions>
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
+                    <mainClass>org.openmelee.Main</mainClass>
                 </configuration>
             </plugin>
             <plugin>
