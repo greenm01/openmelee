@@ -38,7 +38,7 @@ class Melee extends PApplet {
     var kzerZa : PShape = null;
     
     override def setup() {
-        kzerZa = loadShape("/ships/Kzer-Za.svg")
+        kzerZa = loadShape("Kzer-Za.svg")
         kzerZa.scale(0.15f)
         width = 640
         height = 480
