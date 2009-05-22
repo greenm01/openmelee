@@ -112,7 +112,7 @@ abstract class Ship(melee:Melee) extends GameObject
         body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel)
     }
 
-    @inline def updateState() {
+    @inline override def updateState() {
 		time = System.currentTimeMillis * 0.001f
 		rechargeBattery
 		if (primary && !special) fire

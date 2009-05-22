@@ -9,6 +9,8 @@ package org.openmelee.objects
 
 import org.villane.box2d.dynamics.Body
 
-class GameObject {
-    var body : Body = _
+abstract class GameObject {
+    val body : Body
+    //var sprite : PShape
+    def updateState()
 }

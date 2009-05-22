@@ -16,12 +16,11 @@ import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Transform2f
 import org.villane.box2d.dynamics.World
 
-import processing.core.PApplet
-
 import melee.Melee
 
-class Render(g:PApplet) {
+class Render() {
 
+    /*
     // World 0,0 maps to transX, transY on screen
     var transX = 0f;
     var transY = 0f;
@@ -34,20 +33,12 @@ class Render(g:PApplet) {
     	scaleFactor = scale;
     }
 
-    def update(world:World) {
-        transX = g.width * 0.5f;
-        transY = g.height * 0.5f;
-        val color = new Color3f(1,1,0)
-        for(b <- world.bodyList) {
-            for(s <- b.shapes) {
-                s match {
-                    case poly => drawPolygon(s, b.transform, color)
-                }
-            }
-        }
+    def update(g:Graphics, world:World) {
+        transX = g.screenWidth * 0.5f;
+        transY = g.screenHeight * 0.5f;
     }
 
-	def drawPolygon(shape:Shape, xf:Transform2f, color:Color3f) {
+	def drawPolygon(g:Graphics, shape:Shape, xf:Transform2f, color:Color3f) {
 
         val poly = shape.asInstanceOf[Polygon]
         val vertices = poly.vertices
@@ -66,11 +57,24 @@ class Render(g:PApplet) {
 
     def drawCircle() = {}
     
-    def worldToScreen(world:Vector2f) = {
-		val x = PApplet.map(world.x, 0f, 1f, transX, transX+scaleFactor)
-		var y = PApplet.map(world.y, 0f, 1f, transY, transY+scaleFactor)
-		if (yFlip == -1.0f) y = PApplet.map(y,0f,g.height, g.height,0f)
-		val v = new Vector2f(x, y)
-        v
-	}
+    def map(mapMe: Float, fromLow: Float, fromHigh: Float, toLow: Float, toHigh: Float) = {
+        val interp = (mapMe - fromLow) / (fromHigh - fromLow)
+        (interp*toHigh + (1.0f-interp)*toLow)
+    }
+    
+    override def worldToScreen(world: Vector2f) = {
+        val x = map(world.x, 0f, 1f, transX, transX+scaleFactor)
+        var y = map(world.y, 0f, 1f, transY, transY+scaleFactor)
+        if (yFlip == -1.0f) y = map(y, 0f, container.getHeight, container.getHeight, 0f)
+        Vector2f(x, y)
+    }
+
+    override def screenToWorld(screen: Vector2f) = {
+        val x = map(screen.x, transX, transX+scaleFactor, 0f, 1f)
+        var y = screen.y
+        if (yFlip == -1.0f) y = map(y, container.getHeight, 0f, 0f, container.getHeight)
+        y = map(y, transY, transY + scaleFactor, 0f, 1f)
+        Vector2f(x, y)
+    }
+    */
 }

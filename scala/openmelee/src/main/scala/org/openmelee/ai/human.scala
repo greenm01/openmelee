@@ -31,9 +31,8 @@
 package org.openmelee.ai
 
 import objects.ships.Ship
-import melee.Melee;
 
-class Human (ship : Ship, melee : Melee)
+class Human (ship : Ship)
 {
 
     var quit  = false;
@@ -41,40 +40,36 @@ class Human (ship : Ship, melee : Melee)
   
 	def onKeyDown(key:Int) {
         key match {
-            case 29 => // ESC
-                quit = true;
-            case 87 => // 'w' (thrust)
-                ship.engines = true;
-            case 65 => // 'a' (left)
+            case 1 => quit = true; // ESC
+            case 17 => ship.engines = true; // 'w' (thrust)
+            case 30 => // 'a' (left)
                 if (!ship.turnL) {
-					if(!ship.special) {
-						ship.turnLeft();
-					}
+					if(!ship.special) 
+						ship.turnLeft()
                     ship.turnL = true;
                 }
-            case 68 => // 'd' (right)
+            case 32 => // 'd' (right)
                 if (!ship.turnR) {
 					if(!ship.special)
-						ship.turnRight();
-					}
-                    ship.turnR = true;
-            case 190 => // '.' (fire)
-				ship.primary = true;
-			case 191 => // '/' (special)
-				ship.special = true;
+						ship.turnRight()
+                    ship.turnR = true
+				}
+            case 52 => ship.primary = true; // '.' (fire)
+			case 53 => ship.special = true;// '/' (special)
+			case _ => 
 		}
     }
 
     def onKeyUp(key:Int) {
-        if (key == 65 || key == 68) {
+        if (key == 30 || key == 32) {
             ship.turnR = false
             ship.turnL = false
             ship.body.angularVelocity = 0
-        } else if(key == 87) {
+        } else if(key == 17) {
             ship.engines = false
-        } else if (key == 191) {
+        } else if (key == 53) {
 			ship.special = false
-		} else if (key == 190) {
+		} else if (key == 52) {
 			ship.primary = false
 		}
 	}

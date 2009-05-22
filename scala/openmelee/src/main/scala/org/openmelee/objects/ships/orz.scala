@@ -38,6 +38,8 @@ import org.villane.vecmath.Vector2f
 
 import openmelee.melee.Melee;
 
+import processing.core.PShape
+
 // Orz Nemesis
 class Orz(melee:Melee) extends Ship(melee)
 {
@@ -61,15 +63,17 @@ class Orz(melee:Melee) extends Ship(melee)
     sEnergy = 6
 
     scale = 0.025f
-    engineForce = new Vector2f(1000f, 0f)
-    turnForce = new Vector2f(0f, 5000f)
+    engineForce = new Vector2f(10f, 0f)
+    turnForce = new Vector2f(0f, 500f)
     rightTurnPoint = new Vector2f(-0.5f, 0f)
     leftTurnPoint = new Vector2f(0.5f, 0f)
 
     val bodyDef = new BodyDef
-    bodyDef.pos = new Vector2f(-10f, 10f)
+    bodyDef.pos = new Vector2f(10f, 10f)
     bodyDef.angle = 3.14159f/4f
-    body = melee.world.createBody(bodyDef)
+    
+    override val body = melee.world.createBody(bodyDef)
+    override var sprite : PShape = null
     var linVel = new Vector2f(10f,0f)
     //body.linearVelocity = linVel
 

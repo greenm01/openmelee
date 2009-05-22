@@ -15,6 +15,14 @@
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
+        <repository>
+            <id>slick-repo</id>
+            <url>http://slick.cokeandcode.com/mavenrepo/</url>
+        </repository>
+        <repository>
+            <id>some-repo-which-happened-to-have-lwjgl</id>
+            <url>http://nifty-gui.sourceforge.net/nifty-maven-repo/</url>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -35,10 +43,15 @@
             <version>2.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.processing</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0.3</version>
+            <groupId>slick</groupId>
+            <artifactId>slick</artifactId>
+            <version>259</version>
         </dependency>
+        <dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>2.1.0</version>
+		</dependency>
     </dependencies>
     <build>
         <plugins>
