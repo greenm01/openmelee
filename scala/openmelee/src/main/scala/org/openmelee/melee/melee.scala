@@ -61,18 +61,18 @@ class Melee(stateID:Int) extends BasicGameState {
         debugDraw.container = gc
         InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
         renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Kzer-Za.svg"))
-        null
+        val foo = renderer.diagram.getFigureByID("bridge")
+        foo.getShape.getPoints.foreach(println)
     }
 
     override def render(gc: GameContainer, sb:StateBasedGame, g: Graphics) {
 
-        val numFigs = renderer.diagram.getFigureCount
-
-        for(i <- 0 until numFigs) {
-            val figure = renderer.getFigure(i)
-
-        }
+        g.translate(250, 100)
+        g.scale(0.1f,0.1f)
+        g.rotate(0,0, orz.body.angle*57.2957795f)
         renderer.render(g)
+        g.resetTransform
+
         val red = new Color3f(255.0f,0.0f,0.0f)
         
         for(b <- world.bodyList) {
