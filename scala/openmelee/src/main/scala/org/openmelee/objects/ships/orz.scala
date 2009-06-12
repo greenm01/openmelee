@@ -34,171 +34,172 @@ import org.villane.box2d.dynamics.BodyDef
 import org.villane.box2d.dynamics.World
 import org.villane.box2d.shapes.PolygonDef
 import org.villane.box2d.shapes.CircleDef
+import org.villane.box2d.dynamics.FixtureDef
+
 import org.villane.vecmath.Vector2f
 
 import openmelee.melee.Melee;
 
-import processing.core.PShape
-
 // Orz Nemesis
-class Orz(melee:Melee) extends Ship(melee)
-{
+class Orz(melee:Melee) extends Ship(melee) {
 
-    private var scale : Float = _
-    private var offset : Vector2f = _
+  private var scale : Float = _
+  private var offset : Vector2f = _
 	private var tA : Float = _
 
-    name = new String("Orz: Nemesis")
-    captain = new String("zzzzrrr")
+  name = new String("Orz: Nemesis")
+  captain = new String("zzzzrrr")
 
-    tA = 0.0f
-    pDelay = 0.15f
-    sDelay = 0.5f
-    bDelay = 0.25f
-    crewCapacity = 16
-    crew = 16
-    batteryCapacity = 20
-    battery = 20
-    pEnergy = 5
-    sEnergy = 6
+  tA = 0.0f
+  pDelay = 0.15f
+  sDelay = 0.5f
+  bDelay = 0.25f
+  crewCapacity = 16
+  crew = 16
+  batteryCapacity = 20
+  battery = 20
+  pEnergy = 5
+  sEnergy = 6
 
-    scale = 0.025f
-    engineForce = new Vector2f(10f, 0f)
-    turnForce = new Vector2f(0f, 500f)
-    rightTurnPoint = new Vector2f(-0.5f, 0f)
-    leftTurnPoint = new Vector2f(0.5f, 0f)
+  scale = 0.025f
+  engineForce = new Vector2f(10f, 0f)
+  turnForce = new Vector2f(0f, 500f)
+  rightTurnPoint = new Vector2f(-0.5f, 0f)
+  leftTurnPoint = new Vector2f(0.5f, 0f)
 
-    val bodyDef = new BodyDef
-    bodyDef.pos = new Vector2f(10f, 10f)
-    bodyDef.angle = 3.14159f/4f
+  val bodyDef = new BodyDef
+  bodyDef.pos = new Vector2f(10f, 10f)
+  bodyDef.angle = 3.14159f/4f
     
-    override val body = melee.world.createBody(bodyDef)
-    override var sprite : PShape = null
-    var linVel = new Vector2f(10f,0f)
-    //body.linearVelocity = linVel
+  override val body = melee.world.createBody(bodyDef)
+  var linVel = Vector2f(10f,0f)
+  //body.linearVelocity = linVel
 
-    // Body
-    val pd = new PolygonDef
-    pd.density = 5.0f
-    pd.vertices = Array( point(42, 14),
-                         point(-28, 21),
-                         point(-28, -28),
+  // Body
+  val bodyVerts = Array(point(42, 14),
+                        point(-28, 21),
+                        point(-28, -28),
+                        point(42, -21))
+  val bDef = PolygonDef(bodyVerts)
+  val bf = new FixtureDef(bDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Top Wing
+  val tWingVerts = Array(point(-28, 21),
+                         point(42, 14),
+                         point(70, 14),
+                         point(-49, 63),
+                         point(-70, 63))
+  val tWing = PolygonDef(tWingVerts)
+  val twf = new FixtureDef(tWing)
+  twf.density = 5.0f
+  body.createFixture(twf)
+
+  // Bottom Wing
+  val bWingVerts = Array(point(-28, -28),
+                         point(-70, -63),
+                         point(-49, -63),
+                         point(70, -21),
                          point(42, -21))
-    body.createShape(pd)
-
-    // Top Wing
-    var tWing = new PolygonDef
-    tWing.density = 5.0f
-    tWing.vertices = Array(point(-28, 21),
-                           point(42, 14),
-                           point(70, 14),
-                           point(-49, 63),
-                           point(-70, 63))
-    body.createShape(tWing)
-
-    // Bottom Wing
-    var bWing = new PolygonDef
-    bWing.density = 5f
-    bWing.vertices = Array(point(-28, -28),
-                           point(-70, -63),
-                           point(-49, -63),
-                           point(70, -21),
-                           point(42, -21))
-    body.createShape(bWing)
+  val bWing = PolygonDef(bWingVerts)
+  val bwf = new FixtureDef(bWing)
+  bwf.density = 5f
+  body.createFixture(bwf)
    
-    body.computeMassFromShapes
+  body.computeMassFromShapes
     
-    /*
-    // Turret
-    secondWep = new SecondaryWeapon(this, melee);
-    secondWep.group = group;
-    secondWep.rBody = new Body(pos.x, pos.y, props);
-    offset.set(0, -0.05);
-    var base = new Circle(0.6, offset);
-    var verts = new Array<Vector2f>();
-    verts.push(new Vector2f(0.15,0.75));
-    verts.push(new Vector2f(0.15,-0.5));
-    verts.push(new Vector2f(-0.15,-0.5));
-    verts.push(new Vector2f( -0.15, 0.75));
-    offset.set(0.0, 0.5);
-    var barrel = new Polygon(verts, offset);
-    base.groups = barrel.groups = 2;
-    secondWep.rBody.addShape(base);
-    secondWep.rBody.addShape(barrel);
-    secondWep.init();
-    */
+  /*
+   // Turret
+   secondWep = new SecondaryWeapon(this, melee);
+   secondWep.group = group;
+   secondWep.rBody = new Body(pos.x, pos.y, props);
+   offset.set(0, -0.05);
+   var base = new Circle(0.6, offset);
+   var verts = new Array<Vector2f>();
+   verts.push(new Vector2f(0.15,0.75));
+   verts.push(new Vector2f(0.15,-0.5));
+   verts.push(new Vector2f(-0.15,-0.5));
+   verts.push(new Vector2f( -0.15, 0.75));
+   offset.set(0.0, 0.5);
+   var barrel = new Polygon(verts, offset);
+   base.groups = barrel.groups = 2;
+   secondWep.rBody.addShape(base);
+   secondWep.rBody.addShape(barrel);
+   secondWep.init();
+   */
 
-    def point(x:Float, y:Float) = {
-        val p = new Vector2f(x*scale,y*scale)
-        p
-    }
+  def point(x:Float, y:Float) = {
+    val p = new Vector2f(x*scale,y*scale)
+    p
+  }
 
 	override def fire = {
-        /*
-		if (!primaryTime() || battery < pEnergy) return;
-			batteryCost(pEnergy);
-			primeWep = new PrimaryWeapon(this, melee);
-		  	primeWep.group = group;
-          	var verts = new Array<Vector2f>();
-          	verts.push(new Vector2f(0.25,0.5));
-          	verts.push(new Vector2f(0.25,-0.5));
-          	verts.push(new Vector2f(-0.25,-0.5));
-          	verts.push(new Vector2f(-0.25,0.5));
-          	var poly = new Polygon(verts, Vector2f.init());
-          	var localPos = new Vector2f(0, 1.25);
-          	var worldPos = secondWep.rBody.worldPoint(localPos);
-          	howitzer = new Body(worldPos.x, worldPos.y);
-		  	howitzer.a = secondWep.rBody.a;
-          	howitzer.v = new Vector2f(0.0, 100.0).rotate(howitzer.a);
-          	howitzer.addShape(poly);
-          	world.addBody(howitzer);
-          	primeWep.rBody = howitzer;
-          	primeWep.lifetime = 2.5;
-          	primeWep.damage = 10;
-          	primeWep.crew = 5;
-			primeWep.draw(0xFF0000);
-			primeWep.init();
-            */
-      }
+    /*
+     if (!primaryTime() || battery < pEnergy) return;
+     batteryCost(pEnergy);
+     primeWep = new PrimaryWeapon(this, melee);
+     primeWep.group = group;
+     var verts = new Array<Vector2f>();
+     verts.push(new Vector2f(0.25,0.5));
+     verts.push(new Vector2f(0.25,-0.5));
+     verts.push(new Vector2f(-0.25,-0.5));
+     verts.push(new Vector2f(-0.25,0.5));
+     var poly = new Polygon(verts, Vector2f.init());
+     var localPos = new Vector2f(0, 1.25);
+     var worldPos = secondWep.rBody.worldPoint(localPos);
+     howitzer = new Body(worldPos.x, worldPos.y);
+     howitzer.a = secondWep.rBody.a;
+     howitzer.v = new Vector2f(0.0, 100.0).rotate(howitzer.a);
+     howitzer.addShape(poly);
+     world.addBody(howitzer);
+     primeWep.rBody = howitzer;
+     primeWep.lifetime = 2.5;
+     primeWep.damage = 10;
+     primeWep.crew = 5;
+     primeWep.draw(0xFF0000);
+     primeWep.init();
+     */
+  }
 
 	// Collide with own objects -> collect marines
 	def collect(o:GameObject) {
-        /*
-		if(o != primeWep) {
-			crew++;
-			melee.destroyList.set(o.rBody);
-		}
-        */
+    /*
+     if(o != primeWep) {
+     crew++;
+     melee.destroyList.set(o.rBody);
+     }
+     */
 	}
 
 	override def updateSpecial = {
-        /*
-		var turret = secondWep.rBody;
-		turret.v = rBody.v;
-		turret.x = rBody.x;
-		turret.y = rBody.y;
-		if (special) {
-		  if (turnL) {
-			tA += Math.PI / 32;
-		  } else if (turnR) {
-			tA -= Math.PI / 32;
-		  } else if (primary && crew > 1) {
-				var time = flash.Lib.getTimer() * 0.001;
-				var dt = time - sTime;
-				if(dt >= sDelay) {
-					sTime = time;
-					// Release a marine
-					batteryCost(sEnergy);
-					crew--;
-					var marine = new Marine(melee, this);
-					numMarines++;
-					marine.initAI(melee.ship2);
-					marines.map(marine);
-				}
-		  }
-		}
-		turret.a = rBody.a + Math.PI/2 + tA;
-        */
+    /*
+     var turret = secondWep.rBody;
+     turret.v = rBody.v;
+     turret.x = rBody.x;
+     turret.y = rBody.y;
+     if (special) {
+     if (turnL) {
+     tA += Math.PI / 32;
+     } else if (turnR) {
+     tA -= Math.PI / 32;
+     } else if (primary && crew > 1) {
+     var time = flash.Lib.getTimer() * 0.001;
+     var dt = time - sTime;
+     if(dt >= sDelay) {
+     sTime = time;
+     // Release a marine
+     batteryCost(sEnergy);
+     crew--;
+     var marine = new Marine(melee, this);
+     numMarines++;
+     marine.initAI(melee.ship2);
+     marines.map(marine);
+     }
+     }
+     }
+     turret.a = rBody.a + Math.PI/2 + tA;
+     */
 	}
 }
 

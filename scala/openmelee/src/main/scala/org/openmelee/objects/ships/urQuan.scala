@@ -30,75 +30,107 @@
  */
 package org.openmelee.objects.ships
  
-import org.villane.box2d.dynamics.BodyDef
-import org.villane.box2d.dynamics.World
-import org.villane.box2d.shapes.PolygonDef
-import org.villane.box2d.shapes.CircleDef
+import org.villane.box2d.dynamics.{BodyDef, World, FixtureDef}
+import org.villane.box2d.shapes.{PolygonDef, CircleDef}
 import org.villane.vecmath.Vector2f
+
+import org.newdawn.slick.Graphics
+import org.newdawn.slick.svg.{InkscapeLoader, SimpleDiagramRenderer}
 
 import melee.Melee;
  
 // UrQuan Dreadnought
-class UrQuan(melee:Melee) extends Ship(melee)
-{
+class UrQuan(melee:Melee) extends Ship(melee) {
 
-    override val body = null
-    //override var sprite : PShape = null
-    
-    name = new String("UrQuan: Kzer-Za")
-    captain = new String("Lord 999")
+  name = new String("UrQuan: Kzer-Za")
+  captain = new String("Lord 999")
 
-    pDelay = 0.1f
-    sDelay = 0.5f
-    bDelay = 0.25f
+  pDelay = 0.1f
+  sDelay = 0.5f
+  bDelay = 0.25f
 
-    crewCapacity = 42; crew = 42
-    batteryCapacity = 42; battery = 42
-    pEnergy = 8
-    sEnergy = 6
+  crewCapacity = 42; crew = 42
+  batteryCapacity = 42; battery = 42
+  pEnergy = 8
+  sEnergy = 6
 
-    val scale = 0.025f
-    val offset = new Vector2f(0, 0)
-    engineForce = new Vector2f(800, 0)
-    turnForce = new Vector2f(0, 3000)
-    rightTurnPoint = new Vector2f(-0.5f, 0)
-    leftTurnPoint = new Vector2f(0.5f, 0)
+  val scale = 0.025f
+  val offset = new Vector2f(0, 0)
+  engineForce = new Vector2f(800, 0)
+  turnForce = new Vector2f(0, 3000)
+  rightTurnPoint = new Vector2f(-0.5f, 0)
+  leftTurnPoint = new Vector2f(0.5f, 0)
 
-    def loadShape() {
-        //val g = melee.asInstanceOf[PApplet]
-        //sprite = g.loadShape("Kzer-Za.svg")
-        //sprite.scale(0.15f)
-    }
+  InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
+  val renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Kzer-Za.svg"))
+
+  val bridge = renderer.diagram.getFigureByID("bridge")
+  var points = bridge.getShape.getPoints
+  val bridgeVerts = new Array[Vector2f](points.length/2)
+
+  var i = 0
+  while(i < bridgeVerts.length) {
+    bridgeVerts(i) = Vector2f(points(i), points(i+1))
+    i += 1
+  }
+
+  bridgeVerts.foreach(println)
+  
+  val bodyDef = new BodyDef
+  bodyDef.pos = new Vector2f(10f, 10f)
+  bodyDef.angle = 3.14159f/4f
+
+  override val body = melee.world.createBody(bodyDef)
+
+  val bridgeDef = PolygonDef(bridgeVerts)
+  val bf = new FixtureDef(bridgeDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+  body.computeMassFromShapes
+  
+  def loadShape() {
+    //val g = melee.asInstanceOf[PApplet]
+    //sprite = g.loadShape("Kzer-Za.svg")
+    //sprite.scale(0.15f)
+  }
 
 	override def fire = {
-        /*
-		if(!primaryTime() || battery <= pEnergy) return;  
-		batteryCost(pEnergy);
-		primeWep = new PrimaryWeapon(this, melee);
-		primeWep.group = group;
-		var verts = new Array<Vector2f>();
-		verts.push(new Vector2f(0.25,0.5));
-		verts.push(new Vector2f(0.25,-0.5));
-		verts.push(new Vector2f(-0.25,-0.5));
-		verts.push(new Vector2f(-0.25,0.5));
-		var poly = new Polygon(verts, Vector2f.init());
-		var localPos = new Vector2f(1.5, -0.25);
-		var worldPos = body.worldPoint(localPos);
-		var howitzer = new Body(worldPos.x, worldPos.y);
-		howitzer.a = body.a + Math.PI/2;
-		howitzer.v = new Vector2f(100.0, 0.0).rotate(body.a);
-		howitzer.addShape(poly);
-		world.addBody(howitzer);
-		primeWep.body = howitzer;
-		primeWep.lifetime = 2.5;
-		primeWep.damage = 10;
-		primeWep.crew = 5;
-		primeWep.draw(0xFF0000);
-		primeWep.init();
-        */
+    /*
+     if(!primaryTime() || battery <= pEnergy) return;
+     batteryCost(pEnergy);
+     primeWep = new PrimaryWeapon(this, melee);
+     primeWep.group = group;
+     var verts = new Array<Vector2f>();
+     verts.push(new Vector2f(0.25,0.5));
+     verts.push(new Vector2f(0.25,-0.5));
+     verts.push(new Vector2f(-0.25,-0.5));
+     verts.push(new Vector2f(-0.25,0.5));
+     var poly = new Polygon(verts, Vector2f.init());
+     var localPos = new Vector2f(1.5, -0.25);
+     var worldPos = body.worldPoint(localPos);
+     var howitzer = new Body(worldPos.x, worldPos.y);
+     howitzer.a = body.a + Math.PI/2;
+     howitzer.v = new Vector2f(100.0, 0.0).rotate(body.a);
+     howitzer.addShape(poly);
+     world.addBody(howitzer);
+     primeWep.body = howitzer;
+     primeWep.lifetime = 2.5;
+     primeWep.damage = 10;
+     primeWep.crew = 5;
+     primeWep.draw(0xFF0000);
+     primeWep.init();
+     */
   }
     
-    override def updateSpecial = {
-    }
+  override def updateSpecial = {
+  }
+
+  def render(g: Graphics) {
+    g.translate(250, 100)
+    g.scale(0.1f,0.1f)
+    g.rotate(0,0, Math.Pi.toFloat/4f*57.2957795f)
+    renderer.render(g)
+    g.resetTransform
+  }
  
 } 
