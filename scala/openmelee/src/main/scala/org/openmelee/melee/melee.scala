@@ -21,7 +21,6 @@ import render.{Render, SlickDebugDraw}
 import objects.GameObject
 import objects.ships.{Orz, UrQuan}
 
-import render.MeleeMain
 import ai.Human
 
 class Melee(stateID:Int) extends BasicGameState {
