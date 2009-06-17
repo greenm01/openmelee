@@ -22,12 +22,13 @@ object Util {
     u
   }
     
-  def isLeft(a: Vector2f, b: Vector2f, c: Vector2f) =
-    (b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y)
+  def left(a: Vector2f, b: Vector2f, c: Vector2f) =
+    ((b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y) > 0)
 
-
-  // Melkman's Algorithm
-  // Return a convex hull in ccw order
+  /** Melkman's Algorithm
+   *  www.ams.sunysb.edu/~jsbm/courses/345/melkman.pdf
+   *  Return a convex hull in ccw order
+   */
   def hull(V: Array[Vector2f]) = {
 
     val n = V.length
@@ -38,7 +39,7 @@ object Util {
     D(bot) = V(2)
     D(top) = V(2)
 
-    if (isLeft(V(0), V(1), V(2)) > 0) {
+    if (left(V(0), V(1), V(2))) {
       D(bot+1) = V(0)
       D(bot+2) = V(1)
     } else {
@@ -48,42 +49,37 @@ object Util {
 
     var i = 3
     while(i < n) {
-      if (!(isLeft(D(bot), D(bot+1), V(i)) > 0) &&
-          !(isLeft(D(top-1), D(top), V(i)) > 0)) {
-        while (isLeft(D(bot), D(bot+1), V(i)) <= 0) bot += 1
-        bot -= 1
-        D(bot) = V(i)
-        while (isLeft(D(top-1), D(top), V(i)) <= 0) top -= 1
-        top += 1
-        D(top) = V(i)
+      while (left(D(bot), D(bot+1), V(i)) && left(D(top-1), D(top), V(i))) {
+        i += 1
       }
+      while (!left(D(top-1), D(top), V(i))) top -= 1
+      top += 1; D(top) = V(i)
+      while (!left(D(bot), D(bot+1), V(i))) bot += 1
+      bot -= 1; D(bot) = V(i)
       i += 1
     }
 
-    val H = new Array[Vector2f](n)
+    val H = new Array[Vector2f](top - bot)
     var h = 0
-    while(h <= (top - bot)) {
+    while(h < (top - bot)) {
       H(h) = D(bot + h)
       h += 1
     }
-    D.foreach(println)
     H
   }
 
   def svgToWorld(points: Array[Float], scale: Float) = {
+    val verts = new Array[Vector2f](points.length/2)
     var i = 0
-    var j = 0
-    val bridgeVerts = new Array[Vector2f](points.length/2)
-    while(i < bridgeVerts.length) {
-      bridgeVerts(i) = worldPoint(points(j), points(j+1), scale)
+    while(i < verts.length) {
+      verts(i) = worldPoint(points(i*2), points(i*2+1), scale)
       i += 1
-      j += 2
     }
-    bridgeVerts
+    verts
   }
 
   def worldPoint(x: Float, y: Float, scale: Float) = {
-    val p = Vector2f(x*scale,y*scale)
+    val p = Vector2f(x*scale, y*scale)
     p
   }
 

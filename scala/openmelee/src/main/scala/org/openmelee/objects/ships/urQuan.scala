@@ -57,7 +57,7 @@ class UrQuan(melee:Melee) extends Ship(melee) {
 
   val scale = 0.008f
   val offset = new Vector2f(0, 0)
-  engineForce = new Vector2f(800, 0)
+  engineForce = new Vector2f(0, -10)
   turnForce = new Vector2f(0, 3000)
   rightTurnPoint = new Vector2f(-0.5f, 0)
   leftTurnPoint = new Vector2f(0.5f, 0)
@@ -67,85 +67,21 @@ class UrQuan(melee:Melee) extends Ship(melee) {
 
   val bodyDef = new BodyDef
   bodyDef.pos = new Vector2f(10f, 10f)
-  bodyDef.angle = 3.14159f/4f
 
   override val body = melee.world.createBody(bodyDef)
 
-  // Bridge
+  val parts = Array("bridge", "body", "leftStrut", "leftWing", "rightStrut",
+                         "rightWing", "tail")
 
-  val bridge = renderer.diagram.getFigureByID("bridge")
-  val bridgeVerts = Util.svgToWorld(bridge.getShape.getPoints, scale)
-  val bridgeDef = PolygonDef(bridgeVerts)
-  var bf = new FixtureDef(bridgeDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Body
-
-  val shipBody = renderer.diagram.getFigureByID("body")
-  val bodyVerts = Util.svgToWorld(shipBody.getShape.getPoints, scale)
-  val bDef = PolygonDef(bodyVerts)
-  bf = new FixtureDef(bDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Left strut
-
-  val ls = renderer.diagram.getFigureByID("leftStrut")
-  val lsVerts = Util.svgToWorld(ls.getShape.getPoints, scale)
-  lsVerts.foreach(println)
-  println("***************")
-  Util.hull(lsVerts).foreach(println)
-  val lsDef = PolygonDef(lsVerts)
-  bf = new FixtureDef(lsDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Left wing
-
-  val lw = renderer.diagram.getFigureByID("leftWing")
-  val lwVerts = Util.svgToWorld(lw.getShape.getPoints, scale)
-  val lwDef = PolygonDef(lwVerts)
-  bf = new FixtureDef(lwDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Right strut
-
-  val rs = renderer.diagram.getFigureByID("rightStrut")
-  val rsVerts = Util.svgToWorld(rs.getShape.getPoints, scale)
-  val rsDef = PolygonDef(rsVerts)
-  bf = new FixtureDef(rsDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Right wing
-  /*
-  val rw = renderer.diagram.getFigureByID("rightWing")
-  val rwVerts = Util.hull(Util.svgToWorld(rw.getShape.getPoints, scale))
-  rwVerts.foreach(println)
-  val rwDef = PolygonDef(rwVerts)
-  bf = new FixtureDef(rwDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Tail
-
-  val tail = renderer.diagram.getFigureByID("tail")
-  val tVerts = Util.svgToWorld(tail.getShape.getPoints, scale)
-  val tDef = PolygonDef(tVerts)
-  bf = new FixtureDef(tDef)
-  bf.density = 5.0f
-  //body.createFixture(bf)
-  */
- 
-  body.computeMassFromShapes
-
-  def loadShape() {
-    //val g = melee.asInstanceOf[PApplet]
-    //sprite = g.loadShape("Kzer-Za.svg")
-    //sprite.scale(0.15f)
+  for(p <- parts) {
+    val partID = renderer.diagram.getFigureByID(p)
+    val verts = Util.hull(Util.svgToWorld(partID.getShape.getPoints, scale))
+    val fd = new FixtureDef(PolygonDef(verts))
+    fd.density = 5.0f
+    body.createFixture(fd)
   }
+
+  body.computeMassFromShapes
 
 	override def fire = {
     /*
@@ -179,9 +115,10 @@ class UrQuan(melee:Melee) extends Ship(melee) {
   }
 
   def render(g: Graphics) {
-    g.translate(250, 100)
-    g.scale(0.1f,0.1f)
-    g.rotate(0,0, Math.Pi.toFloat/4f*57.2957795f)
+    val pos = melee.debugDraw.worldToScreen(body.pos)
+    g.translate(pos.x, pos.y)
+    g.scale(0.095f, 0.095f)
+    g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
     renderer.render(g)
     g.resetTransform
   }

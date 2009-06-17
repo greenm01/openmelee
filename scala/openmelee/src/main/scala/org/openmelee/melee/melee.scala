@@ -36,11 +36,11 @@ class Melee(stateID:Int) extends BasicGameState {
 	val world = new World(worldAABB, gravity, false)
     
   val orz = new Orz(this)
-  val kz = new UrQuan(this)
-  
   objectList += orz
-
-  val human = new Human(orz)
+  val kz = new UrQuan(this)
+  objectList += kz
+  
+  val human = new Human(kz)
   val timeStep = 1f/60f
   val iterations = 10
 

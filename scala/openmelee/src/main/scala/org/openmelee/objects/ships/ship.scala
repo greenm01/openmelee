@@ -44,26 +44,26 @@ import org.openmelee.melee.Melee
 abstract class Ship(melee:Melee) extends GameObject
 {
 
-    var name : String = _
+  var name : String = _
 	var captain : String = _
 	var primeWep : GameObject = _
 	var secondWep : GameObject = _
 
-    protected var engineForce : Vector2f = _
-    protected var turnForce : Vector2f = _
-    protected var leftTurnPoint : Vector2f = _
-    protected var rightTurnPoint : Vector2f = _
+  protected var engineForce : Vector2f = _
+  protected var turnForce : Vector2f = _
+  protected var leftTurnPoint : Vector2f = _
+  protected var rightTurnPoint : Vector2f = _
 
-    // Control commands
-    var turnL  = false
-    var turnR  = false
-    var engines = false
-    var special = false
+  // Control commands
+  var turnL  = false
+  var turnR  = false
+  var engines = false
+  var special = false
 	var primary = false
 	
 	// Timing parameters (seconds)
 	var time = System.currentTimeMillis * 0.001f
-    // Primary delay
+  // Primary delay
 	var pDelay = 0f
 	// Secondary delay
 	var sDelay = 0f
@@ -76,8 +76,8 @@ abstract class Ship(melee:Melee) extends GameObject
 	// Battery time
 	var bTime = 0f
 
-    var crewCapacity : Int = _
-    var crew : Int = _
+  var crewCapacity : Int = _
+  var crew : Int = _
     
 	var batteryCapacity : Int = _
 	var battery : Int = _
@@ -87,92 +87,92 @@ abstract class Ship(melee:Melee) extends GameObject
 	// Secondary battery cost
 	protected var sEnergy : Int = _
 
-    private var maxLinVel  = new Vector2f(35,35)
-    private var maxAngVel : Float = 2
+  private var maxLinVel  = new Vector2f(35,35)
+  private var maxAngVel : Float = 2
 
 	//private var ai : AI;
 	private var enemy : Ship = null
 
-    @inline def thrust() {
-        body.force += Util.rotate(engineForce, body.angle)
-    }
+  @inline def thrust() {
+    body.force += Util.rotate(engineForce, body.angle)
+  }
 
-    @inline def turnLeft() {
-        body.torque += leftTurnPoint cross turnForce
-    }
+  @inline def turnLeft() {
+    body.torque += leftTurnPoint cross turnForce
+  }
 
-    @inline def turnRight() {
-        body.torque += rightTurnPoint cross turnForce
-    }
+  @inline def turnRight() {
+    body.torque += rightTurnPoint cross turnForce
+  }
 
-    @inline def limitVelocity() {
-        val v = body.linearVelocity
-        body.linearVelocity = v.clamp(-maxLinVel, maxLinVel)
-        val omega = body.angularVelocity
-        body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel)
-    }
+  @inline def limitVelocity() {
+    val v = body.linearVelocity
+    body.linearVelocity = v.clamp(-maxLinVel, maxLinVel)
+    val omega = body.angularVelocity
+    body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel)
+  }
 
-    @inline override def updateState() {
+  @inline override def updateState() {
 		time = System.currentTimeMillis * 0.001f
 		rechargeBattery
 		if (primary && !special) fire
 		updateSpecial
-        if(engines) thrust
-    }
+    if(engines) thrust
+  }
 
-    /*
-	def initAI(enemy:Ship) {
-		ai = new AI(this, melee.gameObjects);
-		this.enemy = ai.enemy = enemy;
-	}
+  /*
+   def initAI(enemy:Ship) {
+   ai = new AI(this, melee.gameObjects);
+   this.enemy = ai.enemy = enemy;
+   }
 
-	def updateAI() {
-		if(ai != null) {
-			ai.move();
-		}
-	}
+   def updateAI() {
+   if(ai != null) {
+   ai.move();
+   }
+   }
 
-    def destroy() {
-        for(s in body.shapes) {
-            var debris = new Debris(melee);
-            switch(s.type) {
-                case Shape.POLYGON:
-                    var verts = new Array<Vector2f>();
-                    var v = s.polygon.verts;
-                    while(v != null) {
-                        verts.push(v.clone());
-                        v = v.next;
-                    }
-                    var pos = new Vector2f(body.x, body.y);
-                    debris.initPoly(verts, pos, s.offset);
-                case Shape.CIRCLE:
-            }
-        }
-    }
-    */
+   def destroy() {
+   for(s in body.shapes) {
+   var debris = new Debris(melee);
+   switch(s.type) {
+   case Shape.POLYGON:
+   var verts = new Array<Vector2f>();
+   var v = s.polygon.verts;
+   while(v != null) {
+   verts.push(v.clone());
+   v = v.next;
+   }
+   var pos = new Vector2f(body.x, body.y);
+   debris.initPoly(verts, pos, s.offset);
+   case Shape.CIRCLE:
+   }
+   }
+   }
+   */
 
-    @inline def applyPlanetGravity() {
+  @inline final def applyPlanetGravity() {
 
-        val minRadius = 0.1f
-        val maxRadius = 50f
-        val strength = 75f
+    val minRadius = 0.1f
+    val maxRadius = 50f
+    val strength = 75f
 
-        // TODO: Correct center
-        val center = new Vector2f(400f, 250f)
-        var r = center - body.pos
-        val d = Math.sqrt(r.x * r.x + r.y * r.y).toFloat
-        r /= d
-        var ratio = (d - minRadius) / (maxRadius - minRadius)
+    // TODO: Correct center
+    val center = new Vector2f(400f, 250f)
+    var r = center - body.pos
+    val d = Math.sqrt(r.x * r.x + r.y * r.y).toFloat
+    r /= d
+    var ratio = (d - minRadius) / (maxRadius - minRadius)
 
-        if (ratio < 0)
-            ratio = 0f
-        else if (ratio > 1)
-            ratio = 1f
+    if (ratio < 0)
+    ratio = 0f
+    else if (ratio > 1)
+    ratio = 1f
 
-        body.force += r * ratio * strength
-    }
+    body.force += r * ratio * strength
+  }
 
-	@inline def primaryTime = {
+	@inline final def primaryTime = {
 		var dt = time - pTime
 		if(dt >= pDelay) {
 			pTime = time
@@ -180,7 +180,7 @@ abstract class Ship(melee:Melee) extends GameObject
 		} else {
 			false
 		}
-    }
+  }
 
 	@inline def rechargeBattery() {
 		var dt = time - bTime
@@ -196,5 +196,5 @@ abstract class Ship(melee:Melee) extends GameObject
 	}
     
 	def updateSpecial
-    def fire
+  def fire
 }

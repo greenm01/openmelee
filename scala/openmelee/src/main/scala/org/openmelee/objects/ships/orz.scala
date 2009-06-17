@@ -68,12 +68,11 @@ class Orz(melee:Melee) extends Ship(melee) {
   leftTurnPoint = new Vector2f(0.5f, 0f)
 
   val bodyDef = new BodyDef
-  bodyDef.pos = new Vector2f(10f, 10f)
+  bodyDef.pos = new Vector2f(0f, 0f)
   bodyDef.angle = 3.14159f/4f
     
   override val body = melee.world.createBody(bodyDef)
   var linVel = Vector2f(10f,0f)
-  //body.linearVelocity = linVel
 
   // Body
   val bodyVerts = Array(point(42, 14),
