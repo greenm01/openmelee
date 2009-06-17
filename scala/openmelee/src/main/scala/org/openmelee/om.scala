@@ -14,29 +14,29 @@ import melee.Melee
 
 object OpenMelee {
 
-    val game = new Game
+  val game = new Game
 
 	def main(args: Array[String]) {
-        game.init()
+    game.init()
 	}
 }
 
 class Game extends StateBasedGame("OpenMelee") {
 
-    val MAINMENUSTATE = 0
-    val GAMEPLAYSTATE = 1
+  val MAINMENUSTATE = 0
+  val GAMEPLAYSTATE = 1
 
-    addState(new Melee(GAMEPLAYSTATE))
-    enterState(GAMEPLAYSTATE)
+  addState(new Melee(GAMEPLAYSTATE))
+  enterState(GAMEPLAYSTATE)
    
-    def init() {
-        val app = new AppGameContainer(new Game)
-        app.setDisplayMode(600, 600, false)
-        app.start
-    }
+  def init() {
+    val app = new AppGameContainer(this)
+    app.setDisplayMode(600, 600, false)
+    app.start
+  }
 
-    override def initStatesList(gameContainer:GameContainer) {
-        getState(GAMEPLAYSTATE).init(gameContainer, this)
-    }
+  override def initStatesList(gameContainer:GameContainer) {
+    getState(GAMEPLAYSTATE).init(gameContainer, this)
+  }
 
 }

@@ -37,11 +37,12 @@ import org.villane.vecmath.Vector2f
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.svg.{InkscapeLoader, SimpleDiagramRenderer}
 
-import melee.Melee;
- 
+import melee.Melee
+import utils.Util
+
 // UrQuan Dreadnought
 class UrQuan(melee:Melee) extends Ship(melee) {
-
+  
   name = new String("UrQuan: Kzer-Za")
   captain = new String("Lord 999")
 
@@ -54,7 +55,7 @@ class UrQuan(melee:Melee) extends Ship(melee) {
   pEnergy = 8
   sEnergy = 6
 
-  val scale = 0.025f
+  val scale = 0.008f
   val offset = new Vector2f(0, 0)
   engineForce = new Vector2f(800, 0)
   turnForce = new Vector2f(0, 3000)
@@ -64,30 +65,82 @@ class UrQuan(melee:Melee) extends Ship(melee) {
   InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
   val renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Kzer-Za.svg"))
 
-  val bridge = renderer.diagram.getFigureByID("bridge")
-  var points = bridge.getShape.getPoints
-  val bridgeVerts = new Array[Vector2f](points.length/2)
-
-  var i = 0
-  while(i < bridgeVerts.length) {
-    bridgeVerts(i) = Vector2f(points(i), points(i+1))
-    i += 1
-  }
-
-  bridgeVerts.foreach(println)
-  
   val bodyDef = new BodyDef
   bodyDef.pos = new Vector2f(10f, 10f)
   bodyDef.angle = 3.14159f/4f
 
   override val body = melee.world.createBody(bodyDef)
 
+  // Bridge
+
+  val bridge = renderer.diagram.getFigureByID("bridge")
+  val bridgeVerts = Util.svgToWorld(bridge.getShape.getPoints, scale)
   val bridgeDef = PolygonDef(bridgeVerts)
-  val bf = new FixtureDef(bridgeDef)
+  var bf = new FixtureDef(bridgeDef)
   bf.density = 5.0f
   body.createFixture(bf)
+
+  // Body
+
+  val shipBody = renderer.diagram.getFigureByID("body")
+  val bodyVerts = Util.svgToWorld(shipBody.getShape.getPoints, scale)
+  val bDef = PolygonDef(bodyVerts)
+  bf = new FixtureDef(bDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Left strut
+
+  val ls = renderer.diagram.getFigureByID("leftStrut")
+  val lsVerts = Util.svgToWorld(ls.getShape.getPoints, scale)
+  lsVerts.foreach(println)
+  println("***************")
+  Util.hull(lsVerts).foreach(println)
+  val lsDef = PolygonDef(lsVerts)
+  bf = new FixtureDef(lsDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Left wing
+
+  val lw = renderer.diagram.getFigureByID("leftWing")
+  val lwVerts = Util.svgToWorld(lw.getShape.getPoints, scale)
+  val lwDef = PolygonDef(lwVerts)
+  bf = new FixtureDef(lwDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Right strut
+
+  val rs = renderer.diagram.getFigureByID("rightStrut")
+  val rsVerts = Util.svgToWorld(rs.getShape.getPoints, scale)
+  val rsDef = PolygonDef(rsVerts)
+  bf = new FixtureDef(rsDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Right wing
+  /*
+  val rw = renderer.diagram.getFigureByID("rightWing")
+  val rwVerts = Util.hull(Util.svgToWorld(rw.getShape.getPoints, scale))
+  rwVerts.foreach(println)
+  val rwDef = PolygonDef(rwVerts)
+  bf = new FixtureDef(rwDef)
+  bf.density = 5.0f
+  body.createFixture(bf)
+
+  // Tail
+
+  val tail = renderer.diagram.getFigureByID("tail")
+  val tVerts = Util.svgToWorld(tail.getShape.getPoints, scale)
+  val tDef = PolygonDef(tVerts)
+  bf = new FixtureDef(tDef)
+  bf.density = 5.0f
+  //body.createFixture(bf)
+  */
+ 
   body.computeMassFromShapes
-  
+
   def loadShape() {
     //val g = melee.asInstanceOf[PApplet]
     //sprite = g.loadShape("Kzer-Za.svg")

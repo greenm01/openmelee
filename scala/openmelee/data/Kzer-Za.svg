@@ -51,8 +51,8 @@
      showgrid="true"
      inkscape:window-width="970"
      inkscape:window-height="728"
-     inkscape:window-x="156"
-     inkscape:window-y="4"
+     inkscape:window-x="170"
+     inkscape:window-y="11"
      inkscape:snap-global="true">
     <inkscape:grid
        type="xygrid"
@@ -82,23 +82,25 @@
        sodipodi:nodetypes="ccccccccc" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 110,-87.63782 C 110,-11.78136 110,81.60669 110,162.36218 L -110,162.36218 L -109.01088,-88.47465"
+       d="M 110,-87.63782 L 110,162.36218 L -110,162.36218 L -109.01088,-88.47465"
        id="body"
        sodipodi:nodetypes="cccc"
        inkscape:label="body" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M -90,162.36218 L -90,182.36218 L -140,212.36218 L -140,232.36218 L -105.44156,271.53978 L 105.68032,271.53978 L 140,232.36218 L 140,212.36218 L 90,182.36218 L 90,162.36218 L -90,162.36218 z"
-       id="path4852"
-       sodipodi:nodetypes="ccccccccccc" />
+       id="tail"
+       sodipodi:nodetypes="ccccccccccc"
+       inkscape:label="tail" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 110,42.36218 L 180,42.36218 L 180,92.36218 L 110,92.36218 L 110,42.36218 z"
-       id="path4854"
-       sodipodi:nodetypes="ccccc" />
+       id="rightStrut"
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="rightStrut" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M -110,42.36218 L -180,42.36218 L -180,92.36218 L -110,92.36218 L -110,42.36218 z"
+       d="M -110,42.36218 L -110,92.36218 L -180,92.36218 L -180,42.36218 L -110,42.36218 z"
        id="leftStrut"
        inkscape:label="leftStrut"
        sodipodi:nodetypes="ccccc" />
