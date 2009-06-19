@@ -36,9 +36,13 @@ import org.villane.box2d.shapes.PolygonDef
 import org.villane.box2d.shapes.CircleDef
 import org.villane.box2d.dynamics.FixtureDef
 
+import org.newdawn.slick.Graphics
+import org.newdawn.slick.svg.{InkscapeLoader, SimpleDiagramRenderer}
+
 import org.villane.vecmath.Vector2f
 
-import openmelee.melee.Melee;
+import melee.Melee;
+import utils.Util
 
 // Orz Nemesis
 class Orz(melee:Melee) extends Ship(melee) {
@@ -50,6 +54,10 @@ class Orz(melee:Melee) extends Ship(melee) {
   name = new String("Orz: Nemesis")
   captain = new String("zzzzrrr")
 
+  InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
+  val renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
+  val turret = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
+ 
   tA = 0.0f
   pDelay = 0.15f
   sDelay = 0.5f
@@ -61,7 +69,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   pEnergy = 5
   sEnergy = 6
 
-  scale = 0.025f
+  scale = 0.008f
   engineForce = new Vector2f(10f, 0f)
   turnForce = new Vector2f(0f, 500f)
   rightTurnPoint = new Vector2f(-0.5f, 0f)
@@ -72,39 +80,16 @@ class Orz(melee:Melee) extends Ship(melee) {
   bodyDef.angle = 3.14159f/4f
     
   override val body = melee.world.createBody(bodyDef)
-  var linVel = Vector2f(10f,0f)
+  val parts = Array("B1", "B2", "B3", "R1", "R2", "R3", "R4", "R5",
+                    "L1", "L2", "L3", "L4", "L5")
 
-  // Body
-  val bodyVerts = Array(point(42, 14),
-                        point(-28, 21),
-                        point(-28, -28),
-                        point(42, -21))
-  val bDef = PolygonDef(bodyVerts)
-  val bf = new FixtureDef(bDef)
-  bf.density = 5.0f
-  body.createFixture(bf)
-
-  // Top Wing
-  val tWingVerts = Array(point(-28, 21),
-                         point(42, 14),
-                         point(70, 14),
-                         point(-49, 63),
-                         point(-70, 63))
-  val tWing = PolygonDef(tWingVerts)
-  val twf = new FixtureDef(tWing)
-  twf.density = 5.0f
-  body.createFixture(twf)
-
-  // Bottom Wing
-  val bWingVerts = Array(point(-28, -28),
-                         point(-70, -63),
-                         point(-49, -63),
-                         point(70, -21),
-                         point(42, -21))
-  val bWing = PolygonDef(bWingVerts)
-  val bwf = new FixtureDef(bWing)
-  bwf.density = 5f
-  body.createFixture(bwf)
+  for(p <- parts) {
+    val partID = renderer.diagram.getFigureByID(p)
+    val verts = Util.hull(Util.svgToWorld(partID.getShape.getPoints, scale))
+    val fd = new FixtureDef(PolygonDef(verts))
+    fd.density = 5.0f
+    body.createFixture(fd)
+  }
    
   body.computeMassFromShapes
     
@@ -200,5 +185,17 @@ class Orz(melee:Melee) extends Ship(melee) {
      turret.a = rBody.a + Math.PI/2 + tA;
      */
 	}
+
+  def render(g: Graphics) {
+     /*
+    val pos = melee.debugDraw.worldToScreen(body.pos)
+    g.translate(pos.x, pos.y)
+    g.scale(0.095f, 0.095f)
+    g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
+    turret.render(g)
+    g.resetTransform
+    */
+  }
+  
 }
 

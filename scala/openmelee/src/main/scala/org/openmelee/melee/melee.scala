@@ -60,6 +60,7 @@ class Melee(stateID:Int) extends BasicGameState {
   override def render(gc: GameContainer, sb:StateBasedGame, g: Graphics) {
 
     kz.render(g)
+    orz.render(g)
     
     val red = new Color3f(255.0f,0.0f,0.0f)
         

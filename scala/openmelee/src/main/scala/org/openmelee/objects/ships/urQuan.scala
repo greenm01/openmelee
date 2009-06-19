@@ -71,7 +71,7 @@ class UrQuan(melee:Melee) extends Ship(melee) {
   override val body = melee.world.createBody(bodyDef)
 
   val parts = Array("bridge", "body", "leftStrut", "leftWing", "rightStrut",
-                         "rightWing", "tail")
+                    "rightWing", "tail")
 
   for(p <- parts) {
     val partID = renderer.diagram.getFigureByID(p)
