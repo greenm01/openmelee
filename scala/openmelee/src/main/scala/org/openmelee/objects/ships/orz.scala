@@ -55,8 +55,8 @@ class Orz(melee:Melee) extends Ship(melee) {
   captain = new String("zzzzrrr")
 
   InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
-  val renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
-  val turret = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
+  val skeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
+  //val turret = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
  
   tA = 0.0f
   pDelay = 0.15f
@@ -69,7 +69,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   pEnergy = 5
   sEnergy = 6
 
-  scale = 0.008f
+  scale = 0.0062f
   engineForce = new Vector2f(10f, 0f)
   turnForce = new Vector2f(0f, 500f)
   rightTurnPoint = new Vector2f(-0.5f, 0f)
@@ -84,7 +84,7 @@ class Orz(melee:Melee) extends Ship(melee) {
                     "L1", "L2", "L3", "L4", "L5")
 
   for(p <- parts) {
-    val partID = renderer.diagram.getFigureByID(p)
+    val partID = skeleton.diagram.getFigureByID(p)
     val verts = Util.hull(Util.svgToWorld(partID.getShape.getPoints, scale))
     val fd = new FixtureDef(PolygonDef(verts))
     fd.density = 5.0f
@@ -92,7 +92,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   }
    
   body.computeMassFromShapes
-    
+ 
   /*
    // Turret
    secondWep = new SecondaryWeapon(this, melee);
@@ -187,14 +187,12 @@ class Orz(melee:Melee) extends Ship(melee) {
 	}
 
   def render(g: Graphics) {
-     /*
     val pos = melee.debugDraw.worldToScreen(body.pos)
     g.translate(pos.x, pos.y)
-    g.scale(0.095f, 0.095f)
+    g.scale(0.075f, 0.075f)
     g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
-    turret.render(g)
+    skeleton.render(g)
     g.resetTransform
-    */
   }
   
 }
