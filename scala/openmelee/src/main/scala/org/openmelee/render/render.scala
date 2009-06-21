@@ -10,7 +10,7 @@ package org.openmelee.render
 import java.util.ArrayList
 
 import org.villane.box2d.draw.Color3f
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Transform2f
@@ -62,19 +62,19 @@ class Render() {
         (interp*toHigh + (1.0f-interp)*toLow)
     }
     
-    override def worldToScreen(world: Vector2f) = {
+    override def worldToScreen(world: Vector2) = {
         val x = map(world.x, 0f, 1f, transX, transX+scaleFactor)
         var y = map(world.y, 0f, 1f, transY, transY+scaleFactor)
         if (yFlip == -1.0f) y = map(y, 0f, container.getHeight, container.getHeight, 0f)
-        Vector2f(x, y)
+        Vector2(x, y)
     }
 
-    override def screenToWorld(screen: Vector2f) = {
+    override def screenToWorld(screen: Vector2) = {
         val x = map(screen.x, transX, transX+scaleFactor, 0f, 1f)
         var y = screen.y
         if (yFlip == -1.0f) y = map(y, container.getHeight, 0f, 0f, container.getHeight)
         y = map(y, transY, transY + scaleFactor, 0f, 1f)
-        Vector2f(x, y)
+        Vector2(x, y)
     }
     */
 }

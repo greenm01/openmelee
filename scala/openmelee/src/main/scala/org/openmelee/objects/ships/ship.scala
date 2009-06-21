@@ -33,7 +33,7 @@ package org.openmelee.objects.ships;
 import org.villane.box2d.dynamics.World
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 import org.villane.vecmath.MathUtil
 
 import org.openmelee.objects.GameObject
@@ -49,10 +49,10 @@ abstract class Ship(melee:Melee) extends GameObject
 	var primeWep : GameObject = _
 	var secondWep : GameObject = _
 
-  protected var engineForce : Vector2f = _
-  protected var turnForce : Vector2f = _
-  protected var leftTurnPoint : Vector2f = _
-  protected var rightTurnPoint : Vector2f = _
+  protected var engineForce : Vector2 = _
+  protected var turnForce : Vector2 = _
+  protected var leftTurnPoint : Vector2 = _
+  protected var rightTurnPoint : Vector2 = _
 
   // Control commands
   var turnL  = false
@@ -87,7 +87,7 @@ abstract class Ship(melee:Melee) extends GameObject
 	// Secondary battery cost
 	protected var sEnergy : Int = _
 
-  private var maxLinVel  = new Vector2f(35,35)
+  private var maxLinVel  = new Vector2(35,35)
   private var maxAngVel : Float = 2
 
 	//private var ai : AI;
@@ -137,13 +137,13 @@ abstract class Ship(melee:Melee) extends GameObject
    var debris = new Debris(melee);
    switch(s.type) {
    case Shape.POLYGON:
-   var verts = new Array<Vector2f>();
+   var verts = new Array<Vector2>();
    var v = s.polygon.verts;
    while(v != null) {
    verts.push(v.clone());
    v = v.next;
    }
-   var pos = new Vector2f(body.x, body.y);
+   var pos = new Vector2(body.x, body.y);
    debris.initPoly(verts, pos, s.offset);
    case Shape.CIRCLE:
    }
@@ -158,7 +158,7 @@ abstract class Ship(melee:Melee) extends GameObject
     val strength = 75f
 
     // TODO: Correct center
-    val center = new Vector2f(400f, 250f)
+    val center = new Vector2(400f, 250f)
     var r = center - body.pos
     val d = Math.sqrt(r.x * r.x + r.y * r.y).toFloat
     r /= d

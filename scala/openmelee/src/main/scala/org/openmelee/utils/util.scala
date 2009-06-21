@@ -7,32 +7,32 @@
 
 package org.openmelee.utils
 
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 
 object Util {
 
-  @inline def rotateLeft90(v:Vector2f) = new Vector2f( -v.y, v.x )
+  @inline def rotateLeft90(v:Vector2) = new Vector2( -v.y, v.x )
 
-  @inline def rotateRight90(v:Vector2f) = new Vector2f(v.y, -v.x )
+  @inline def rotateRight90(v:Vector2) = new Vector2(v.y, -v.x )
 
-  @inline def rotate(v:Vector2f, angle:Float) = {
+  @inline def rotate(v:Vector2, angle:Float) = {
     val cos = Math.cos(angle).asInstanceOf[Float]
     val sin = Math.sin(angle).asInstanceOf[Float]
-    val u = new Vector2f((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x))
+    val u = new Vector2((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x))
     u
   }
     
-  def left(a: Vector2f, b: Vector2f, c: Vector2f) =
+  def left(a: Vector2, b: Vector2, c: Vector2) =
     ((b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y) > 0)
 
   /** Melkman's Algorithm
    *  www.ams.sunysb.edu/~jsbm/courses/345/melkman.pdf
    *  Return a convex hull in ccw order
    */
-  def hull(V: Array[Vector2f]) = {
+  def hull(V: Array[Vector2]) = {
 
     val n = V.length
-    val D = new Array[Vector2f](2 * n + 1)
+    val D = new Array[Vector2](2 * n + 1)
     var bot = n - 2
     var top = bot + 3
 
@@ -59,7 +59,7 @@ object Util {
       i += 1
     }
 
-    val H = new Array[Vector2f](top - bot)
+    val H = new Array[Vector2](top - bot)
     var h = 0
     while(h < (top - bot)) {
       H(h) = D(bot + h)
@@ -69,7 +69,7 @@ object Util {
   }
 
   def svgToWorld(points: Array[Float], scale: Float) = {
-    val verts = new Array[Vector2f](points.length/2)
+    val verts = new Array[Vector2](points.length/2)
     var i = 0
     while(i < verts.length) {
       verts(i) = worldPoint(points(i*2), points(i*2+1), scale)
@@ -79,7 +79,7 @@ object Util {
   }
 
   def worldPoint(x: Float, y: Float, scale: Float) = {
-    val p = Vector2f(x*scale, y*scale)
+    val p = Vector2(x*scale, y*scale)
     p
   }
 

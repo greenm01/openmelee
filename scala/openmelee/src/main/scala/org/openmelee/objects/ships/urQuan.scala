@@ -32,7 +32,7 @@ package org.openmelee.objects.ships
  
 import org.villane.box2d.dynamics.{BodyDef, World, FixtureDef}
 import org.villane.box2d.shapes.{PolygonDef, CircleDef}
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.svg.{InkscapeLoader, SimpleDiagramRenderer}
@@ -56,17 +56,17 @@ class UrQuan(melee:Melee) extends Ship(melee) {
   sEnergy = 6
 
   val scale = 0.008f
-  val offset = new Vector2f(0, 0)
-  engineForce = new Vector2f(0, -10)
-  turnForce = new Vector2f(0, 3000)
-  rightTurnPoint = new Vector2f(-0.5f, 0)
-  leftTurnPoint = new Vector2f(0.5f, 0)
+  val offset = new Vector2(0, 0)
+  engineForce = new Vector2(0, -10)
+  turnForce = new Vector2(0, 3000)
+  rightTurnPoint = new Vector2(-0.5f, 0)
+  leftTurnPoint = new Vector2(0.5f, 0)
 
   InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
   val renderer = new SimpleDiagramRenderer(InkscapeLoader.load("data/Kzer-Za.svg"))
 
   val bodyDef = new BodyDef
-  bodyDef.pos = new Vector2f(10f, 10f)
+  bodyDef.pos = new Vector2(10f, 10f)
 
   override val body = melee.world.createBody(bodyDef)
 
@@ -89,17 +89,17 @@ class UrQuan(melee:Melee) extends Ship(melee) {
      batteryCost(pEnergy);
      primeWep = new PrimaryWeapon(this, melee);
      primeWep.group = group;
-     var verts = new Array<Vector2f>();
-     verts.push(new Vector2f(0.25,0.5));
-     verts.push(new Vector2f(0.25,-0.5));
-     verts.push(new Vector2f(-0.25,-0.5));
-     verts.push(new Vector2f(-0.25,0.5));
-     var poly = new Polygon(verts, Vector2f.init());
-     var localPos = new Vector2f(1.5, -0.25);
+     var verts = new Array<Vector2>();
+     verts.push(new Vector2(0.25,0.5));
+     verts.push(new Vector2(0.25,-0.5));
+     verts.push(new Vector2(-0.25,-0.5));
+     verts.push(new Vector2(-0.25,0.5));
+     var poly = new Polygon(verts, Vector2.init());
+     var localPos = new Vector2(1.5, -0.25);
      var worldPos = body.worldPoint(localPos);
      var howitzer = new Body(worldPos.x, worldPos.y);
      howitzer.a = body.a + Math.PI/2;
-     howitzer.v = new Vector2f(100.0, 0.0).rotate(body.a);
+     howitzer.v = new Vector2(100.0, 0.0).rotate(body.a);
      howitzer.addShape(poly);
      world.addBody(howitzer);
      primeWep.body = howitzer;

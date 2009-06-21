@@ -39,7 +39,7 @@ import org.villane.box2d.dynamics.FixtureDef
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.svg.{InkscapeLoader, SimpleDiagramRenderer}
 
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 
 import melee.Melee;
 import utils.Util
@@ -48,7 +48,7 @@ import utils.Util
 class Orz(melee:Melee) extends Ship(melee) {
 
   private var scale : Float = _
-  private var offset : Vector2f = _
+  private var offset : Vector2 = _
 	private var tA : Float = _
 
   name = new String("Orz: Nemesis")
@@ -56,7 +56,7 @@ class Orz(melee:Melee) extends Ship(melee) {
 
   InkscapeLoader.RADIAL_TRIANGULATION_LEVEL = 2
   val skeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
-  //val turret = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
+  val turret = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
  
   tA = 0.0f
   pDelay = 0.15f
@@ -70,13 +70,13 @@ class Orz(melee:Melee) extends Ship(melee) {
   sEnergy = 6
 
   scale = 0.0062f
-  engineForce = new Vector2f(10f, 0f)
-  turnForce = new Vector2f(0f, 500f)
-  rightTurnPoint = new Vector2f(-0.5f, 0f)
-  leftTurnPoint = new Vector2f(0.5f, 0f)
+  engineForce = new Vector2(10f, 0f)
+  turnForce = new Vector2(0f, 500f)
+  rightTurnPoint = new Vector2(-0.5f, 0f)
+  leftTurnPoint = new Vector2(0.5f, 0f)
 
   val bodyDef = new BodyDef
-  bodyDef.pos = new Vector2f(0f, 0f)
+  bodyDef.pos = new Vector2(0f, 0f)
   bodyDef.angle = 3.14159f/4f
     
   override val body = melee.world.createBody(bodyDef)
@@ -100,11 +100,11 @@ class Orz(melee:Melee) extends Ship(melee) {
    secondWep.rBody = new Body(pos.x, pos.y, props);
    offset.set(0, -0.05);
    var base = new Circle(0.6, offset);
-   var verts = new Array<Vector2f>();
-   verts.push(new Vector2f(0.15,0.75));
-   verts.push(new Vector2f(0.15,-0.5));
-   verts.push(new Vector2f(-0.15,-0.5));
-   verts.push(new Vector2f( -0.15, 0.75));
+   var verts = new Array<Vector2>();
+   verts.push(new Vector2(0.15,0.75));
+   verts.push(new Vector2(0.15,-0.5));
+   verts.push(new Vector2(-0.15,-0.5));
+   verts.push(new Vector2( -0.15, 0.75));
    offset.set(0.0, 0.5);
    var barrel = new Polygon(verts, offset);
    base.groups = barrel.groups = 2;
@@ -114,7 +114,7 @@ class Orz(melee:Melee) extends Ship(melee) {
    */
 
   def point(x:Float, y:Float) = {
-    val p = new Vector2f(x*scale,y*scale)
+    val p = new Vector2(x*scale,y*scale)
     p
   }
 
@@ -124,17 +124,17 @@ class Orz(melee:Melee) extends Ship(melee) {
      batteryCost(pEnergy);
      primeWep = new PrimaryWeapon(this, melee);
      primeWep.group = group;
-     var verts = new Array<Vector2f>();
-     verts.push(new Vector2f(0.25,0.5));
-     verts.push(new Vector2f(0.25,-0.5));
-     verts.push(new Vector2f(-0.25,-0.5));
-     verts.push(new Vector2f(-0.25,0.5));
-     var poly = new Polygon(verts, Vector2f.init());
-     var localPos = new Vector2f(0, 1.25);
+     var verts = new Array<Vector2>();
+     verts.push(new Vector2(0.25,0.5));
+     verts.push(new Vector2(0.25,-0.5));
+     verts.push(new Vector2(-0.25,-0.5));
+     verts.push(new Vector2(-0.25,0.5));
+     var poly = new Polygon(verts, Vector2.init());
+     var localPos = new Vector2(0, 1.25);
      var worldPos = secondWep.rBody.worldPoint(localPos);
      howitzer = new Body(worldPos.x, worldPos.y);
      howitzer.a = secondWep.rBody.a;
-     howitzer.v = new Vector2f(0.0, 100.0).rotate(howitzer.a);
+     howitzer.v = new Vector2(0.0, 100.0).rotate(howitzer.a);
      howitzer.addShape(poly);
      world.addBody(howitzer);
      primeWep.rBody = howitzer;
@@ -192,6 +192,7 @@ class Orz(melee:Melee) extends Ship(melee) {
     g.scale(0.075f, 0.075f)
     g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
     skeleton.render(g)
+    turret.render(g)
     g.resetTransform
   }
   

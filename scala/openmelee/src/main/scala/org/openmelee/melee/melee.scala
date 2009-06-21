@@ -12,7 +12,7 @@ import collection.jcl.ArrayList
 import org.villane.box2d.shapes.{AABB, Polygon}
 import org.villane.box2d.dynamics.World
 import org.villane.box2d.draw.{DebugDraw, Color3f}
-import org.villane.vecmath.Vector2f
+import org.villane.vecmath.Vector2
 
 import org.newdawn.slick.state.{BasicGameState, StateBasedGame}
 import org.newdawn.slick.{GameContainer, Color, Graphics}
@@ -29,10 +29,10 @@ class Melee(stateID:Int) extends BasicGameState {
 
   val objectList = new ArrayList[GameObject]
 
-  val min = new Vector2f(-200f, -100f)
-	val max = new Vector2f(200f, 200f)
+  val min = new Vector2(-200f, -100f)
+	val max = new Vector2(200f, 200f)
 	val worldAABB = new AABB(min, max)
-	val gravity = new Vector2f(0f, 0f)
+	val gravity = new Vector2(0f, 0f)
 	val world = new World(worldAABB, gravity, false)
     
   val orz = new Orz(this)
@@ -45,6 +45,9 @@ class Melee(stateID:Int) extends BasicGameState {
   val iterations = 10
 
   override def getID = stateID
+
+  var debug = false
+  var drawSVG = true
 
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
@@ -59,28 +62,36 @@ class Melee(stateID:Int) extends BasicGameState {
 
   override def render(gc: GameContainer, sb:StateBasedGame, g: Graphics) {
 
-    kz.render(g)
-    orz.render(g)
-    
-    val red = new Color3f(255.0f,0.0f,0.0f)
-        
-    for(b <- world.bodyList) {
-      for(f <- b.fixtures) {
-        f.shape match {
-          case poly =>
-            val p = f.shape.asInstanceOf[Polygon]
-            val vertexCount = p.vertices.length
-            val wVerts = Array.fromFunction(p.vertices)(vertexCount)
-            for(i <- 0 until vertexCount) {
-              wVerts(i) = b.transform*p.vertices(i)
-            }
-            debugDraw.drawPolygon(wVerts, red)
+    if(drawSVG) {
+      kz.render(g)
+      orz.render(g)
+    }
+
+    if(debug) {
+      val red = new Color3f(255.0f,0.0f,0.0f)
+      for(b <- world.bodyList) {
+        for(f <- b.fixtures) {
+          f.shape match {
+            case poly =>
+              val p = f.shape.asInstanceOf[Polygon]
+              val vertexCount = p.vertices.length
+              val wVerts = Array.fromFunction(p.vertices)(vertexCount)
+              for(i <- 0 until vertexCount) {
+                wVerts(i) = b.transform*p.vertices(i)
+              }
+              debugDraw.drawPolygon(wVerts, red)
+          }
         }
       }
     }
   }
 
-  override def keyPressed(key:Int, c:Char) = human.onKeyDown(key)
+  override def keyPressed(key:Int, c:Char) {
+    if(c == 'b') drawSVG = !drawSVG
+    if(key == 57) debug = !debug
+    human.onKeyDown(key)
+  }
+  
   override def keyReleased(key:Int, c:Char) = human.onKeyUp(key)
 
 
