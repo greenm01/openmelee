@@ -9,7 +9,7 @@ package org.openmelee.melee
 
 import collection.jcl.ArrayList
 
-import org.villane.box2d.shapes.{AABB, Polygon}
+import org.villane.box2d.shapes.{AABB, Polygon, Circle}
 import org.villane.box2d.dynamics.World
 import org.villane.box2d.draw.{DebugDraw, Color3f}
 import org.villane.vecmath.Vector2
@@ -18,7 +18,7 @@ import org.newdawn.slick.state.{BasicGameState, StateBasedGame}
 import org.newdawn.slick.{GameContainer, Color, Graphics}
 
 import render.{Render, SlickDebugDraw}
-import objects.GameObject
+import objects.{GameObject, Filter}
 import objects.ships.{Orz, UrQuan}
 
 import ai.Human
@@ -34,7 +34,10 @@ class Melee(stateID:Int) extends BasicGameState {
 	val worldAABB = new AABB(min, max)
 	val gravity = new Vector2(0f, 0f)
 	val world = new World(worldAABB, gravity, false)
-    
+
+  val filter = new Filter
+  world.contactFilter = filter
+
   val orz = new Orz(this)
   objectList += orz
   val kz = new UrQuan(this)
@@ -48,7 +51,7 @@ class Melee(stateID:Int) extends BasicGameState {
 
   var debug = false
   var drawSVG = true
-
+  
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
     debugDraw.container = gc
@@ -72,7 +75,7 @@ class Melee(stateID:Int) extends BasicGameState {
       for(b <- world.bodyList) {
         for(f <- b.fixtures) {
           f.shape match {
-            case poly =>
+            case poly: Polygon =>
               val p = f.shape.asInstanceOf[Polygon]
               val vertexCount = p.vertices.length
               val wVerts = Array.fromFunction(p.vertices)(vertexCount)
@@ -80,6 +83,11 @@ class Melee(stateID:Int) extends BasicGameState {
                 wVerts(i) = b.transform*p.vertices(i)
               }
               debugDraw.drawPolygon(wVerts, red)
+            case circle: Circle =>
+              val center = b.transform * circle.pos
+              val radius = circle.radius
+              val axis = b.transform.rot.col1
+              debugDraw.drawCircle(center, radius, red)
           }
         }
       }
