@@ -34,7 +34,6 @@ import org.villane.box2d.dynamics.World
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Vector2
-import org.villane.vecmath.MathUtil
 
 import org.openmelee.objects.GameObject
 import utils.Util;
@@ -109,7 +108,7 @@ abstract class Ship(melee:Melee) extends GameObject
     val v = body.linearVelocity
     body.linearVelocity = v.clamp(-maxLinVel, maxLinVel)
     val omega = body.angularVelocity
-    body.angularVelocity = MathUtil.clamp(omega, -maxAngVel, maxAngVel)
+    body.angularVelocity = Util.clamp(omega, -maxAngVel, maxAngVel)
   }
 
   @inline override def updateState() {
@@ -192,7 +191,7 @@ abstract class Ship(melee:Melee) extends GameObject
 
 	@inline def batteryCost(cost:Int) {
 		var b = battery - cost
-		battery = MathUtil.clamp(b.toFloat, 0f, batteryCapacity.toFloat).toInt
+		battery = Util.clamp(b.toFloat, 0f, batteryCapacity.toFloat).toInt
 	}
     
 	def updateSpecial

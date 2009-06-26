@@ -71,7 +71,7 @@ class Melee(stateID:Int) extends BasicGameState {
     }
 
     if(debug) {
-      val red = new Color3f(255.0f,0.0f,0.0f)
+      val red = new Color3f(255.0f,0.0f,0.0f,255)
       for(b <- world.bodyList) {
         for(f <- b.fixtures) {
           f.shape match {

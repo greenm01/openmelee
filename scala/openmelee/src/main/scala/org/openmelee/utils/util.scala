@@ -11,18 +11,23 @@ import org.villane.vecmath.Vector2
 
 object Util {
 
-  @inline def rotateLeft90(v:Vector2) = new Vector2( -v.y, v.x )
+  final def rotateLeft90(v:Vector2) = new Vector2( -v.y, v.x )
 
-  @inline def rotateRight90(v:Vector2) = new Vector2(v.y, -v.x )
+  final def rotateRight90(v:Vector2) = new Vector2(v.y, -v.x )
 
-  @inline def rotate(v:Vector2, angle:Float) = {
+  final def rotate(v:Vector2, angle:Float) = {
     val cos = Math.cos(angle).asInstanceOf[Float]
     val sin = Math.sin(angle).asInstanceOf[Float]
     val u = new Vector2((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x))
     u
   }
+
+  final def clamp(a: Float, low: Float, high: Float) =
+    if (a < low) low
+    else if (a > high) high
+    else a
     
-  def left(a: Vector2, b: Vector2, c: Vector2) =
+  final def left(a: Vector2, b: Vector2, c: Vector2) =
     ((b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y) > 0)
 
   /** Melkman's Algorithm

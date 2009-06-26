@@ -44,6 +44,7 @@ import org.villane.vecmath.Vector2
 
 import melee.Melee;
 import utils.Util
+import utils.svg.SVGParser
 
 // Orz Nemesis
 class Orz(melee:Melee) extends Ship(melee) {
@@ -58,8 +59,11 @@ class Orz(melee:Melee) extends Ship(melee) {
   // Main body's skeleton'
   val skeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
   // Turret skeleton
-  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
+  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/test2.svg"))
 
+  val p = new SVGParser("data/test.svg")
+  p.parse
+  
   private var turretAngle = 0.0f
   pDelay = 0.15f
   sDelay = 0.5f
@@ -81,7 +85,9 @@ class Orz(melee:Melee) extends Ship(melee) {
   bodyDef.pos = new Vector2(0f, 0f)
   bodyDef.angle = 3.14159f/4f
   var centroid = Vector2.Zero
-    
+
+  //val loadnode = xml.XML.loadFile("data/test.svg")
+
   override val body = melee.world.createBody(bodyDef)
   var parts = Array("B1", "B2", "B3", "R1", "R2", "R3", "R4", "R5",
                     "L1", "L2", "L3", "L4", "L5")
@@ -100,6 +106,7 @@ class Orz(melee:Melee) extends Ship(melee) {
    
   body.computeMassFromShapes
 
+  /*
   val turret = melee.world.createBody(bodyDef)
   parts = Array("barrel", "lBase", "rBase")
 
@@ -114,6 +121,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   val fd = new FixtureDef(CircleDef(centroid, 180f*scale))
   fd.density = 0.5f
   body.createFixture(fd)
+  */
 
   /*
   val foo = tSkeleton.diagram.getFigureByID("bridge")
@@ -205,7 +213,7 @@ class Orz(melee:Melee) extends Ship(melee) {
     g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
     skeleton.render(g)
     g.resetTransform
-    renderTurret(g)
+    //renderTurret(g)
   }
 
   def renderTurret(g: Graphics) {

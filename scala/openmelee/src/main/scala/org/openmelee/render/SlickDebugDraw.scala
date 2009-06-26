@@ -112,6 +112,4 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
 
   def drawString(x: Float, y: Float, s: String, color: Color3f) {}
 
-  def drawTransform(xf: Transform2f) {}
-
 }

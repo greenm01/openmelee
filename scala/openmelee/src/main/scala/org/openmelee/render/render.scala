@@ -13,7 +13,7 @@ import org.villane.box2d.draw.Color3f
 import org.villane.vecmath.Vector2
 import org.villane.box2d.shapes.Shape
 import org.villane.box2d.shapes.Polygon
-import org.villane.vecmath.Transform2f
+import org.villane.vecmath.Transform2
 import org.villane.box2d.dynamics.World
 
 import melee.Melee
