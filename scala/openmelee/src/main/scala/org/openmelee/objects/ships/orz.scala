@@ -59,7 +59,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   // Main body's skeleton'
   val skeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
   // Turret skeleton
-  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/test2.svg"))
+  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
 
   val p = new SVGParser("data/test.svg")
   p.parse
