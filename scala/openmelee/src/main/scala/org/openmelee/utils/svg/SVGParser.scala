@@ -14,7 +14,6 @@ import org.villane.vecmath.{Vector2}
 
 import shapes.{Rect, Circle, Ellipse, Line, Polygon, Polyline}
 
-// Built from Erkki Lindpere's scalabox2d svg parser
 class SVGParser(fileName: String) {
 
   val sodipodi = "@{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}" + _
@@ -60,31 +59,173 @@ class SVGParser(fileName: String) {
         layer.shapes += new Line(start, end)
       }
 
-      for (r <- g \ "polygon") 
+      for (r <- g \ "polygon") {
         layer.shapes += new Polygon(points(r))
+      }
 
       for (r <- g \ "polyline")
-        layer.shapes += new Polyline(points(r))
+      layer.shapes += new Polyline(points(r))
 
       for (path <- g \ "path") {
-
-        // TODO: Generate generic shapes from paths
-        // http://www.w3.org/TR/SVG/shapes.html
-        
-        if ("arc" == (path \ sodipodi("type")).text) {
-          val rx = (path \ sodipodi("rx")).text.toFloat
-          val ry = (path \ sodipodi("ry")).text.toFloat
-          if (rx == ry) {
-            val cx = (path \ sodipodi("cx")).text.toFloat
-            val cy = (path \ sodipodi("cy")).text.toFloat
-            println(cx + "," + cy)
+        val pathData = (path \ "@d").text.split("[ ,]+")
+        var i = 0
+        while(i < pathData.length) {
+          pathData(i) match {
+            case "M" =>  // M - move to (absolute)
+              //cx = PApplet.parseFloat(pathDataKeys[i + 1])
+              //cy = PApplet.parseFloat(pathDataKeys[i + 2])
+              //parsePathMoveto(cx, cy)
+              i += 3
+            case "m" =>  // m - move to (relative)
+              //cx = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+              //cy = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+              //parsePathMoveto(cx, cy)
+              i += 3
+            case "L" =>
+              //cx = PApplet.parseFloat(pathDataKeys[i + 1])
+              //cy = PApplet.parseFloat(pathDataKeys[i + 2])
+              //parsePathLineto(cx, cy)
+              i += 3
+            case "l" =>
+              //cx = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+              //cy = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+              //parsePathLineto(cx, cy)
+              i += 3;
+            case "H" =>
+              //cx = PApplet.parseFloat(pathDataKeys[i + 1])
+              //parsePathLineto(cx, cy)
+              i += 2;
+            case "h" =>
+              //cx = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+              //parsePathLineto(cx, cy)
+              i += 2;
+            case "V" =>
+              //cy = PApplet.parseFloat(pathDataKeys[i + 1])
+              //parsePathLineto(cx, cy)
+              i += 2;
+            case "v" =>
+              //cy = cy + PApplet.parseFloat(pathDataKeys[i + 1])
+              //parsePathLineto(cx, cy)
+              i += 2;
+            case "C" =>
+              /*
+               val ctrlX1 = PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY1 = PApplet.parseFloat(pathDataKeys[i + 2])
+               val ctrlX2 = PApplet.parseFloat(pathDataKeys[i + 3])
+               val ctrlY2 = PApplet.parseFloat(pathDataKeys[i + 4])
+               val endX = PApplet.parseFloat(pathDataKeys[i + 5])
+               val endY = PApplet.parseFloat(pathDataKeys[i + 6])
+               parsePathCurveto(ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY)
+               cx = endX;
+               cy = endY;
+               */
+              i += 7;
+            case "c" =>
+              /*
+               val ctrlX1 = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY1 = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+               val ctrlX2 = cx + PApplet.parseFloat(pathDataKeys[i + 3])
+               val ctrlY2 = cy + PApplet.parseFloat(pathDataKeys[i + 4])
+               val endX = cx + PApplet.parseFloat(pathDataKeys[i + 5])
+               val endY = cy + PApplet.parseFloat(pathDataKeys[i + 6])
+               parsePathCurveto(ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY)
+               cx = endX
+               cy = endY
+               */
+              i += 7
+            case "S" =>
+              /*
+               val ppx = vertices[vertexCount-2][X]
+               val ppy = vertices[vertexCount-2][Y]
+               val px = vertices[vertexCount-1][X]
+               val py = vertices[vertexCount-1][Y]
+               val ctrlX1 = px + (px - ppx)
+               val ctrlY1 = py + (py - ppy)
+               val ctrlX2 = PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY2 = PApplet.parseFloat(pathDataKeys[i + 2])
+               val endX = PApplet.parseFloat(pathDataKeys[i + 3])
+               val endY = PApplet.parseFloat(pathDataKeys[i + 4])
+               parsePathCurveto(ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY)
+               cx = endX
+               cy = endY
+               */
+              i += 5
+            case "s" =>
+              /*
+               val ppx = vertices[vertexCount-2][X]
+               val ppy = vertices[vertexCount-2][Y]
+               val px = vertices[vertexCount-1][X]
+               val py = vertices[vertexCount-1][Y]
+               val ctrlX1 = px + (px - ppx)
+               val ctrlY1 = py + (py - ppy)
+               val ctrlX2 = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY2 = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+               val endX = cx + PApplet.parseFloat(pathDataKeys[i + 3])
+               val endY = cy + PApplet.parseFloat(pathDataKeys[i + 4])
+               parsePathCurveto(ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY)
+               cx = endX
+               cy = endY
+               */
+              i += 5
+            case "Q" =>
+              /*
+               val ctrlX = PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY = PApplet.parseFloat(pathDataKeys[i + 2])
+               val endX = PApplet.parseFloat(pathDataKeys[i + 3])
+               val endY = PApplet.parseFloat(pathDataKeys[i + 4])
+               parsePathQuadto(cx, cy, ctrlX, ctrlY, endX, endY)
+               cx = endX;
+               cy = endY;
+               */
+              i += 5
+            case "q" =>
+              /*
+               val ctrlX = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+               val ctrlY = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+               val endX = cx + PApplet.parseFloat(pathDataKeys[i + 3])
+               val endY = cy + PApplet.parseFloat(pathDataKeys[i + 4])
+               parsePathQuadto(cx, cy, ctrlX, ctrlY, endX, endY)
+               cx = endX
+               cy = endY
+               */
+              i += 5
+            case "T" =>
+              /*
+               val ppx = vertices[vertexCount-2][X]
+               val ppy = vertices[vertexCount-2][Y]
+               val px = vertices[vertexCount-1][X]
+               val py = vertices[vertexCount-1][Y]
+               val ctrlX = px + (px - ppx)
+               val ctrlY = py + (py - ppy)
+               val endX = PApplet.parseFloat(pathDataKeys[i + 1])
+               val endY = PApplet.parseFloat(pathDataKeys[i + 2])
+               parsePathQuadto(cx, cy, ctrlX, ctrlY, endX, endY)
+               cx = endX
+               cy = endY
+               */
+              i += 3
+            case "t" =>
+              /*
+               val ppx = vertices[vertexCount-2][X]
+               val ppy = vertices[vertexCount-2][Y]
+               val px = vertices[vertexCount-1][X]
+               val py = vertices[vertexCount-1][Y]
+               val ctrlX = px + (px - ppx)
+               val ctrlY = py + (py - ppy)
+               val endX = cx + PApplet.parseFloat(pathDataKeys[i + 1])
+               val endY = cy + PApplet.parseFloat(pathDataKeys[i + 2])
+               parsePathQuadto(cx, cy, ctrlX, ctrlY, endX, endY)
+               cx = endX;
+               cy = endY;
+               */
+              i += 3
+            case "Z" =>
+            case "z" =>
+              i += 1
+            case _ => i += 1
           }
         }
-
-        // TODO: Create path parser based on SVG specs
-        // http://www.w3.org/TR/SVG/paths.html
-        val foo = (path \ "@d").text
-        println(foo)
+        println("yo")
       }
     }
   }
@@ -108,5 +249,4 @@ class SVGParser(fileName: String) {
     }
     vecs
   }
-  
 }
