@@ -16,65 +16,65 @@ import org.villane.box2d.shapes.Polygon
 import org.villane.vecmath.Transform2
 import org.villane.box2d.dynamics.World
 
+import org.lwjgl.opengl.GL11
+
 import melee.Melee
 
 class Render() {
 
-    /*
-    // World 0,0 maps to transX, transY on screen
-    var transX = 0f;
-    var transY = 0f;
-    var scaleFactor = 15.0f;
-    val yFlip = -1.0f; //flip y coordinate
+  def bezierQuadratic {
+    // Control points (example)
+    val Ax = 400; val Ay = 100
+    val Bx = 500; val By = 300.0
+    val Cx = 400.0; val Cy = 500.0
 
-    def setCamera(x:Float, y:Float, scale:Float) {
-    	transX = PApplet.map(x,0.0f,-1.0f,g.width*.5f,g.width*.5f+scale);
-    	transY = PApplet.map(y,0.0f,yFlip*1.0f,g.height*0.5f,g.height*0.5f+scale);
-    	scaleFactor = scale;
-    }
+    // Variable
+    var a = 1.0
+    var b = 1.0 - a
 
-    def update(g:Graphics, world:World) {
-        transX = g.screenWidth * 0.5f;
-        transY = g.screenHeight * 0.5f;
-    }
+    GL11.glColor3f(255f, 0, 0)
+    GL11.glLineWidth(2f)
 
-	def drawPolygon(g:Graphics, shape:Shape, xf:Transform2f, color:Color3f) {
+    // Tell OGL to start drawing a line strip
+    GL11.glBegin(GL11.GL_LINE_STRIP)
+      for(i <- 0 to 20) {
+        // Get a point on the curve
+        val X = Ax*a*a + Bx*2*a*b + Cx*b*b
+        val Y = Ay*a*a + By*2*a*b + Cy*b*b
+        GL11.glVertex2d(X, Y)
+        a -= 0.05
+        b = 1.0 - a
+      }
+    GL11.glEnd()
+  }
 
-        val poly = shape.asInstanceOf[Polygon]
-        val vertices = poly.vertices
+  def bezierCubic {
 
-		g.stroke(color.r, color.g, color.b)
-		g.noFill();
-        val vertexCount = vertices.length
+    // Control points (example)
+    val Ax = 100; val Ay = 100
+    val Bx = 100; val By = 300.0
+    val Cx = 200.0; val Cy = 100.0
+    val Dx = 200.0; val Dy = 300.0
 
-		for(i <- 0 until vertexCount) {
-			val ind = if(i+1<vertexCount) i+1 else (i+1-vertexCount)
-			val v1 = worldToScreen(xf*vertices(i))
-			val v2 = worldToScreen(xf*vertices(ind))
-			g.line(v1.x, v1.y, v2.x, v2.y)
-        }
-	}
+    // Variable
+    var a = 1.0
+    var b = 1.0 - a
 
-    def drawCircle() = {}
-    
-    def map(mapMe: Float, fromLow: Float, fromHigh: Float, toLow: Float, toHigh: Float) = {
-        val interp = (mapMe - fromLow) / (fromHigh - fromLow)
-        (interp*toHigh + (1.0f-interp)*toLow)
-    }
-    
-    override def worldToScreen(world: Vector2) = {
-        val x = map(world.x, 0f, 1f, transX, transX+scaleFactor)
-        var y = map(world.y, 0f, 1f, transY, transY+scaleFactor)
-        if (yFlip == -1.0f) y = map(y, 0f, container.getHeight, container.getHeight, 0f)
-        Vector2(x, y)
-    }
+    GL11.glColor3f(255f, 0, 0)
+    GL11.glLineWidth(2f)
 
-    override def screenToWorld(screen: Vector2) = {
-        val x = map(screen.x, transX, transX+scaleFactor, 0f, 1f)
-        var y = screen.y
-        if (yFlip == -1.0f) y = map(y, container.getHeight, 0f, 0f, container.getHeight)
-        y = map(y, transY, transY + scaleFactor, 0f, 1f)
-        Vector2(x, y)
-    }
-    */
+    // Tell OGL to start drawing a line strip
+    GL11.glBegin(GL11.GL_LINE_STRIP) 
+      for(i <- 0 to 20) {
+        // Get a point on the curve
+        val X = Ax*a*a*a + Bx*3*a*a*b + Cx*3*a*b*b + Dx*b*b*b
+        val Y = Ay*a*a*a + By*3*a*a*b + Cy*3*a*b*b + Dy*b*b*b
+        GL11.glVertex2d(X, Y)
+        a -= 0.05
+        b = 1.0 - a
+      }
+    GL11.glEnd()
+
+  }
+
 }

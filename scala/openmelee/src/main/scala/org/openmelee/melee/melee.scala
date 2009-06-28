@@ -51,6 +51,8 @@ class Melee(stateID:Int) extends BasicGameState {
 
   var debug = false
   var drawSVG = true
+
+  val renderer = new Render
   
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
@@ -92,6 +94,10 @@ class Melee(stateID:Int) extends BasicGameState {
         }
       }
     }
+
+    renderer.bezierCubic
+    renderer.bezierQuadratic
+    
   }
 
   override def keyPressed(key:Int, c:Char) {
