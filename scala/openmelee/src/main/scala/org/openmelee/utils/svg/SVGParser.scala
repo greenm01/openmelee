@@ -70,6 +70,7 @@ class SVGParser(fileName: String) {
         val p = new Path(pathData)
         p.parse
         layer.shapes += p
+        p.vertices.foreach(println)
       }
     }
   }
