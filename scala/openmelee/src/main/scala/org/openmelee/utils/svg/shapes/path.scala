@@ -16,14 +16,14 @@ import org.villane.vecmath.Vector2
  */
 class Path(pathData: Array[String]) extends Shape {
 
-  val commands = new ArrayList[Int]
+  object Commands extends Enumeration {
+    val VERTEX, BEZIER_CURVE, ARC = Value
+  }
+
+  val commands = new ArrayList[Commands.Value]
   val vertices = new ArrayList[Vector2]
   var cx, cy = 0f
 
-  val VERTEX = 0
-  val BEZIER_CURVE = 1
-  val ARC = 2
-  
   def parse = {
     var i = 0
     while(i < pathData.length) {
@@ -197,19 +197,19 @@ class Path(pathData: Array[String]) extends Shape {
   }
 
   def moveTo(x: Float, y: Float) {
-    commands += VERTEX
+    commands += Commands.VERTEX
     vertices += Vector2(x, y)
   }
 
   def curveTo(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) {
-    commands += BEZIER_CURVE
+    commands += Commands.BEZIER_CURVE
     vertices += Vector2(x1, y1)
     vertices += Vector2(x2, y2)
     vertices += Vector2(x3, y3)
   }
 
   def quadTo(x1: Float, y1: Float, cx: Float, cy: Float, x2: Float, y2: Float) {
-    commands += BEZIER_CURVE
+    commands += Commands.BEZIER_CURVE
     vertices += Vector2(x1 + ((cx-x1)*2/3.0f), y1 + ((cy-y1)*2/3.0f));
     vertices += Vector2(x2 + ((cx-x2)*2/3.0f), y2 + ((cy-y2)*2/3.0f));
     vertices += Vector2(x2, y2);
@@ -217,7 +217,7 @@ class Path(pathData: Array[String]) extends Shape {
 
   def arcTo(rx: Float, ry: Float, xRot: Float, largeArc: Int, sweep: Int, x: Float, y: Float) {
     // TODO: Enable xRot
-    commands += ARC
+    commands += Commands.ARC
     vertices += Vector2(rx, ry)
     vertices += Vector2(cx, cy)
     vertices += Vector2(x ,y)
