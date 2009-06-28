@@ -10,5 +10,5 @@ package org.openmelee.utils.svg.shapes
 import org.villane.vecmath.Vector2
 
 class Rect(width: Float, height: Float, pos: Vector2) extends Shape {
-
+  override def render() {}
 }

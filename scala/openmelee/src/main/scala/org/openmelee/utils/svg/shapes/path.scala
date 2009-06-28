@@ -224,7 +224,7 @@ class Path(pathData: Array[String]) extends Shape {
     vertices += Vector2(largeArc, sweep)
   }
 
-  def render() {
+  override def render() {
 
   }
 

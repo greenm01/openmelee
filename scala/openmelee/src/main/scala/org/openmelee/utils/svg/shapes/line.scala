@@ -11,4 +11,5 @@ import org.villane.vecmath.Vector2
 
 class Line(start: Vector2, end: Vector2) extends Shape {
 
+  override def render() {}
 }

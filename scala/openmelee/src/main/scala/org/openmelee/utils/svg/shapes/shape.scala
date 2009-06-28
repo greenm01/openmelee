@@ -9,6 +9,12 @@ package org.openmelee.utils.svg.shapes
 
 import org.villane.vecmath.Vector2
 
-class Shape {
+import render.Render
 
+abstract class Shape {
+
+  val draw = new Render
+  
+  def render
+  
 }

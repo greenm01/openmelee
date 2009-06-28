@@ -44,7 +44,6 @@ import org.villane.vecmath.Vector2
 
 import melee.Melee;
 import utils.Util
-import utils.svg.SVGParser
 
 // Orz Nemesis
 class Orz(melee:Melee) extends Ship(melee) {
@@ -61,9 +60,6 @@ class Orz(melee:Melee) extends Ship(melee) {
   // Turret skeleton
   val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
 
-  val p = new SVGParser("data/test.svg")
-  p.parse
-  
   private var turretAngle = 0.0f
   pDelay = 0.15f
   sDelay = 0.5f

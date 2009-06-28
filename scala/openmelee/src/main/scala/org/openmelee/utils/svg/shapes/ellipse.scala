@@ -11,4 +11,6 @@ import org.villane.vecmath.Vector2
 
 class Ellipse(radius: Vector2, pos: Vector2) extends Shape {
 
+  override def render() {}
+
 }

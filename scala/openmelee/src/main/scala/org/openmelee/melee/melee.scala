@@ -22,6 +22,7 @@ import objects.{GameObject, Filter}
 import objects.ships.{Orz, UrQuan}
 
 import ai.Human
+import utils.svg.SVGParser
 
 class Melee(stateID:Int) extends BasicGameState {
 
@@ -53,7 +54,10 @@ class Melee(stateID:Int) extends BasicGameState {
   var drawSVG = true
 
   val renderer = new Render
-  
+
+    val svg = new SVGParser("data/test.svg")
+    svg.parse
+
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
     debugDraw.container = gc
@@ -96,8 +100,14 @@ class Melee(stateID:Int) extends BasicGameState {
     }
 
     renderer.bezierCubic
-    renderer.bezierQuadratic
-    
+    renderer.bezierQuadratic(Vector2(300,300), Vector2(400,400), Vector2(300,500))
+
+    for(layer <- svg.layers) {
+      for(shape <- layer.shapes) {
+        shape render
+      }
+    }
+
   }
 
   override def keyPressed(key:Int, c:Char) {
