@@ -9,12 +9,8 @@ package org.openmelee.utils.svg.shapes
 
 import org.villane.vecmath.Vector2
 
-import render.Render
+import render.RenderG11
 
-abstract class Shape {
-
-  val draw = new Render
-  
+abstract class Shape extends RenderG11 with Properties {
   def render
-  
 }

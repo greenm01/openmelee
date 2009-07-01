@@ -77,7 +77,7 @@ class UrQuan(melee:Melee) extends Ship(melee) {
     val partID = renderer.diagram.getFigureByID(p)
     val verts = Util.hull(Util.svgToWorld(partID.getShape.getPoints, scale))
     val fd = new FixtureDef(PolygonDef(verts))
-    fd.density = 5f
+    fd.density = 5.0f
     body.createFixture(fd)
   }
 

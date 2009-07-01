@@ -12,16 +12,16 @@ import collection.jcl.ArrayList
 
 import org.villane.vecmath.{Vector2}
 
-import shapes.{Rect, Circle, Ellipse, Line, Polygon, Polyline, Path}
+import shapes.{Shape, Rect, Circle, Ellipse, Line, Polygon, Polyline, Path}
 
-class SVGParser(fileName: String) {
+trait SVGParser {
 
   val sodipodi = "@{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}" + _
   val inkscape = "@{http://www.inkscape.org/namespaces/inkscape}" + _
 
   val layers = new ArrayList[Layer]
 
-  def parse {
+  def parse(fileName: String) {
 
     val svg = XML.load(fileName)
 
@@ -34,19 +34,25 @@ class SVGParser(fileName: String) {
       for (r <- g \ "rect") {
         val width = (r \ "@width").text.toFloat
         val height = (r \ "@height").text.toFloat
-        layer.shapes += new Rect(width, height, pos(r))
+        val rect = new Rect(width, height, pos(r))
+        styleProperties(r, rect)
+        layer.shapes += rect
       }
 
       for (r <- g \ "circle") {
         val radius = (r \ "@r").text.toFloat
-        layer.shapes += new Circle(radius, pos(r))
+        val circle = new Circle(radius, pos(r))
+        styleProperties(r, circle)
+        layer.shapes += circle
       }
 
       for (r <- g \ "ellipse") {
         val rx = (r \ "@rx").text.toFloat
         val ry = (r \ "@ry").text.toFloat
         val radius = Vector2(rx, ry)
-        layer.shapes += new Ellipse(radius, pos(r))
+        val ellipse = new Ellipse(radius, pos(r))
+        styleProperties(r, ellipse)
+        layer.shapes += ellipse
       }
 
       for (r <- g \ "line") {
@@ -56,23 +62,35 @@ class SVGParser(fileName: String) {
         val y2 = (r \ "@y2").text.toFloat
         val start = Vector2(x1, y1)
         val end = Vector2(x2, y2)
-        layer.shapes += new Line(start, end)
+        val line =  new Line(start, end)
+        styleProperties(r, line)
+        layer.shapes += line
       }
 
-      for (r <- g \ "polygon") 
-        layer.shapes += new Polygon(points(r))
+      for (r <- g \ "polygon") {
+        val poly = new Polygon(points(r))
+        styleProperties(r, poly)
+        layer.shapes += poly
+      }
 
       for (r <- g \ "polyline")
         layer.shapes += new Polyline(points(r))
 
-      for (path <- g \ "path") {
-        val pathData = (path \ "@d").text.split("[ ,]+")
-        val p = new Path(pathData)
-        p.parse
-        layer.shapes += p
-        p.vertices.foreach(println)
+      for (r <- g \ "path") {
+        val pathData = (r \ "@d").text.split("[ ,]+")
+        val path = new Path(pathData)
+        path.parse
+        styleProperties(r, path)
+        layer.shapes += path
       }
     }
+  }
+
+  def styleProperties(node: Node, shape: Shape) {
+    shape.fill = RGBColor.lookup((node \ "@fill").text)
+    shape.stroke = RGBColor.lookup((node \ "@stroke").text)
+    val tmp = (node \ "@stroke-width").text
+    if(tmp != "") shape.strokeWidth = tmp.toFloat
   }
 
   def pos(node: Node) = {

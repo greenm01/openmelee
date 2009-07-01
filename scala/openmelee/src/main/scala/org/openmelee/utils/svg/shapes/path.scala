@@ -24,7 +24,7 @@ class Path(pathData: Array[String]) extends Shape {
   val vertices = new ArrayList[Vector2]
   var cx, cy = 0f
 
-  def parse = {
+  def parse {
     var i = 0
     while(i < pathData.length) {
       val vertexCount = vertices.length
@@ -224,8 +224,7 @@ class Path(pathData: Array[String]) extends Shape {
     vertices += Vector2(largeArc, sweep)
   }
 
-  override def render() {
+  override def render {}
 
-  }
 
 }

@@ -17,12 +17,12 @@ import org.villane.vecmath.Vector2
 import org.newdawn.slick.state.{BasicGameState, StateBasedGame}
 import org.newdawn.slick.{GameContainer, Color, Graphics}
 
-import render.{Render, SlickDebugDraw}
+import render.SlickDebugDraw
 import objects.{GameObject, Filter}
 import objects.ships.{Orz, UrQuan}
 
 import ai.Human
-import utils.svg.SVGParser
+import utils.svg.SVG
 
 class Melee(stateID:Int) extends BasicGameState {
 
@@ -53,10 +53,7 @@ class Melee(stateID:Int) extends BasicGameState {
   var debug = false
   var drawSVG = true
 
-  val renderer = new Render
-
-    val svg = new SVGParser("data/test.svg")
-    svg.parse
+  val svg = new SVG("data/test.svg")
 
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
@@ -99,14 +96,7 @@ class Melee(stateID:Int) extends BasicGameState {
       }
     }
 
-    renderer.bezierCubic
-    renderer.bezierQuadratic(Vector2(300,300), Vector2(400,400), Vector2(300,500))
-
-    for(layer <- svg.layers) {
-      for(shape <- layer.shapes) {
-        shape render
-      }
-    }
+    svg render
 
   }
 
