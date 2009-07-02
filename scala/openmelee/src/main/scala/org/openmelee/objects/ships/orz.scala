@@ -58,7 +58,7 @@ class Orz(melee:Melee) extends Ship(melee) {
   // Main body's skeleton'
   val skeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis.svg"))
   // Turret skeleton
-  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/Nemesis-Turret.svg"))
+  val tSkeleton = new SimpleDiagramRenderer(InkscapeLoader.load("data/test.svg"))
 
   private var turretAngle = 0.0f
   pDelay = 0.15f
@@ -209,7 +209,7 @@ class Orz(melee:Melee) extends Ship(melee) {
     g.rotate(0, 0, -(body.angle+Math.Pi.toFloat)*57.2957795f)
     skeleton.render(g)
     g.resetTransform
-    //renderTurret(g)
+    renderTurret(g)
   }
 
   def renderTurret(g: Graphics) {
