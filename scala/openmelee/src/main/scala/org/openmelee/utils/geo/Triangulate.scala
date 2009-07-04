@@ -6,6 +6,7 @@
  */
 package org.openmelee.utils.geo
 
+import collection.jcl.ArrayList
 import scala.collection.mutable.Map
 
 import org.villane.vecmath.{Vector2, Preamble}
@@ -16,20 +17,68 @@ import org.villane.vecmath.{Vector2, Preamble}
 
 class Triangulate(segments: Array[Segment]) {
 
-  val trapMap: Map[Int, Trapezoid] = Map()
-  val queryStruct = new QueryStructure
+  // TODO: Randomize segment list
 
   // Initialize trapezoidal map and query structure
+  val trapMap: Map[Int, Trapezoid] = Map()
   val trap = boundingBox
   trapMap + (trap.hashCode -> trap)
-  queryStruct.add(new Sink(trap))
+  val queryStruct = new QueryStructure(new Sink(trap))
+
+  def process {
+    
+  }
   
   def trapezoidalMap {
-
+    for(s <- segments) {
+      val trapSet = followSegment(s)
+      val newTraps = new ArrayList[ArrayList[Trapezoid]]
+      for(t <- trapSet) trapMap - t.hashCode
+      if(trapSet.size == 1) {
+        // Case 1
+        newTraps += partitionTrapezoid(trapSet(0), s)
+      } else {
+        // Case 2 and 3
+        for(t <- trapSet) {
+          //val p = point(t, s)
+          // newTraps += partitionTrapezoid(t, p)
+        }
+      }
+      for(tList <- newTraps) {
+        for(t <- tList) {
+          trapMap + (t.hashCode -> t)
+        }
+      }
+    }
   }
 
-  def followSegment {
+  def followSegment(s: Segment) = {
+    val trapezoids = new ArrayList[Trapezoid]
+    trapezoids += queryStruct.locate(s.p)
+    var j = 0
+    while(s.q.x > trapezoids(j).rightPoint.x) {
+      if(s >= trapezoids(j).rightPoint) {
+        trapezoids += trapezoids(j).upperRightNeighbor
+      } else {
+        trapezoids += trapezoids(j).lowerRightNeighbor
+      }
+      j += 1
+    }
+    trapezoids
+  }
 
+  // Case 1: segment completely enclosed by trapezoid
+  //         break trapezoid into 4 smaller traps
+  def partitionTrapezoid(t: Trapezoid, s: Segment): ArrayList[Trapezoid] = {
+    return new ArrayList[Trapezoid]
+  }
+
+   // Case 2: only one vertex of the segment is contained within trapezoid
+   //         break into 3 pieces
+   // Case 3: Trapezoid is bisected by the line
+   //         break trapezoid into 2 pieces
+  def partitionTrapezoid(t: Trapezoid, point: Vector2): ArrayList[Trapezoid] = {
+    return new ArrayList[Trapezoid]
   }
 
   def boundingBox: Trapezoid = {

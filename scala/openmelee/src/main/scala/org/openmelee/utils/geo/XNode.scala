@@ -7,9 +7,16 @@
 
 package org.openmelee.utils.geo
 
-class XNode extends Node {
+import org.villane.vecmath.Vector2
 
-  val left: Node
-  val right: Node
+class XNode(segment: Segment, left: Node, right: Node) extends Node {
+
+  def locate(p: Vector2) = {
+    if(segment >= p) {
+      left.locate(p)
+    } else {
+      right.locate(p)
+    }
+  }
 
 }

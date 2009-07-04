@@ -7,11 +7,18 @@
 
 package org.openmelee.utils.geo
 
+import org.villane.vecmath.Vector2
+
 // Directed Acyclitic Graph (DAG)
-class QueryStructure {
+class QueryStructure(head: Node) {
 
   def add(sink: Sink) {
 
   }
-  
+
+  def locate(q: Vector2) = {
+    val sink = head.locate(q).asInstanceOf[Sink]
+    sink.trapezoid
+  }
+
 }

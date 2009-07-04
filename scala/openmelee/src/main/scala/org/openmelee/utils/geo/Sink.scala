@@ -7,8 +7,11 @@
 
 package org.openmelee.utils.geo
 
-class Sink(trapezoid: Trapezoid) extends Node {
+import org.villane.vecmath.Vector2
+
+class Sink(val trapezoid: Trapezoid) extends Node {
 
   def hash = trapezoid.hashCode
+  def locate(p: Vector2) = this
   
 }

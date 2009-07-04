@@ -16,9 +16,7 @@ import org.lwjgl.opengl.GL11
 import utils.geo.Triangulate
 
 class Polygon(vertices: Array[Vector2]) extends Shape {
-
-  vertices.foreach(println)
-  
+ 
   //val poly2tri = new Triangulate
   //val triList = poly2tri.process(vertices)
 

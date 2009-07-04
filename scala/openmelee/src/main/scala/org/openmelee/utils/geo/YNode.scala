@@ -7,9 +7,18 @@
 
 package org.openmelee.utils.geo
 
-class YNode extends Node {
+import org.villane.vecmath.Vector2
 
-  val above: Node
-  val below: Node
+import org.villane.vecmath.Vector2
+
+class YNode(point: Vector2, above: Node, below: Node) extends Node {
+
+  def locate(p: Vector2) = {
+    if(p.x >= point.x) {
+      above.locate(p)
+    } else {
+      below.locate(p)
+    }
+  }
 
 }

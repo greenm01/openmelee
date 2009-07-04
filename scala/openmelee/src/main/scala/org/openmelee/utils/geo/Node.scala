@@ -7,4 +7,10 @@
 
 package org.openmelee.utils.geo
 
-trait Node 
+import org.villane.vecmath.Vector2
+
+trait Node {
+
+  def locate(p: Vector2)
+  
+}
