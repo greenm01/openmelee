@@ -17,30 +17,43 @@ import utils.geo.Triangulate
 
 class Polygon(vertices: Array[Vector2]) extends Shape {
 
-  val poly2tri = new Triangulate
-  val triList = poly2tri.process(vertices)
+  vertices.foreach(println)
+  
+  //val poly2tri = new Triangulate
+  //val triList = poly2tri.process(vertices)
 
   val points = BufferUtils.createFloatBuffer(vertices.length*2)
+
+  /*
   val triangles = new Array[FloatBuffer]((triList.length/3))
 
-  for(t <- triangles) {
+  var k = 0
+  for(i <- 0 until triangles.length) {
     val triPoints = BufferUtils.createFloatBuffer(3*2)
-    println("foo")
+    for(j <- 1 to 3) {
+      triPoints.put(triList(k).x)
+      triPoints.put(triList(k).y)
+      k+=1
+    }
+    triPoints.rewind
+    triangles(i) = triPoints
   }
-  
+  */
+
   vertices.foreach(v => {points.put(v.x); points.put(v.y)})
   points.rewind
 
   override def render {
     pushMatrix
     scale(0.5f)
-    //rotate(45f, center)
+    /*
+    color = fill
+    for(t <- triangles)
+      renderVA(t, GL11.GL_TRIANGLES)
+    */
     color = stroke
     lineWidth(strokeWidth*0.5f)
     renderVA(points, GL11.GL_LINE_LOOP)
-    // TODO: Add OpenGL Tessellation for non-convex polygons
-    //color = fill
-    //renderVA(points, GL11.GL_POLYGON)
     popMatrix
   }
 }
