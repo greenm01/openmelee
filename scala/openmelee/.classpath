@@ -3,12 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="ch.epfl.lamp.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="E:/workspace/slick/Slick/dist/slick.jar"/>
-	<classpathentry kind="lib" path="E:/workspace/lwjgl-2.1.0/jar/lwjgl.jar">
+	<classpathentry kind="lib" path="/Volumes/MASON/workspace/slick/Slick/dist/slick.jar"/>
+	<classpathentry kind="lib" path="/Volumes/MASON/workspace/lwjgl-2.1.0/jar/lwjgl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="E:/workspace/lwjgl-2.1.0/native/windows"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Volumes/MASON/workspace/lwjgl-2.1.0/native/macosx"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="E:/workspace/scalabox2d/scalabox2d/target/scalabox2d-2.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Volumes/MASON/workspace/scalabox2d/scalabox2d/target/scalabox2d-2.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -18,15 +18,10 @@ class Trapezoid(val leftPoint: Vector2, val rightPoint: Vector2, val top: Segmen
   var lowerRight: Trapezoid = _
   
   def updateNeighbors(ul: Trapezoid, ll: Trapezoid, ur: Trapezoid, lr: Trapezoid) {
-    if(upperRight != null) upperRight.upperLeft = ul
-    if(lowerRight != null) lowerRight.lowerLeft = ll
-    if(upperLeft != null) upperLeft.upperRight = ur
-    if(lowerLeft != null) lowerLeft.lowerRight = lr
-  }
-  
-  def updateNeighbors(ur: Trapezoid, lr: Trapezoid) {
-    if(upperLeft != null) upperLeft.upperRight = ur
-    if(lowerLeft != null) lowerLeft.lowerRight = lr
+    if(upperRight != null) upperLeft.upperRight = ul
+    if(lowerRight != null) lowerLeft.lowerRight = ll
+    if(upperLeft != null) upperRight.upperLeft = ur
+    if(lowerLeft != null) lowerRight.lowerLeft = lr
   }
   
   def update(ul: Trapezoid, ll: Trapezoid, ur: Trapezoid, lr: Trapezoid) {

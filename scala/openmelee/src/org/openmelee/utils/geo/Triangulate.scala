@@ -70,11 +70,13 @@ class Triangulate(segments: Array[Segment]) {
   // Case 1: segment completely enclosed by trapezoid
   //         break trapezoid into 4 smaller traps
   def case1(t: Trapezoid, s: Segment) = {
+    
     val trapList = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
     val trapB = new Trapezoid(s.p, s.q, t.top, s)
     val trapC = new Trapezoid(s.p, s.q, s, t.bottom)
     val trapD = new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
+    
     trapA.update(t.upperLeft, t.lowerLeft, trapB, trapC)
     trapList += trapA
     trapB.update(trapA, null, trapD, null)
@@ -83,7 +85,8 @@ class Triangulate(segments: Array[Segment]) {
     trapList += trapC
     trapC.update(trapB, trapC, t.upperRight, t.lowerRight)
     trapList += trapD
-    t.updateNeighbors(trapD, trapD, trapA, trapA)
+    
+    t.updateNeighbors(trapA, trapA, trapD, trapD)
     
     trapList
   }
@@ -106,7 +109,8 @@ class Triangulate(segments: Array[Segment]) {
     trapList += trapB
     trapC.update(null, trapA, null, t.lowerRight)
     trapList += trapC
-    t.updateNeighbors(trapA, trapA)
+    
+    t.updateNeighbors(trapA, trapA, trapB, trapC)
     
     trapList
   }
@@ -116,9 +120,9 @@ class Triangulate(segments: Array[Segment]) {
   def case3(t: Trapezoid, s: Segment)= {
     
     val trapList = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
-    val trapB = new Trapezoid(s.p, s.q, t.top, s)
-    val trapC = new Trapezoid(s.p, s.q, s, t.bottom)
+    val trapA = new Trapezoid(s.p, s.q, t.top, s)
+    val trapB = new Trapezoid(s.p, s.q, s, t.bottom)
+    val trapC = new Trapezoid(s.q, t.leftPoint, t.top, t.bottom)
     
     trapA.update(t.upperLeft, s.above, trapC, null)
     trapList += trapA
@@ -126,15 +130,31 @@ class Triangulate(segments: Array[Segment]) {
     trapList += trapB
     trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
     trapList += trapC
-    t.updateNeighbors(trapC, trapC, trapA, trapB)
+    
+    t.updateNeighbors(trapA, trapB, trapC, trapC)
     
     trapList
   }
   
   // Case 4: Trapezoid is bisected
   //         Break trapezoid into 2 pieces
-  def case4(t: Trapezoid, s: Segment): ArrayList[Trapezoid] = {
-    return new ArrayList[Trapezoid]
+  def case4(t: Trapezoid, s: Segment) = {
+    
+    val trapList = new ArrayList[Trapezoid]
+    val trapA = new Trapezoid(s.p, s.q, t.top, s)
+    val trapB = new Trapezoid(s.p, s.q, s, t.bottom)
+    
+    trapA.update(t.upperLeft, s.above, t.upperRight, null)
+    trapList += trapA
+    trapB.update(s.above, t.lowerLeft, null, t.lowerRight)
+    trapList += trapB
+    
+    s.above = trapA
+    s.below = trapB
+    
+    t.updateNeighbors(trapA, trapB, trapA, trapB)
+    
+    trapList
   }
 
   def boundingBox: Trapezoid = {

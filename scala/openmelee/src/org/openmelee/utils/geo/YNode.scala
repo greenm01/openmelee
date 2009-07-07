@@ -20,8 +20,6 @@ class YNode(segment: Segment, above: Node, below: Node) extends Node {
       above.locate(s)
     } else {
       // s and segment share the same endpoint
-      s.above = segment.above
-      s.below = segment.below
       if (s.slope < segment.slope) {
         below.locate(s)
       } else {
