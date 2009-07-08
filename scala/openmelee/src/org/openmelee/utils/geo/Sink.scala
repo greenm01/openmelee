@@ -32,6 +32,18 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
+object Sink {
+  
+  def init(trapezoid: Trapezoid) = {
+    if(trapezoid.sink != null) {
+      trapezoid.sink
+    } else {
+      new Sink(trapezoid)
+    }
+  }
+  
+}
+
 class Sink(val trapezoid: Trapezoid) extends Node(null, null) {
 
   trapezoid.sink = this

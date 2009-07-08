@@ -40,11 +40,11 @@ import org.villane.vecmath.{Vector2, Preamble}
 class Triangulator(segments: Array[Segment]) {
 
   // TODO: Randomize segment list
-  // Initialize trapezoidal map and query structure
   
+  // Initialize trapezoidal map and query structure
   val trapezoidalMap = new TrapezoidalMap
   val boundingBox = trapezoidalMap.boundingBox(segments)
-  val queryStruct = new QueryStructure(new Sink(boundingBox))
+  val queryStruct = new QueryGraph(new Sink(boundingBox))
   
   def process {
     for(s <- segments) {
@@ -73,4 +73,9 @@ class Triangulator(segments: Array[Segment]) {
       tList.foreach(trapezoidalMap.add)
     }
   }
+  
+  private def orderSegments {
+    
+  }
+  
 }
