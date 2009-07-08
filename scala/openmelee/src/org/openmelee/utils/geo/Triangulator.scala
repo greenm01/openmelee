@@ -36,37 +36,38 @@ import org.villane.vecmath.{Vector2, Preamble}
 
 // Based on Raimund Seidel's paper "A simple and fast incremental randomized
 // algorithm for computing trapezoidal decompositions and for triangulating polygons"
-// See also "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
 class Triangulator(segments: Array[Segment]) {
 
   // TODO: Randomize segment list
+  orderSegments
   
   // Initialize trapezoidal map and query structure
   val trapezoidalMap = new TrapezoidalMap
   val boundingBox = trapezoidalMap.boundingBox(segments)
-  val queryStruct = new QueryGraph(new Sink(boundingBox))
+  val queryGraph = new QueryGraph(new Sink(boundingBox))
   
+  // Build the trapezoidal map and querey graph
   def process {
     for(s <- segments) {
-      val trapezoids = queryStruct.followSegment(s)
+      val trapezoids = queryGraph.followSegment(s)
       trapezoids.foreach(trapezoidalMap.remove)
       var tList: ArrayList[Trapezoid] = null
       for(t <- trapezoids) {
         if(t.contains(s)) {
           tList = trapezoidalMap.case1(t,s)
-          queryStruct.case1(t.sink, s, tList)
+          queryGraph.case1(t.sink, s, tList)
         } else {
           val containsP = t.contains(s.p)
           val containsQ = t.contains(s.q)
           if(containsP && !containsQ) {
             tList = trapezoidalMap.case2(t,s) 
-            queryStruct.case2(t.sink, s, tList)
+            queryGraph.case2(t.sink, s, tList)
           } else if(!containsP && !containsQ) {
             tList = trapezoidalMap.case3(t, s)
-            queryStruct.case3(t.sink, s, tList)
+            queryGraph.case3(t.sink, s, tList)
           } else {
             tList = trapezoidalMap.case4(t, s)
-            queryStruct.case4(t.sink, s, tList)
+            queryGraph.case4(t.sink, s, tList)
           }
         }
       }
@@ -75,7 +76,15 @@ class Triangulator(segments: Array[Segment]) {
   }
   
   private def orderSegments {
-    
+    for(s <- segments) {
+      // Point p must be to the left of point q
+      if(s.p.x > s.q.x) {
+        val tmp = s.p
+        s.p = s.q
+        s.q = tmp
+      }
+    }
+      
   }
   
 }

@@ -36,7 +36,7 @@ import org.villane.vecmath.Vector2
 
 class YNode(segment: Segment, lChild: Node, rChild: Node) extends Node(lChild, rChild) {
 
-  def locate(s: Segment) = {
+  override def locate(s: Segment): Sink = {
     if (segment > s.p) {
       // Move down the graph
       right.locate(s)
@@ -47,10 +47,10 @@ class YNode(segment: Segment, lChild: Node, rChild: Node) extends Node(lChild, r
       // s and segment share the same endpoint
       if (s.slope < segment.slope) {
         // Move down the graph
-        right.locate(s)
+        return right.locate(s)
       } else {
         // Move up the graph
-        left.locate(s)
+        return left.locate(s)
       }
     }
   }

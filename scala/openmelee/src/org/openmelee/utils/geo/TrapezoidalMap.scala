@@ -34,7 +34,9 @@ import collection.jcl.ArrayList
 import scala.collection.mutable.Map
 
 import org.villane.vecmath.Vector2
-                            
+
+// See "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
+
 class TrapezoidalMap {
 
   val map: Map[Int, Trapezoid] = Map()

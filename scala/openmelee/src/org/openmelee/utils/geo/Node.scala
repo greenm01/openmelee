@@ -38,7 +38,8 @@ import org.villane.vecmath.Vector2
 abstract class Node(var left: Node, var right: Node) {
 
   var parentList = new ArrayList[Node]
-  def locate(s: Segment)
+  
+  def locate(s: Segment): Sink
   
   def child(n : Node) = {
     if(left == n) {

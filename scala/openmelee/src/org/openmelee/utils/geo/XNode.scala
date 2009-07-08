@@ -34,13 +34,13 @@ import org.villane.vecmath.Vector2
 
 class XNode(point: Vector2, lChild: Node, rChild: Node) extends Node(lChild, rChild) {
 
-  def locate(s: Segment) = {
+  override def locate(s: Segment): Sink = {
     if(s.p.x >= point.x) {
       // Move to the right in the graph
-      right.locate(s)
+      return right.locate(s)
     } else {
       // Move to the left in the graph
-      left.locate(s)
+      return left.locate(s)
     } 
   }
 

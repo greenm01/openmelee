@@ -23,13 +23,16 @@ import objects.ships.{Orz, UrQuan}
 
 import ai.Human
 import utils.svg.SVG
+import utils.geo.{Triangulator, Segment}
 
 class Melee(stateID:Int) extends BasicGameState {
 
   println("OpenMelee 0.1")
   
+  var tesselator: Triangulator = null
+  
   val debugDraw = new SlickDebugDraw(null,null)
-
+  
   val objectList = new ArrayList[GameObject]
 
   val min = new Vector2(-200f, -100f)
@@ -60,6 +63,7 @@ class Melee(stateID:Int) extends BasicGameState {
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
     debugDraw.container = gc
+    testTesselator
   }
 
   override def update(gc: GameContainer, sb:StateBasedGame, delta:Int) {
@@ -98,8 +102,17 @@ class Melee(stateID:Int) extends BasicGameState {
       }
     }
 
-    svg render
-
+    svg.render
+    
+    val red = new Color3f(255.0f,0.0f,0.0f,255)
+    for(t <- tesselator.trapezoidalMap.map.values) {
+	  debugDraw.drawPolygon(t.vertices, red)
+    }
+    
+    val scale = 0.025f
+    val green = new Color3f(0f, 255f, 0f ,255)
+    debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
+    //debugDraw.drawSegment(Vector2(200,200)*scale, Vector2(600, 150)*scale, green)
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -110,6 +123,21 @@ class Melee(stateID:Int) extends BasicGameState {
   
   override def keyReleased(key:Int, c:Char) = human.onKeyUp(key)
 
+  def testTesselator {
+    
+    val scale = 0.025f
+    val segments = new Array[Segment](1)
+    segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400, 500)*scale)
+    //segments(1) = new Segment(Vector2(200,200)*scale, Vector2(600, 150)*scale)
+    tesselator = new Triangulator(segments)
+    tesselator.process
+
+    for(t <- tesselator.trapezoidalMap.map.values) {
+      t.vertices.foreach(println)
+      println("***")
+    }
+    
+  }
 
   /*
    override def setup() {

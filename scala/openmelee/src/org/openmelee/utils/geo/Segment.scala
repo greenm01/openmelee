@@ -32,7 +32,7 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
-class Segment(val p: Vector2, val q: Vector2) {
+class Segment(var p: Vector2, var q: Vector2) {
 
   var above: Trapezoid = _
   var below: Trapezoid = _

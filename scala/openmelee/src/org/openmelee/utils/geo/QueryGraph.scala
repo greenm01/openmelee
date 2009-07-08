@@ -35,11 +35,13 @@ import org.villane.vecmath.Vector2
 import collection.jcl.ArrayList
 
 // Directed Acyclic graph (DAG)
+// See "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
+                           
 class QueryGraph(head: Node) {
 
-  def locate(s: Segment) = {
-    val sink = head.locate(s).asInstanceOf[Sink]
-    sink.trapezoid
+  def locate(s: Segment): Trapezoid = {
+    val sink = head.locate(s)
+    return sink.trapezoid
   }
   
   def followSegment(s: Segment) = {

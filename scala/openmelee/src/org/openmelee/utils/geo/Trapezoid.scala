@@ -61,5 +61,38 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   
   def contains(segment: Segment) = 
     (segment < rightPoint && segment > leftPoint && segment < top && segment > bottom)
+  
+  def vertices: Array[Vector2] = {
+    val verts = new Array[Vector2](4)
+    verts(0) = closestPtSegment(top.p, top.q, leftPoint)
+    verts(1) = closestPtSegment(bottom.p, bottom.q, leftPoint)
+    verts(2) = closestPtSegment(bottom.p, bottom.q, rightPoint)
+    verts(3) = closestPtSegment(top.p, top.q, rightPoint)
+    return verts
+  }
+  
+  // From Christer Ericson’s Real-time Collision Detection 
+  // Finds the closest point on segment to point c
+  def closestPtSegment(c: Vector2, a: Vector2, b: Vector2) = {
+
+    val ab = b - a;
+    var d = Vector2.Zero
+    
+    var t = (c - a).dot(ab);
+    if (t <= 0.0f) {
+    	t = 0.0f
+    	d = a
+    } else {
+    	val denom = ab.dot(ab)
+    	if (t >= denom) {
+    		t = 1.0f
+    		d = b
+    	} else {
+    		t = t / denom
+    		d = a + ab * t
+    	}
+    }
+    d 
+  }
  
 }
