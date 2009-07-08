@@ -32,8 +32,9 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
-class Sink(val trapezoid: Trapezoid) extends Node {
+class Sink(val trapezoid: Trapezoid) extends Node(null, null) {
 
+  trapezoid.sink = this
   def hash = trapezoid.hashCode
   def locate(s: Segment) = this
   

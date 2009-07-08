@@ -39,6 +39,11 @@ class TrapezoidalMap {
 
   val map: Map[Int, Trapezoid] = Map()
   
+  // Trapezoid that spans multiple parent trapezoids
+  private var tCross: Trapezoid = null
+  // Bottom segment that spans multiple trapezoids
+  private var bCross: Segment = null
+  
   // Add a trapezoid to the map
   def add(t: Trapezoid) {
     map + (t.hashCode -> t)
@@ -77,11 +82,14 @@ class TrapezoidalMap {
   //         Break into 3 pieces
   def case2(t: Trapezoid, s: Segment) = {
     
+    tCross = null
+    bCross = null
+    
     val trapezoids = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
     val trapB = new Trapezoid(s.p, s.q, t.top, s)
     val trapC = new Trapezoid(s.p, s.q, s, t.bottom)
-    
+   
     s.above = trapB
     s.below = trapC
     
@@ -92,47 +100,64 @@ class TrapezoidalMap {
     trapC.update(null, trapA, null, t.lowerRight)
     trapezoids += trapC
     
+    bCross = t.bottom
+    tCross = trapC
     t.updateNeighbors(trapA, trapA, trapB, trapC)
     trapezoids
   }
   
-  // Case 3: Trapezoid contains point q, p lies outside
-  //         Break trapezoid into 3 pieces
-  def case3(t: Trapezoid, s: Segment)= {
-    
-    val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(s.p, s.q, t.top, s)
-    val trapB = new Trapezoid(s.p, s.q, s, t.bottom)
-    val trapC = new Trapezoid(s.q, t.leftPoint, t.top, t.bottom)
-    
-    trapA.update(t.upperLeft, s.above, trapC, null)
-    trapezoids += trapA
-    trapB.update(s.below, t.lowerLeft, null, trapC)
-    trapezoids += trapB
-    trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
-    trapezoids += trapC
-    
-    t.updateNeighbors(trapA, trapB, trapC, trapC)
-    trapezoids
-  }
-  
-  // Case 4: Trapezoid is bisected
+  // Case 3: Trapezoid is bisected
   //         Break trapezoid into 2 pieces
-  def case4(t: Trapezoid, s: Segment) = {
+  def case3(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(s.p, s.q, t.top, s)
-    val trapB = new Trapezoid(s.p, s.q, s, t.bottom)
+    val trapA = new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)
+    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
     
     trapA.update(t.upperLeft, s.above, t.upperRight, null)
     trapezoids += trapA
-    trapB.update(s.above, t.lowerLeft, null, t.lowerRight)
+    
+    if(bCross == t.bottom) {
+      trapB.lowerRight = t.lowerRight
+      trapB.rightPoint = t.rightPoint
+    } else {
+      trapB.update(s.above, t.lowerLeft, null, t.lowerRight)
+    }
     trapezoids += trapB
     
     s.above = trapA
     s.below = trapB
     
+    bCross = t.bottom
+    tCross = trapB
     t.updateNeighbors(trapA, trapB, trapA, trapB)
+    trapezoids
+  }
+  
+  // Case 4: Trapezoid contains point q, p lies outside
+  //         Break trapezoid into 3 pieces
+  def case4(t: Trapezoid, s: Segment)= {
+    
+    val trapezoids = new ArrayList[Trapezoid]
+    val trapA = new Trapezoid(t.leftPoint, s.q, t.top, s)
+    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
+    val trapC = new Trapezoid(s.q, t.leftPoint, t.top, t.bottom)
+    
+    trapA.update(t.upperLeft, s.above, trapC, null)
+    trapezoids += trapA
+   
+    if(bCross == t.bottom) {
+      trapB.lowerRight = trapC
+      trapB.rightPoint = t.rightPoint
+    } else {
+      trapB.update(s.below, t.lowerLeft, null, trapC)
+    }
+    trapezoids += trapB
+    
+    trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
+    trapezoids += trapC
+    
+    t.updateNeighbors(trapA, trapB, trapC, trapC)
     trapezoids
   }
   

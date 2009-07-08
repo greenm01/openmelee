@@ -32,14 +32,16 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
-class XNode(point: Vector2, left: Node, right: Node) extends Node {
+class XNode(point: Vector2, lChild: Node, rChild: Node) extends Node(lChild, rChild) {
 
   def locate(s: Segment) = {
     if(s.p.x >= point.x) {
+      // Move to the right in the graph
       right.locate(s)
     } else {
+      // Move to the left in the graph
       left.locate(s)
-    }
+    } 
   }
 
 }

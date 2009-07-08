@@ -32,8 +32,10 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
-class Trapezoid(val leftPoint: Vector2, val rightPoint: Vector2, val top: Segment, val bottom: Segment) {
+class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segment, val bottom: Segment) {
 
+  var sink: Sink = null
+  
   // Neighbor pointers
   var upperLeft: Trapezoid = null
   var lowerLeft: Trapezoid = null

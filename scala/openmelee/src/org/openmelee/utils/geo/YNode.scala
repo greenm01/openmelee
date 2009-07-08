@@ -34,19 +34,23 @@ import org.villane.vecmath.Vector2
 
 import org.villane.vecmath.Vector2
 
-class YNode(segment: Segment, above: Node, below: Node) extends Node {
+class YNode(segment: Segment, lChild: Node, rChild: Node) extends Node(lChild, rChild) {
 
   def locate(s: Segment) = {
     if (segment > s.p) {
-      below.locate(s)
+      // Move down the graph
+      right.locate(s)
     } else if (segment < s.p){
-      above.locate(s)
+      // Move up the graph
+      left.locate(s)
     } else {
       // s and segment share the same endpoint
       if (s.slope < segment.slope) {
-        below.locate(s)
+        // Move down the graph
+        right.locate(s)
       } else {
-        above.locate(s)
+        // Move up the graph
+        left.locate(s)
       }
     }
   }

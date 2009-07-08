@@ -50,23 +50,27 @@ class Triangulator(segments: Array[Segment]) {
     for(s <- segments) {
       val trapezoids = queryStruct.followSegment(s)
       trapezoids.foreach(trapezoidalMap.remove)
-      var newTraps: ArrayList[Trapezoid] = null
+      var tList: ArrayList[Trapezoid] = null
       for(t <- trapezoids) {
         if(t.contains(s)) {
-          newTraps = trapezoidalMap.case1(t,s)
+          tList = trapezoidalMap.case1(t,s)
+          queryStruct.case1(t.sink, s, tList)
         } else {
           val containsP = t.contains(s.p)
           val containsQ = t.contains(s.q)
           if(containsP && !containsQ) {
-            newTraps = trapezoidalMap.case2(t,s)
-          } else if(!containsP && containsQ) {
-            newTraps = trapezoidalMap.case3(t, s)
+            tList = trapezoidalMap.case2(t,s) 
+            queryStruct.case2(t.sink, s, tList)
+          } else if(!containsP && !containsQ) {
+            tList = trapezoidalMap.case3(t, s)
+            queryStruct.case3(t.sink, s, tList)
           } else {
-            newTraps = trapezoidalMap.case4(t, s)
+            tList = trapezoidalMap.case4(t, s)
+            queryStruct.case4(t.sink, s, tList)
           }
         }
       }
-      newTraps.foreach(trapezoidalMap.add)
+      tList.foreach(trapezoidalMap.add)
     }
   }
 }

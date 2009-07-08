@@ -30,10 +30,33 @@
  */
 package org.openmelee.utils.geo
 
+import collection.jcl.ArrayList
+
 import org.villane.vecmath.Vector2
 
-trait Node {
+// Node for a Directed Acyclic graph (DAG)
+abstract class Node(var left: Node, var right: Node) {
 
+  var parentList = new ArrayList[Node]
   def locate(s: Segment)
   
+  def child(n : Node) = {
+    if(left == n) {
+      left
+    } else {
+      right
+    }
+  }
+  
+  // Replace a node in the graph with this node
+  // Make sure parent pointers are updated
+  def replace(node: Node) {
+   for(p <- node.parentList) {
+     // Select the correct node (left or right child)
+     var child = p.child(node)
+     // Decouple the node
+     child = this
+     parentList += p
+   }
+  }
 }

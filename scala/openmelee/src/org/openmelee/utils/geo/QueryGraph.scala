@@ -34,7 +34,7 @@ import org.villane.vecmath.Vector2
 
 import collection.jcl.ArrayList
 
-// Directed Acyclitic Graph (DAG)
+// Directed Acyclic graph (DAG)
 class QueryStructure(head: Node) {
 
   def locate(s: Segment) = {
@@ -56,5 +56,28 @@ class QueryStructure(head: Node) {
     }
     trapezoids
   }
-
+  
+  def case1(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
+    val yNode = new YNode(s, new Sink(tList(1)), new Sink(tList(2)))
+    val qNode = new XNode(s.q, yNode, new Sink(tList(3)))
+	val pNode = new XNode(s.p, new Sink(tList(0)), qNode)
+	pNode.replace(sink)
+  }
+  
+  def case2(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
+    val yNode = new YNode(s, new Sink(tList(1)), new Sink(tList(2)))
+	val pNode = new XNode(s.p, new Sink(tList(0)), yNode)
+    pNode.replace(sink)
+  }
+  
+  def case3(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
+    val yNode = new YNode(s, new Sink(tList(0)), new Sink(tList(1)))
+    yNode.replace(sink)
+  }
+  
+  def case4(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
+    val yNode = new YNode(s, new Sink(tList(0)), new Sink(tList(1)))
+	val qNode = new XNode(s.q, yNode, new Sink(tList(2)))
+	qNode.replace(sink)
+  }
 }
