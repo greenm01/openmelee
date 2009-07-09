@@ -37,7 +37,7 @@ import collection.jcl.ArrayList
 // Directed Acyclic graph (DAG)
 // See "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
                            
-class QueryGraph(head: Node) {
+class QueryGraph(var head: Node) {
 
   def locate(s: Segment): Trapezoid = {
     val sink = head.locate(s)
@@ -59,27 +59,35 @@ class QueryGraph(head: Node) {
     trapezoids
   }
   
+  def replace(sink: Sink, node: Node) {
+    if(sink.parentList.length == 0) {
+      head = node
+    } else {
+      node.replace(sink)
+    }
+  }
+  
   def case1(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(1)), Sink.init(tList(2)))
     val qNode = new XNode(s.q, yNode, Sink.init(tList(3)))
 	val pNode = new XNode(s.p, Sink.init(tList(0)), qNode)
-	pNode.replace(sink)
+    replace(sink, pNode)
   }
   
   def case2(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(1)), Sink.init(tList(2)))
 	val pNode = new XNode(s.p, Sink.init(tList(0)), yNode)
-    pNode.replace(sink)
+    replace(sink, pNode)
   }
   
   def case3(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(0)), Sink.init(tList(1)))
-    yNode.replace(sink)
+    replace(sink, yNode)
   }
   
   def case4(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(0)), Sink.init(tList(1)))
 	val qNode = new XNode(s.q, yNode, Sink.init(tList(2)))
-	qNode.replace(sink)
+    replace(sink, qNode)
   }
 }

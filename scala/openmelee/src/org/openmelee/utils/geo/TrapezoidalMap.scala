@@ -72,11 +72,10 @@ class TrapezoidalMap {
     trapezoids += trapB
     trapC.update(null, trapA, null, trapD)
     trapezoids += trapC
-    trapC.update(trapB, trapC, t.upperRight, t.lowerRight)
+    trapD.update(trapB, trapC, t.upperRight, t.lowerRight)
     trapezoids += trapD
     
-    t.updateNeighbors(trapA, trapA, trapD, trapD)
-    
+    //t.updateNeighbors(trapA, trapA, trapD, trapD)
     trapezoids
   }
 
@@ -89,8 +88,8 @@ class TrapezoidalMap {
     
     val trapezoids = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
-    val trapB = new Trapezoid(s.p, s.q, t.top, s)
-    val trapC = new Trapezoid(s.p, s.q, s, t.bottom)
+    val trapB = new Trapezoid(s.p, t.rightPoint, t.top, s)
+    val trapC = new Trapezoid(s.p, t.rightPoint, s, t.bottom)
    
     s.above = trapB
     s.below = trapC
@@ -104,7 +103,7 @@ class TrapezoidalMap {
     
     bCross = t.bottom
     tCross = trapC
-    t.updateNeighbors(trapA, trapA, trapB, trapC)
+    //t.updateNeighbors(trapA, trapA, trapB, trapC)
     trapezoids
   }
   
@@ -132,7 +131,8 @@ class TrapezoidalMap {
     
     bCross = t.bottom
     tCross = trapB
-    t.updateNeighbors(trapA, trapB, trapA, trapB)
+    
+    //t.updateNeighbors(trapA, trapB, trapA, trapB)
     trapezoids
   }
   
@@ -143,14 +143,15 @@ class TrapezoidalMap {
     val trapezoids = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.q, t.top, s)
     val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
-    val trapC = new Trapezoid(s.q, t.leftPoint, t.top, t.bottom)
+    val trapC = new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
     trapA.update(t.upperLeft, s.above, trapC, null)
     trapezoids += trapA
    
     if(bCross == t.bottom) {
       trapB.lowerRight = trapC
-      trapB.rightPoint = t.rightPoint
+      trapB.upperRight = null
+      trapB.rightPoint = s.q
     } else {
       trapB.update(s.below, t.lowerLeft, null, trapC)
     }
@@ -159,30 +160,33 @@ class TrapezoidalMap {
     trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
     trapezoids += trapC
     
-    t.updateNeighbors(trapA, trapB, trapC, trapC)
+    //t.updateNeighbors(trapA, trapB, trapC, trapC)
     trapezoids
   }
   
   def boundingBox(segments: Array[Segment]): Trapezoid = {
    
-    var max: Vector2 = segments(0).p
-    var min: Vector2 = segments(0).q
+    var max = segments(0).p
+    var min = segments(0).q
 
+    // Create some margin around the segments
+    val margin = 2f
+    
     for(s <- segments) {
-      if(s.p.x > max.x) max = Vector2(s.p.x, max.y)
-      if(s.p.y > max.y) max = Vector2(max.x, s.p.y)
-      if(s.q.x > max.x) max = Vector2(s.q.x, max.y)
-      if(s.q.y > max.y) max = Vector2(max.x, s.q.y)
-      if(s.p.x < min.x) min = Vector2(s.p.x, min.y)
-      if(s.p.y < min.y) min = Vector2(min.x, s.p.y)
-      if(s.q.x < min.x) min = Vector2(s.q.x, min.y)
-      if(s.q.y < min.y) min = Vector2(min.x, s.q.y)
+      if(s.p.x > max.x) max = Vector2(s.p.x+margin, max.y)
+      if(s.p.y > max.y) max = Vector2(max.x, s.p.y+margin)
+      if(s.q.x > max.x) max = Vector2(s.q.x+margin, max.y)
+      if(s.q.y > max.y) max = Vector2(max.x, s.q.y+margin)
+      if(s.p.x < min.x) min = Vector2(s.p.x-margin, min.y)
+      if(s.p.y < min.y) min = Vector2(min.x, s.p.y-margin)
+      if(s.q.x < min.x) min = Vector2(s.q.x-margin, min.y)
+      if(s.q.y < min.y) min = Vector2(min.x, s.q.y-margin)
     }
 
-    val top = new Segment(Vector2(min.x,max.y), Vector2(max.x, max.y))
-    val bottom = new Segment(Vector2(min.x,min.y), Vector2(max.x, min.y))
-    val left = top.p
-    val right = bottom.q
+    val top = new Segment(Vector2(min.x, max.y), Vector2(max.x, max.y))
+    val bottom = new Segment(Vector2(min.x, min.y), Vector2(max.x, min.y))
+    val left = bottom.p
+    val right = top.q
     
     return new Trapezoid(left, right, top, bottom)
   }

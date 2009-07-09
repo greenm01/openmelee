@@ -37,10 +37,8 @@ class Segment(var p: Vector2, var q: Vector2) {
   var above: Trapezoid = _
   var below: Trapezoid = _
   
-  def > (point: Vector2): Boolean = (p.y > point.y && q.y > point.y)
-  def < (point: Vector2): Boolean = (p.y < point.y && q.y < point.y)
-  def > (s: Segment): Boolean = (s < p && s < q)
-  def < (s: Segment): Boolean = (s > p && s > q)
+  def > (point: Vector2): Boolean = (p.y >= point.y && q.y >= point.y)
+  def < (point: Vector2): Boolean = (p.y <= point.y && q.y <= point.y)
   
   def slope = (q.y - p.y)/(q.x - p.x)
   

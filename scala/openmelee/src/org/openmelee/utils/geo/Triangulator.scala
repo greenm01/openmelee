@@ -44,7 +44,10 @@ class Triangulator(segments: Array[Segment]) {
   // Initialize trapezoidal map and query structure
   val trapezoidalMap = new TrapezoidalMap
   val boundingBox = trapezoidalMap.boundingBox(segments)
+  trapezoidalMap.add(boundingBox)
   val queryGraph = new QueryGraph(new Sink(boundingBox))
+  
+  var fooBar: ArrayList[Trapezoid] = null
   
   // Build the trapezoidal map and querey graph
   def process {
@@ -53,25 +56,28 @@ class Triangulator(segments: Array[Segment]) {
       trapezoids.foreach(trapezoidalMap.remove)
       var tList: ArrayList[Trapezoid] = null
       for(t <- trapezoids) {
-        if(t.contains(s)) {
+        val containsP = t.contains(s.p)
+        val containsQ = t.contains(s.q)
+        if(containsP && containsQ) {
+          println("case1")
           tList = trapezoidalMap.case1(t,s)
           queryGraph.case1(t.sink, s, tList)
+        } else if(containsP && !containsQ) {
+          println("case2")
+          tList = trapezoidalMap.case2(t,s) 
+          queryGraph.case2(t.sink, s, tList)
+        } else if(!containsP && !containsQ) {
+          println("case3")
+          tList = trapezoidalMap.case3(t, s)
+          queryGraph.case3(t.sink, s, tList)
         } else {
-          val containsP = t.contains(s.p)
-          val containsQ = t.contains(s.q)
-          if(containsP && !containsQ) {
-            tList = trapezoidalMap.case2(t,s) 
-            queryGraph.case2(t.sink, s, tList)
-          } else if(!containsP && !containsQ) {
-            tList = trapezoidalMap.case3(t, s)
-            queryGraph.case3(t.sink, s, tList)
-          } else {
-            tList = trapezoidalMap.case4(t, s)
-            queryGraph.case4(t.sink, s, tList)
-          }
+          println("case4")
+          tList = trapezoidalMap.case4(t, s)
+          fooBar = tList
+          queryGraph.case4(t.sink, s, tList)
         }
+        tList.foreach(trapezoidalMap.add)
       }
-      tList.foreach(trapezoidalMap.add)
     }
   }
   

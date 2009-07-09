@@ -17,7 +17,7 @@ object OpenMelee {
   val game = new Game
 
 	def main(args: Array[String]) {
-    game.init()
+	  game.init()
 	}
 }
 
@@ -26,17 +26,16 @@ class Game extends StateBasedGame("OpenMelee") {
   val MAINMENUSTATE = 0
   val GAMEPLAYSTATE = 1
 
-  addState(new Melee(GAMEPLAYSTATE))
-  enterState(GAMEPLAYSTATE)
-   
   def init() {
+    addState(new Melee(GAMEPLAYSTATE))
+    enterState(GAMEPLAYSTATE)
     val app = new AppGameContainer(this)
     app.setDisplayMode(600, 600, false)
     app.start
   }
 
   override def initStatesList(gameContainer:GameContainer) {
+    //getState(MAINMENUSTATE).init(gameContainer, this)
     getState(GAMEPLAYSTATE).init(gameContainer, this)
   }
-
 }

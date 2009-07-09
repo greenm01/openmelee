@@ -43,10 +43,10 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   var lowerRight: Trapezoid = null
   
   def updateNeighbors(ul: Trapezoid, ll: Trapezoid, ur: Trapezoid, lr: Trapezoid) {
-    if(upperRight != null) upperLeft.upperRight = ul
-    if(lowerRight != null) lowerLeft.lowerRight = ll
-    if(upperLeft != null) upperRight.upperLeft = ur
-    if(lowerLeft != null) lowerRight.lowerLeft = lr
+    if(upperLeft != null && upperLeft.top == top) upperLeft.upperRight = ul
+    if(lowerLeft != null && lowerLeft.bottom == bottom) lowerLeft.lowerRight = ll
+    if(upperRight != null && upperRight.top == top) upperRight.upperLeft = ur
+    if(lowerRight != null && lowerRight.bottom == bottom) lowerRight.lowerLeft = lr
   }
   
   def update(ul: Trapezoid, ll: Trapezoid, ur: Trapezoid, lr: Trapezoid) {
@@ -57,42 +57,22 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   }
   
   def contains(point: Vector2) = 
-    (point.x > leftPoint.x && point.x < rightPoint.x && top > point && bottom < point)
-  
-  def contains(segment: Segment) = 
-    (segment < rightPoint && segment > leftPoint && segment < top && segment > bottom)
+    (point.x >= leftPoint.x && point.x <= rightPoint.x && top > point && bottom < point)
   
   def vertices: Array[Vector2] = {
     val verts = new Array[Vector2](4)
-    verts(0) = closestPtSegment(top.p, top.q, leftPoint)
-    verts(1) = closestPtSegment(bottom.p, bottom.q, leftPoint)
-    verts(2) = closestPtSegment(bottom.p, bottom.q, rightPoint)
-    verts(3) = closestPtSegment(top.p, top.q, rightPoint)
+    verts(0) = lineIntersect(top, leftPoint.x)
+    verts(1) = lineIntersect(bottom, leftPoint.x)
+    verts(2) = lineIntersect(bottom, rightPoint.x)
+    verts(3) = lineIntersect(top, rightPoint.x)
     return verts
   }
   
-  // From Christer Ericson’s Real-time Collision Detection 
-  // Finds the closest point on segment to point c
-  def closestPtSegment(c: Vector2, a: Vector2, b: Vector2) = {
-
-    val ab = b - a;
-    var d = Vector2.Zero
-    
-    var t = (c - a).dot(ab);
-    if (t <= 0.0f) {
-    	t = 0.0f
-    	d = a
-    } else {
-    	val denom = ab.dot(ab)
-    	if (t >= denom) {
-    		t = 1.0f
-    		d = b
-    	} else {
-    		t = t / denom
-    		d = a + ab * t
-    	}
-    }
-    d 
-  }
- 
+  def lineIntersect(s: Segment, x: Float) = {
+    // Equation of a line : y = m*x + b
+    val m = (s.q.y - s.p.y) / (s.q.x - s.p.x)
+    val b = s.p.y - (s.p.x * m)
+    val y = m * x + b
+    Vector2(x, y)
+  } 
 }

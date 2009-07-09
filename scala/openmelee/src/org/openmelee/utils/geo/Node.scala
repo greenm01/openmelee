@@ -37,6 +37,9 @@ import org.villane.vecmath.Vector2
 // Node for a Directed Acyclic graph (DAG)
 abstract class Node(var left: Node, var right: Node) {
 
+  if(left != null) left.parentList += this
+  if(right != null) right.parentList += this
+  
   var parentList = new ArrayList[Node]
   
   def locate(s: Segment): Sink
@@ -52,12 +55,12 @@ abstract class Node(var left: Node, var right: Node) {
   // Replace a node in the graph with this node
   // Make sure parent pointers are updated
   def replace(node: Node) {
-   for(p <- node.parentList) {
+   for(parent <- node.parentList) {
      // Select the correct node (left or right child)
-     var child = p.child(node)
+     var child = parent.child(node)
      // Decouple the node
      child = this
-     parentList += p
+     parentList += parent
    }
   }
 }

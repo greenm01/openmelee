@@ -23,7 +23,7 @@ import objects.ships.{Orz, UrQuan}
 
 import ai.Human
 import utils.svg.SVG
-import utils.geo.{Triangulator, Segment}
+import utils.geo.{Triangulator, Segment, Trapezoid}
 
 class Melee(stateID:Int) extends BasicGameState {
 
@@ -59,11 +59,14 @@ class Melee(stateID:Int) extends BasicGameState {
   var drawSVG = true
 
   val svg = new SVG("data/test.svg")
-
+  
+  var testTrap: Trapezoid = null
+  
+  testTesselator
+  
   override def init(gc: GameContainer, sb:StateBasedGame) {
     debugDraw.g = gc.getGraphics
     debugDraw.container = gc
-    testTesselator
   }
 
   override def update(gc: GameContainer, sb:StateBasedGame, delta:Int) {
@@ -112,7 +115,11 @@ class Melee(stateID:Int) extends BasicGameState {
     val scale = 0.025f
     val green = new Color3f(0f, 255f, 0f ,255)
     debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
-    //debugDraw.drawSegment(Vector2(200,200)*scale, Vector2(600, 150)*scale, green)
+    debugDraw.drawSegment(Vector2(250,200)*scale, Vector2(600, 175)*scale, green)
+    debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(250,200)*scale, green)
+    debugDraw.drawSegment(Vector2(400,500)*scale, Vector2(300,300)*scale, green)
+    debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
+    debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -124,19 +131,20 @@ class Melee(stateID:Int) extends BasicGameState {
   override def keyReleased(key:Int, c:Char) = human.onKeyUp(key)
 
   def testTesselator {
-    
+   
     val scale = 0.025f
-    val segments = new Array[Segment](1)
+    val segments = new Array[Segment](6)
     segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400, 500)*scale)
-    //segments(1) = new Segment(Vector2(200,200)*scale, Vector2(600, 150)*scale)
+    segments(1) = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
+    segments(2) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
+    segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(300,300)*scale)
+    segments(4) = new Segment(Vector2(300, 300)*scale, Vector2(650,200)*scale)
+    segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
     tesselator = new Triangulator(segments)
     tesselator.process
-
-    for(t <- tesselator.trapezoidalMap.map.values) {
-      t.vertices.foreach(println)
-      println("***")
-    }
-    
+    val tSeg = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
+    testTrap = tesselator.queryGraph.locate(tSeg)
+    println(tesselator.trapezoidalMap.map.size) 
   }
 
   /*
