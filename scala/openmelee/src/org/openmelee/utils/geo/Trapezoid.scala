@@ -56,8 +56,10 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
     lowerRight = lr
   }
   
-  def contains(point: Vector2) = 
-    (point.x >= leftPoint.x && point.x <= rightPoint.x && top > point && bottom < point)
+  // Determines if this point lies inside the trapezoid
+  def contains(point: Vector2) = {
+     (point.x > leftPoint.x && point.x < rightPoint.x && top > point && bottom < point)
+  }
   
   def vertices: Array[Vector2] = {
     val verts = new Array[Vector2](4)
@@ -69,10 +71,7 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   }
   
   def lineIntersect(s: Segment, x: Float) = {
-    // Equation of a line : y = m*x + b
-    val m = (s.q.y - s.p.y) / (s.q.x - s.p.x)
-    val b = s.p.y - (s.p.x * m)
-    val y = m * x + b
+    val y =  s.slope * x + s.b
     Vector2(x, y)
   } 
 }
