@@ -31,6 +31,7 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
+import scala.collection.mutable.Set
 
 import org.villane.vecmath.{Vector2, Preamble}
 
@@ -47,29 +48,41 @@ class Triangulator(segments: Array[Segment]) {
   def process {
     for(s <- segments) {
       val traps = queryGraph.followSegment(s)
+      // Remove trapezoids from trapezoidal Map
       traps.foreach(trapezoidalMap.remove)
+      // Remove segment pointers
+      traps.foreach(t => t.removeSegments)
       for(t <- traps) {
         var tList: ArrayList[Trapezoid] = null
         val containsP = t.contains(s.p)
         val containsQ = t.contains(s.q)
         if(containsP && containsQ) {
+          // Case 1
           tList = trapezoidalMap.case1(t,s)
           queryGraph.case1(t.sink, s, tList)
         } else if(containsP && !containsQ) {
+          // Case 2
           tList = trapezoidalMap.case2(t,s) 
           queryGraph.case2(t.sink, s, tList)
         } else if(!containsP && !containsQ) {
+          // Case 3
           tList = trapezoidalMap.case3(t, s)
           queryGraph.case3(t.sink, s, tList)
         } else {
+          // Case 4
           tList = trapezoidalMap.case4(t, s)
           queryGraph.case4(t.sink, s, tList)
         }
+        // Add new trapezoids to the trapezoidal map
         tList.foreach(trapezoidalMap.add)
+        // Create new segment pointers
+        tList.foreach(s.addTrapezoid)
       }
       trapezoidalMap reset
     }
     trapezoids = trim
+    monotonePolygons
+    xMonoPoly.foreach(println)
   }
   
   def allTrapezoids = trapezoidalMap.map.values
@@ -79,7 +92,31 @@ class Triangulator(segments: Array[Segment]) {
   private val boundingBox = trapezoidalMap.boundingBox(segments)
   private val queryGraph = new QueryGraph(new Sink(boundingBox))
   
+  val xMonoPoly = new ArrayList[Set[Vector2]]
+                                        
   orderSegments
+  
+  // Build a list of x-monotone polygons 
+  private def monotonePolygons {
+    for(s <- segments) {
+    	val set = Set.empty[Vector2]
+        for(t <- s.trapezoids) {
+          if(!t.outside) {
+	          set += t.leftPoint
+	          set += t.rightPoint
+          }
+        }
+        if(set.size > 0) {
+          xMonoPoly += set
+        }
+      }
+  }
+  
+  // Partition the x-monotone polygons into triangles o(n)
+  // See "Computational Geometry", 3rd edition, by Mark de Berg et al, page 57
+  private def triangulateMonotonePolygon {
+    
+  }
   
   // Trim off the extraneous trapezoids surrounding the polygon
   private def trim = {

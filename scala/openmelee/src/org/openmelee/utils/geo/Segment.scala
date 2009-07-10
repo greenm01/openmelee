@@ -32,10 +32,16 @@ package org.openmelee.utils.geo
 
 import org.villane.vecmath.Vector2
 
+import collection.jcl.ArrayList
+
+// Represents a simple polygon's edge
 class Segment(var p: Vector2, var q: Vector2) {
 
-  // Pointer used when segment passes through multiple trapezoids
-  var above: Trapezoid = _
+  // List of trapezoids this segment constitutes either the 
+  // top or bottom edge
+  val trapezoids = new ArrayList[Trapezoid]
+  // Pointer used for building trapezoidal map
+  var above: Trapezoid = null
 
   // Equation of a line: y = m*x + b
   // Slope of the line (m)
@@ -46,5 +52,9 @@ class Segment(var p: Vector2, var q: Vector2) {
   // Determines if this segment lies above the given point
   def > (point: Vector2) = (point.y < slope * point.x + b)
   // Determines if this segment lies below the given point
-  def < (point: Vector2) = (point.y > slope * point.x + b)     
+  def < (point: Vector2) = (point.y > slope * point.x + b) 
+  // Add trapezoid the the pointer list
+  def addTrapezoid(t: Trapezoid) = trapezoids += t
+  // Remove trapezoid from pointer list
+  def removeTrapezoid(t: Trapezoid) = trapezoids -= t
 }
