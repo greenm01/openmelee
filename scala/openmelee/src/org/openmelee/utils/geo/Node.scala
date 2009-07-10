@@ -44,22 +44,17 @@ abstract class Node(var left: Node, var right: Node) {
   
   def locate(s: Segment): Sink
   
-  def child(n : Node) = {
-    if(left == n) {
-      left
-    } else {
-      right
-    }
-  }
-  
   // Replace a node in the graph with this node
   // Make sure parent pointers are updated
   def replace(node: Node) {
    for(parent <- node.parentList) {
      // Select the correct node (left or right child)
-     var child = parent.child(node)
+     if(parent.left == node) {
+     	parent.left = this
+     } else {
+        parent.right = this
+     }
      // Decouple the node
-     child = this
      parentList += parent
    }
   }

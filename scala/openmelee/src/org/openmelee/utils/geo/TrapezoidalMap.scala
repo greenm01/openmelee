@@ -75,7 +75,7 @@ class TrapezoidalMap {
     trapD.update(trapB, trapC, t.upperRight, t.lowerRight)
     trapezoids += trapD
     
-    t.updateNeighbors(trapA, trapA, trapD, trapD)
+    //t.updateNeighbors(trapA, trapA, trapD, trapD)
     trapezoids
   }
 
@@ -86,6 +86,7 @@ class TrapezoidalMap {
     tCross = null
     bCross = null
     
+    println(t.leftPoint.x)
     val trapezoids = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
     val trapB = new Trapezoid(s.p, t.rightPoint, t.top, s)
@@ -103,7 +104,7 @@ class TrapezoidalMap {
     
     bCross = t.bottom
     tCross = trapC
-    t.updateNeighbors(trapA, trapA, trapB, trapC)
+    //t.updateNeighbors(trapA, trapA, trapB, trapC)
     trapezoids
   }
   
@@ -116,6 +117,7 @@ class TrapezoidalMap {
     val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
     
     trapA.update(t.upperLeft, s.above, t.upperRight, null)
+    if(s.above != null) s.above.lowerRight = trapA
     trapezoids += trapA
     
     if(bCross == t.bottom) {
@@ -130,7 +132,7 @@ class TrapezoidalMap {
     bCross = t.bottom
     tCross = trapB
     
-    t.updateNeighbors(trapA, trapB, trapA, trapB)
+    //t.updateNeighbors(trapA, trapB, trapA, trapB)
     trapezoids
   }
   
@@ -140,10 +142,11 @@ class TrapezoidalMap {
     
     val trapezoids = new ArrayList[Trapezoid]
     val trapA = new Trapezoid(t.leftPoint, s.q, t.top, s)
-    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
+    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, s.q, s, t.bottom)
     val trapC = new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
-    trapA.update(t.upperLeft, null, trapC, null)
+    trapA.update(t.upperLeft, s.above, trapC, null)
+    if(s.above != null) s.above.lowerRight = trapA
     trapezoids += trapA
    
     if(bCross == t.bottom) {
@@ -157,7 +160,7 @@ class TrapezoidalMap {
     trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
     trapezoids += trapC
     
-    t.updateNeighbors(trapA, trapB, trapC, trapC)
+    //t.updateNeighbors(trapA, trapB, trapC, trapC)
     trapezoids
   }
   

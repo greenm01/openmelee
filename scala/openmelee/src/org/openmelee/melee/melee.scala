@@ -108,8 +108,8 @@ class Melee(stateID:Int) extends BasicGameState {
     svg.render
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
-    //for(t <- tesselator.trapezoidalMap.map.values) {
-    for(t <- tesselator.trapezoids) {
+    for(t <- tesselator.trapezoidalMap.map.values) {
+    //for(t <- tesselator.trapezoids) {
 	  //val t = tesselator.trapezoids(3)
 	  debugDraw.drawPolygon(t.vertices, red)
     }
@@ -124,9 +124,10 @@ class Melee(stateID:Int) extends BasicGameState {
     debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
     
     val blue = new Color3f(0f, 0f, 255f ,255)
-    for(t <- tesselator.foo) {
+    //for(t <- tesselator.foo) {
+      val t = tesselator.foo(0)
 	  debugDraw.drawPolygon(t.vertices, blue)
-    }
+    //}
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -149,10 +150,7 @@ class Melee(stateID:Int) extends BasicGameState {
     //segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
     tesselator = new Triangulator(segments)
     tesselator.process
-    val tSeg = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
-    testTrap = tesselator.queryGraph.locate(tSeg)
-    println(tesselator.trapezoidalMap.map.size) 
-  }
+   }
 
   /*
    override def setup() {
