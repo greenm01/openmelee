@@ -50,10 +50,8 @@ class QueryGraph(var head: Node) {
     var j = 0
     while(s.q.x > trapezoids(j).rightPoint.x) {
       if(s > trapezoids(j).rightPoint) {
-        if(trapezoids(j).upperRight == null) println("wtf1")
         trapezoids += trapezoids(j).upperRight
       } else {
-        if(trapezoids(j).lowerRight == null) println("wtf2")
         trapezoids += trapezoids(j).lowerRight
       }
       j += 1

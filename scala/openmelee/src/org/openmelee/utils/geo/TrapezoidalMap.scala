@@ -39,8 +39,11 @@ import org.villane.vecmath.Vector2
 
 class TrapezoidalMap {
 
+  // Trapezoid associated array
   val map: Map[Int, Trapezoid] = Map()
-  
+  // AABB margin
+  var margin = 2f
+    
   // Trapezoid that spans multiple parent trapezoids
   private var tCross: Trapezoid = null
   // Bottom segment that spans multiple trapezoids
@@ -84,14 +87,12 @@ class TrapezoidalMap {
   //         break trapezoid into 3 smaller trapezoids
   def case2(t: Trapezoid, s: Segment) = {
     
-    println(t.leftPoint.x)
     val trapezoids = new ArrayList[Trapezoid]
     trapezoids += new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
     trapezoids += new Trapezoid(s.p, t.rightPoint, t.top, s)
     trapezoids += new Trapezoid(s.p, t.rightPoint, s, t.bottom)
    
     s.above = trapezoids(1)
-    s.below = trapezoids(2)
     
     trapezoids(0).update(t.upperLeft, t.lowerLeft, trapezoids(1), trapezoids(2))
     trapezoids(1).update(trapezoids(0), null, t.upperRight, null)
@@ -111,11 +112,12 @@ class TrapezoidalMap {
     trapezoids += new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)
     trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)}
     
-    trapezoids(0).update(t.upperLeft, s.above, t.upperRight, null)
+    trapezoids(0).update(t.upperLeft, s.above, t.upperRight, t.lowerRight)
+    
     if(s.above != null) s.above.lowerRight = trapezoids(0)
+    s.above = trapezoids(0)
     
     if(bCross == t.bottom) {
-      trapezoids(1).upperRight = null
       trapezoids(1).lowerRight = t.lowerRight
       trapezoids(1).rightPoint = t.rightPoint
     } else {
@@ -139,6 +141,7 @@ class TrapezoidalMap {
     trapezoids += new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
     trapezoids(0).update(t.upperLeft, s.above, trapezoids(2), null)
+    
     if(s.above != null) s.above.lowerRight = trapezoids(0)
     
     if(bCross == t.bottom) {
@@ -153,14 +156,12 @@ class TrapezoidalMap {
     trapezoids
   }
   
+  // Create an AABB around segments
   def boundingBox(segments: Array[Segment]): Trapezoid = {
    
     var max = segments(0).p
     var min = segments(0).q
 
-    // Create some margin around the segments
-    val margin = 2f
-    
     for(s <- segments) {
       if(s.p.x > max.x) max = Vector2(s.p.x+margin, max.y)
       if(s.p.y > max.y) max = Vector2(max.x, s.p.y+margin)

@@ -35,6 +35,7 @@ import org.villane.vecmath.Vector2
 class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segment, val bottom: Segment) {
 
   var sink: Sink = null
+  var outside = false
   
   // Neighbor pointers
   var upperLeft: Trapezoid = null
@@ -54,6 +55,13 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
     lowerLeft = ll
     upperRight = ur
     lowerRight = lr
+  }
+  
+  def markNeighbors {
+    if(upperLeft != null) upperLeft.outside = true
+    if(lowerLeft != null) lowerLeft.outside = true
+    if(upperRight != null) upperRight.outside = true
+    if(lowerRight != null) lowerRight.outside = true
   }
   
   // Determines if this point lies inside the trapezoid

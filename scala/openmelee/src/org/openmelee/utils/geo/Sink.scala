@@ -47,7 +47,6 @@ object Sink {
 class Sink(val trapezoid: Trapezoid) extends Node(null, null) {
 
   trapezoid.sink = this
-  def hash = trapezoid.hashCode
   override def locate(s: Segment): Sink = this
   
 }

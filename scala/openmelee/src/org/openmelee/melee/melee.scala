@@ -108,12 +108,12 @@ class Melee(stateID:Int) extends BasicGameState {
     if(drawSVG) svg.render
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
-    for(t <- tesselator.trapezoidalMap.map.values) {
-    //for(t <- tesselator.trapezoids) {
-	  //val t = tesselator.trapezoids(3)
+    //for(t <- tesselator.allTrapezoids) {
+    for(t <- tesselator.trapezoids) {
 	  debugDraw.drawPolygon(t.vertices, red)
     }
     
+    /*
     val scale = 0.025f
     val green = new Color3f(0f, 255f, 0f ,255)
     debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
@@ -123,6 +123,7 @@ class Melee(stateID:Int) extends BasicGameState {
     debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
     debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
     //debugDraw.drawSegment(Vector2(50, 200)*scale, Vector2(200,175)*scale, green)
+    */
   }
 
   override def keyPressed(key:Int, c:Char) {

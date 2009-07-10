@@ -34,9 +34,9 @@ import org.villane.vecmath.Vector2
 
 class Segment(var p: Vector2, var q: Vector2) {
 
+  // Pointer used when segment passes through multiple trapezoids
   var above: Trapezoid = _
-  var below: Trapezoid = _
-  
+
   // Equation of a line: y = m*x + b
   // Slope of the line (m)
   val slope = (q.y - p.y)/(q.x - p.x)

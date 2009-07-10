@@ -38,22 +38,17 @@ import org.villane.vecmath.{Vector2, Preamble}
 // algorithm for computing trapezoidal decompositions and for triangulating polygons"
 class Triangulator(segments: Array[Segment]) {
 
-  // TODO: Randomize segment list
-  orderSegments
-  
-  // Initialize trapezoidal map and query structure
-  val trapezoidalMap = new TrapezoidalMap
-  val boundingBox = trapezoidalMap.boundingBox(segments)
-  trapezoidalMap.add(boundingBox)
-  val queryGraph = new QueryGraph(new Sink(boundingBox))
-  
-  // Build the trapezoidal map and querey graph
+  // Trapezoid decomposition list
+  var trapezoids : ArrayList[Trapezoid] = null
+  // Triangle decomposition list
+  // var triangles: ArrayList[Triangle] = null
+    
+  // Build the trapezoidal map and query graph
   def process {
     for(s <- segments) {
-      val trapezoids = queryGraph.followSegment(s)
-      trapezoids.foreach(trapezoidalMap.remove)
-      println(trapezoids.size)
-      for(t <- trapezoids) {
+      val traps = queryGraph.followSegment(s)
+      traps.foreach(trapezoidalMap.remove)
+      for(t <- traps) {
         var tList: ArrayList[Trapezoid] = null
         val containsP = t.contains(s.p)
         val containsQ = t.contains(s.q)
@@ -74,17 +69,34 @@ class Triangulator(segments: Array[Segment]) {
       }
       trapezoidalMap reset
     }
+    trapezoids = trim
   }
   
-  def trapezoids = {
+  def allTrapezoids = trapezoidalMap.map.values
+  
+  // Initialize trapezoidal map and query structure
+  private val trapezoidalMap = new TrapezoidalMap
+  private val boundingBox = trapezoidalMap.boundingBox(segments)
+  private val queryGraph = new QueryGraph(new Sink(boundingBox))
+  
+  orderSegments
+  
+  // Trim off the extraneous trapezoids surrounding the polygon
+  private def trim = {
     val traps = new ArrayList[Trapezoid]
+    // Mark outside trapezoids
     for(t <- trapezoidalMap.map.values) {
-	  if(t.top != boundingBox.top && t.bottom != boundingBox.bottom) {
-	    traps += t
+	  if(t.top == boundingBox.top || t.bottom == boundingBox.bottom) {
+	    t.outside = true
+	    t.markNeighbors
 	  }
     }
+    // Collect interior trapezoids
+    for(t <- trapezoidalMap.map.values) if(!t.outside) traps += t
     traps
   }
+ 
+  // TODO: Randomize segment list
   private def orderSegments {
     for(s <- segments) {
       // Point p must be to the left of point q
@@ -94,9 +106,5 @@ class Triangulator(segments: Array[Segment]) {
         s.q = tmp
       }
     }
-      
   }
-  
-  
-  
 }
