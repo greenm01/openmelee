@@ -37,9 +37,6 @@ import collection.jcl.ArrayList
 // Represents a simple polygon's edge
 class Segment(var p: Vector2, var q: Vector2) {
 
-  // List of trapezoids this segment constitutes either the 
-  // top or bottom edge
-  val trapezoids = new ArrayList[Trapezoid]
   // Pointer used for building trapezoidal map
   var above: Trapezoid = null
 
@@ -53,8 +50,5 @@ class Segment(var p: Vector2, var q: Vector2) {
   def > (point: Vector2) = (point.y < slope * point.x + b)
   // Determines if this segment lies below the given point
   def < (point: Vector2) = (point.y > slope * point.x + b) 
-  // Add trapezoid the the pointer list
-  def addTrapezoid(t: Trapezoid) = trapezoids += t
-  // Remove trapezoid from pointer list
-  def removeTrapezoid(t: Trapezoid) = trapezoids -= t
+
 }

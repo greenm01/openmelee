@@ -113,15 +113,12 @@ class Melee(stateID:Int) extends BasicGameState {
 	  debugDraw.drawPolygon(t.vertices, red)
     }
     
-    /*
-    //for(x <- tesselator.xMonoPoly) {
-      val x = tesselator.xMonoPoly(0)
+    for(x <- tesselator.xMonoPoly) {
       val p = new Array[Vector2](x.size)
       var i = 0
       for(t <- x) { p(i)= t; i += 1}
       debugDraw.drawPolygon(p, red)
-    //}
-    */
+    }
     
     /*
     val scale = 0.025f

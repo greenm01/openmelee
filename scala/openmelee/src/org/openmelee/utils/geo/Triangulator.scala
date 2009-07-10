@@ -31,7 +31,7 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
-import scala.collection.mutable.Set
+import scala.collection.mutable.{Set, Map}
 
 import org.villane.vecmath.{Vector2, Preamble}
 
@@ -50,8 +50,6 @@ class Triangulator(segments: Array[Segment]) {
       val traps = queryGraph.followSegment(s)
       // Remove trapezoids from trapezoidal Map
       traps.foreach(trapezoidalMap.remove)
-      // Remove segment pointers
-      traps.foreach(t => t.removeSegments)
       for(t <- traps) {
         var tList: ArrayList[Trapezoid] = null
         val containsP = t.contains(s.p)
@@ -75,8 +73,6 @@ class Triangulator(segments: Array[Segment]) {
         }
         // Add new trapezoids to the trapezoidal map
         tList.foreach(trapezoidalMap.add)
-        // Create new segment pointers
-        tList.foreach(s.addTrapezoid)
       }
       trapezoidalMap reset
     }
@@ -98,18 +94,24 @@ class Triangulator(segments: Array[Segment]) {
   
   // Build a list of x-monotone polygons 
   private def monotonePolygons {
+    
+    val map: Map[Int, Set[Vector2]] = Map()
+    
     for(s <- segments) {
-    	val set = Set.empty[Vector2]
-        for(t <- s.trapezoids) {
-          if(!t.outside) {
-	          set += t.leftPoint
-	          set += t.rightPoint
-          }
-        }
-        if(set.size > 0) {
-          xMonoPoly += set
-        }
-      }
+       map + (s.hashCode -> Set.empty[Vector2])
+    }
+    
+   for(t <- trapezoids) {
+     val top = map(t.top.hashCode)
+     top += t.rightPoint; top += t.leftPoint                    
+     val bottom = map(t.bottom.hashCode)     
+     bottom += t.rightPoint; bottom += t.leftPoint
+   }
+   
+   for(m <- map.keys) {
+     if(map(m).size > 2) xMonoPoly += map(m)
+   }
+   
   }
   
   // Partition the x-monotone polygons into triangles o(n)

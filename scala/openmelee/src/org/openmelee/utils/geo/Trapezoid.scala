@@ -82,10 +82,5 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
     val y =  s.slope * x + s.b
     Vector2(x, y)
   } 
-  
-  // Remove this trapezoid from associated edge list
-  def removeSegments {
-    top removeTrapezoid this
-    bottom removeTrapezoid this
-  }
+
 }
