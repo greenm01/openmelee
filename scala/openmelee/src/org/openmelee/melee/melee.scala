@@ -56,7 +56,7 @@ class Melee(stateID:Int) extends BasicGameState {
   override def getID = stateID
 
   var debug = false
-  var drawSVG = true
+  var drawSVG = false
 
   val svg = new SVG("data/test.svg")
   
@@ -105,7 +105,7 @@ class Melee(stateID:Int) extends BasicGameState {
       }
     }
 
-    svg.render
+    if(drawSVG) svg.render
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
     for(t <- tesselator.trapezoidalMap.map.values) {
@@ -122,12 +122,7 @@ class Melee(stateID:Int) extends BasicGameState {
     debugDraw.drawSegment(Vector2(400,500)*scale, Vector2(300,300)*scale, green)
     debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
     debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
-    
-    val blue = new Color3f(0f, 0f, 255f ,255)
-    //for(t <- tesselator.foo) {
-      val t = tesselator.foo(0)
-	  debugDraw.drawPolygon(t.vertices, blue)
-    //}
+    //debugDraw.drawSegment(Vector2(50, 200)*scale, Vector2(200,175)*scale, green)
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -141,13 +136,14 @@ class Melee(stateID:Int) extends BasicGameState {
   def testTesselator {
    
     val scale = 0.025f
-    val segments = new Array[Segment](3)
+    val segments = new Array[Segment](6)
     segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400, 500)*scale)
     segments(1) = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
-    //segments(2) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
-    //segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(300,300)*scale)
-    segments(2) = new Segment(Vector2(300, 300)*scale, Vector2(650,200)*scale)
-    //segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
+    segments(2) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
+    segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(300,300)*scale)
+    segments(4) = new Segment(Vector2(300, 300)*scale, Vector2(650,200)*scale)
+    segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
+    //segments(6) = new Segment(Vector2(50, 200)*scale, Vector2(200,175)*scale)
     tesselator = new Triangulator(segments)
     tesselator.process
    }

@@ -55,112 +55,101 @@ class TrapezoidalMap {
   def remove(t: Trapezoid) {
     map - t.hashCode
   }
+  
+  def reset {
+    tCross = null
+    bCross = null
+  }
 
   // Case 1: segment completely enclosed by trapezoid
-  //         break trapezoid into 4 smaller traps
+  //         break trapezoid into 4 smaller trapezoids
   def case1(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
-    val trapB = new Trapezoid(s.p, s.q, t.top, s)
-    val trapC = new Trapezoid(s.p, s.q, s, t.bottom)
-    val trapD = new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
+    trapezoids += new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
+    trapezoids += new Trapezoid(s.p, s.q, t.top, s)
+    trapezoids += new Trapezoid(s.p, s.q, s, t.bottom)
+    trapezoids += new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
-    trapA.update(t.upperLeft, t.lowerLeft, trapB, trapC)
-    trapezoids += trapA
-    trapB.update(trapA, null, trapD, null)
-    trapezoids += trapB
-    trapC.update(null, trapA, null, trapD)
-    trapezoids += trapC
-    trapD.update(trapB, trapC, t.upperRight, t.lowerRight)
-    trapezoids += trapD
+    trapezoids(0).update(t.upperLeft, t.lowerLeft, trapezoids(1), trapezoids(2))
+    trapezoids(1).update(trapezoids(0), null, trapezoids(3), null)
+    trapezoids(2).update(null, trapezoids(0), null, trapezoids(3))
+    trapezoids(3).update(trapezoids(1), trapezoids(2), t.upperRight, t.lowerRight)
     
-    //t.updateNeighbors(trapA, trapA, trapD, trapD)
+    t.updateNeighbors(trapezoids(0), trapezoids(0), trapezoids(3), trapezoids(3))
     trapezoids
   }
 
   // Case 2: Trapezoid contains point p, q lies outside
-  //         Break into 3 pieces
+  //         break trapezoid into 3 smaller trapezoids
   def case2(t: Trapezoid, s: Segment) = {
-    
-    tCross = null
-    bCross = null
     
     println(t.leftPoint.x)
     val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
-    val trapB = new Trapezoid(s.p, t.rightPoint, t.top, s)
-    val trapC = new Trapezoid(s.p, t.rightPoint, s, t.bottom)
+    trapezoids += new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
+    trapezoids += new Trapezoid(s.p, t.rightPoint, t.top, s)
+    trapezoids += new Trapezoid(s.p, t.rightPoint, s, t.bottom)
    
-    s.above = trapB
-    s.below = trapC
+    s.above = trapezoids(1)
+    s.below = trapezoids(2)
     
-    trapA.update(t.upperLeft, t.lowerLeft, trapB, trapC)
-    trapezoids += trapA
-    trapB.update(trapA, null, t.upperRight, null)
-    trapezoids += trapB
-    trapC.update(null, trapA, null, t.lowerRight)
-    trapezoids += trapC
+    trapezoids(0).update(t.upperLeft, t.lowerLeft, trapezoids(1), trapezoids(2))
+    trapezoids(1).update(trapezoids(0), null, t.upperRight, null)
+    trapezoids(2).update(null, trapezoids(0), null, t.lowerRight)
     
     bCross = t.bottom
-    tCross = trapC
-    //t.updateNeighbors(trapA, trapA, trapB, trapC)
+    tCross = trapezoids(2)
+    t.updateNeighbors(trapezoids(0), trapezoids(0), trapezoids(1), trapezoids(2))
     trapezoids
   }
   
   // Case 3: Trapezoid is bisected
-  //         Break trapezoid into 2 pieces
+  //         break trapezoid into 2 smaller trapezoids
   def case3(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)
-    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)
+    trapezoids += new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)
+    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)}
     
-    trapA.update(t.upperLeft, s.above, t.upperRight, null)
-    if(s.above != null) s.above.lowerRight = trapA
-    trapezoids += trapA
+    trapezoids(0).update(t.upperLeft, s.above, t.upperRight, null)
+    if(s.above != null) s.above.lowerRight = trapezoids(0)
     
     if(bCross == t.bottom) {
-      trapB.upperRight = null
-      trapB.lowerRight = t.lowerRight
-      trapB.rightPoint = t.rightPoint
+      trapezoids(1).upperRight = null
+      trapezoids(1).lowerRight = t.lowerRight
+      trapezoids(1).rightPoint = t.rightPoint
     } else {
-      trapB.update(null, t.lowerLeft, null, t.lowerRight)
+      trapezoids(1).update(null, t.lowerLeft, null, t.lowerRight)
     }
-    trapezoids += trapB
     
     bCross = t.bottom
-    tCross = trapB
+    tCross = trapezoids(1)
     
-    //t.updateNeighbors(trapA, trapB, trapA, trapB)
+    t.updateNeighbors(trapezoids(0), trapezoids(1), trapezoids(0), trapezoids(1))
     trapezoids
   }
   
   // Case 4: Trapezoid contains point q, p lies outside
-  //         Break trapezoid into 3 pieces
+  //         break trapezoid into 3 smaller trapezoids
   def case4(t: Trapezoid, s: Segment)= {
     
     val trapezoids = new ArrayList[Trapezoid]
-    val trapA = new Trapezoid(t.leftPoint, s.q, t.top, s)
-    val trapB = if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, s.q, s, t.bottom)
-    val trapC = new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
+    trapezoids += new Trapezoid(t.leftPoint, s.q, t.top, s)
+    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, s.q, s, t.bottom)}
+    trapezoids += new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
-    trapA.update(t.upperLeft, s.above, trapC, null)
-    if(s.above != null) s.above.lowerRight = trapA
-    trapezoids += trapA
-   
+    trapezoids(0).update(t.upperLeft, s.above, trapezoids(2), null)
+    if(s.above != null) s.above.lowerRight = trapezoids(0)
+    
     if(bCross == t.bottom) {
-      trapB.lowerRight = trapC
-      trapB.rightPoint = s.q
+      trapezoids(1).lowerRight = trapezoids(2)
+      trapezoids(1).rightPoint = s.q
     } else {
-      trapB.update(null, t.lowerLeft, null, trapC)
+      trapezoids(1).update(null, t.lowerLeft, null, trapezoids(2))
     }
-    trapezoids += trapB
+    trapezoids(2).update(trapezoids(0), trapezoids(1), t.upperRight, t.lowerRight)
     
-    trapC.update(trapA, trapB, t.upperRight, t.lowerRight)
-    trapezoids += trapC
-    
-    //t.updateNeighbors(trapA, trapB, trapC, trapC)
+    t.updateNeighbors(trapezoids(0), trapezoids(1), trapezoids(2), trapezoids(2))
     trapezoids
   }
   
