@@ -88,17 +88,17 @@ class Triangulator(segments: Array[Segment]) {
   private val boundingBox = trapezoidalMap.boundingBox(segments)
   private val queryGraph = new QueryGraph(new Sink(boundingBox))
   
-  val xMonoPoly = new ArrayList[Set[Vector2]]
+  val xMonoPoly = new ArrayList[ArrayList[Vector2]]
                                         
   orderSegments
   
   // Build a list of x-monotone polygons 
   private def monotonePolygons {
     
-    val map: Map[Int, Set[Vector2]] = Map()
+    val map: Map[Int, ArrayList[Vector2]] = Map()
     
     for(s <- segments) {
-       map + (s.hashCode -> Set.empty[Vector2])
+       map + (s.hashCode -> new ArrayList[Vector2])
     }
     
    for(t <- trapezoids) {
@@ -135,7 +135,7 @@ class Triangulator(segments: Array[Segment]) {
     traps
   }
  
-  // TODO: Randomize segment list
+  // TODO: Randomize segment list order
   private def orderSegments {
     for(s <- segments) {
       // Point p must be to the left of point q
