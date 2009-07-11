@@ -35,15 +35,21 @@ import scala.collection.mutable.{Set, Map}
 
 import org.villane.vecmath.{Vector2, Preamble}
 
+import utils.Random
+
 // Based on Raimund Seidel's paper "A simple and fast incremental randomized
 // algorithm for computing trapezoidal decompositions and for triangulating polygons"
 class Triangulator(segments: Array[Segment]) {
 
+  //segments.foreach(s => println(s.p + "," + s.q))
+  //println("********************")
+  //segs.foreach(s => println(s.p + "," + s.q))
+  
   // Trapezoid decomposition list
   var trapezoids : ArrayList[Trapezoid] = null
   // Triangle decomposition list
   // var triangles: ArrayList[Triangle] = null
-    
+  
   // Build the trapezoidal map and query graph
   def process {
     for(s <- segments) {
@@ -75,7 +81,7 @@ class Triangulator(segments: Array[Segment]) {
         tList.foreach(trapezoidalMap.add)
       }
       trapezoidalMap reset
-      }
+    }
     trapezoids = trim
     monotonePolygons
     xMonoPoly.foreach(println)
@@ -135,7 +141,6 @@ class Triangulator(segments: Array[Segment]) {
     traps
   }
  
-  // TODO: Randomize segment list order
   private def orderSegments {
     for(s <- segments) {
       // Point p must be to the left of point q
@@ -151,5 +156,6 @@ class Triangulator(segments: Array[Segment]) {
         }
       }
     }
+    Random.shuffle(segments)
   }
 }

@@ -44,10 +44,10 @@ class TrapezoidalMap {
   // AABB margin
   var margin = 2f
     
-  // Trapezoid that spans multiple parent trapezoids
-  private var tCross: Trapezoid = null
   // Bottom segment that spans multiple trapezoids
   private var bCross: Segment = null
+  // Top segment that spans multiple trapezoids
+  private var tCross: Segment = null
   
   // Add a trapezoid to the map
   def add(t: Trapezoid) {
@@ -60,8 +60,8 @@ class TrapezoidalMap {
   }
   
   def reset {
-    tCross = null
     bCross = null
+    tCross = null
   }
 
   // Case 1: segment completely enclosed by trapezoid
@@ -99,7 +99,7 @@ class TrapezoidalMap {
     trapezoids(2).update(null, trapezoids(0), null, t.lowerRight)
     
     bCross = t.bottom
-    tCross = trapezoids(2)
+    tCross = t.top
     t.updateNeighbors(trapezoids(0), trapezoids(0), trapezoids(1), trapezoids(2))
     trapezoids
   }
@@ -109,12 +109,17 @@ class TrapezoidalMap {
   def case3(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    trapezoids += new Trapezoid(s.p, t.rightPoint, t.top, s)
-    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(s.p, t.rightPoint, s, t.bottom)}
+    trapezoids += {if(tCross == t.top) t.upperLeft else new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)}
+    trapezoids += {if(bCross == t.bottom) t.lowerLeft else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)}
     
-    trapezoids(0).update(t.upperLeft, s.above, t.upperRight, t.lowerRight)
+    if(tCross == t.top) {
+      trapezoids(0).upperRight = t.upperRight
+      trapezoids(0).rightPoint = t.rightPoint
+    } else {
+      trapezoids(0).update(t.upperLeft, s.above, t.upperRight, null)
+      if(s.above != null) s.above.lowerRight = trapezoids(0)
+    }
     
-    if(s.above != null) s.above.lowerRight = trapezoids(0)
     s.above = trapezoids(0)
     
     if(bCross == t.bottom) {
@@ -122,28 +127,30 @@ class TrapezoidalMap {
       trapezoids(1).rightPoint = t.rightPoint
     } else {
       trapezoids(1).update(null, t.lowerLeft, null, t.lowerRight)
-      //t.lowerLeft.rightPoint = s.p
     }
     
     bCross = t.bottom
-    tCross = trapezoids(1)
-    
+    tCross = t.top
     t.updateNeighbors(trapezoids(0), trapezoids(1), trapezoids(0), trapezoids(1))
     trapezoids
   }
   
   // Case 4: Trapezoid contains point q, p lies outside
   //         break trapezoid into 3 smaller trapezoids
-  def case4(t: Trapezoid, s: Segment)= {
+  def case4(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    trapezoids += new Trapezoid(t.leftPoint, s.q, t.top, s)
-    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, s.q, s, t.bottom)}
+    trapezoids += {if(tCross == t.top) t.upperLeft else new Trapezoid(t.leftPoint, s.q, t.top, s)}
+    trapezoids += {if(bCross == t.bottom) t.lowerLeft else new Trapezoid(t.leftPoint, s.q, s, t.bottom)}
     trapezoids += new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
-    trapezoids(0).update(t.upperLeft, s.above, trapezoids(2), null)
-    
-    if(s.above != null) s.above.lowerRight = trapezoids(0)
+    if(tCross == t.top) {
+      trapezoids(0).upperRight = trapezoids(2)
+      trapezoids(0).rightPoint = s.q
+    } else {
+      trapezoids(0).update(t.upperLeft, s.above, trapezoids(2), null)
+      if(s.above != null) s.above.lowerRight = trapezoids(0)
+    }
     
     if(bCross == t.bottom) {
       trapezoids(1).lowerRight = trapezoids(2)
@@ -160,8 +167,8 @@ class TrapezoidalMap {
   // Create an AABB around segments
   def boundingBox(segments: Array[Segment]): Trapezoid = {
    
-    var max = segments(0).p
-    var min = segments(0).q
+    var max = segments(0).p + margin
+    var min = segments(0).q + margin
 
     for(s <- segments) {
       if(s.p.x > max.x) max = Vector2(s.p.x+margin, max.y)

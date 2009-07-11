@@ -108,7 +108,7 @@ class Melee(stateID:Int) extends BasicGameState {
     if(drawSVG) svg.render
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
-    //for(t <- tesselator.allTrapezoids) {
+   //for(t <- tesselator.allTrapezoids) {
    for(t <- tesselator.trapezoids) {
 	  //debugDraw.drawPolygon(t.vertices, red)
     }
@@ -120,17 +120,15 @@ class Melee(stateID:Int) extends BasicGameState {
       debugDraw.drawPolygon(p, red)
     }
     
-    /*
-    val scale = 0.025f
-    val green = new Color3f(0f, 255f, 0f ,255)
-    debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
-    debugDraw.drawSegment(Vector2(250,200)*scale, Vector2(600, 175)*scale, green)
-    debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(250,200)*scale, green)
-    debugDraw.drawSegment(Vector2(400,500)*scale, Vector2(300,300)*scale, green)
-    debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
-    debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
+    //val scale = 0.025f
+    //val green = new Color3f(0f, 255f, 0f ,255)
+    //debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
+    //debugDraw.drawSegment(Vector2(250,200)*scale, Vector2(600, 175)*scale, green)
+    //debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(250,200)*scale, green)
+    //debugDraw.drawSegment(Vector2(400,500)*scale, Vector2(300,300)*scale, green)
+    //debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
+    //debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
     //debugDraw.drawSegment(Vector2(50, 200)*scale, Vector2(200,175)*scale, green)
-    */
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -145,13 +143,13 @@ class Melee(stateID:Int) extends BasicGameState {
    
     val scale = 0.025f
     val segments = new Array[Segment](6)
-    segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400, 500)*scale)
-    segments(1) = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
-    segments(2) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
-    segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(400,300)*scale)
-    segments(4) = new Segment(Vector2(400, 300)*scale, Vector2(650,200)*scale)
-    segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
-    //segments(6) = new Segment(Vector2(50, 200)*scale, Vector2(200,175)*scale)
+    segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400,500)*scale)
+    segments(2) = new Segment(Vector2(250,200)*scale, Vector2(600,175)*scale)
+    segments(3) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
+    // TODO: Fix X-Monotone bug w/ colinear points
+    segments(1) = new Segment(Vector2(300,300)*scale, Vector2(400,500)*scale)
+    segments(4) = new Segment(Vector2(300,300)*scale, Vector2(650,200)*scale)
+    segments(5) = new Segment(Vector2(600,175)*scale, Vector2(650,200)*scale) 
     tesselator = new Triangulator(segments)
     tesselator.process
    }
