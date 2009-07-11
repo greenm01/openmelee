@@ -109,8 +109,8 @@ class TrapezoidalMap {
   def case3(t: Trapezoid, s: Segment) = {
     
     val trapezoids = new ArrayList[Trapezoid]
-    trapezoids += new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)
-    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)}
+    trapezoids += new Trapezoid(s.p, t.rightPoint, t.top, s)
+    trapezoids += {if(bCross == t.bottom) tCross else new Trapezoid(s.p, t.rightPoint, s, t.bottom)}
     
     trapezoids(0).update(t.upperLeft, s.above, t.upperRight, t.lowerRight)
     
@@ -122,6 +122,7 @@ class TrapezoidalMap {
       trapezoids(1).rightPoint = t.rightPoint
     } else {
       trapezoids(1).update(null, t.lowerLeft, null, t.lowerRight)
+      //t.lowerLeft.rightPoint = s.p
     }
     
     bCross = t.bottom

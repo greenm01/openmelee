@@ -75,7 +75,7 @@ class Triangulator(segments: Array[Segment]) {
         tList.foreach(trapezoidalMap.add)
       }
       trapezoidalMap reset
-    }
+      }
     trapezoids = trim
     monotonePolygons
     xMonoPoly.foreach(println)
@@ -102,10 +102,10 @@ class Triangulator(segments: Array[Segment]) {
     }
     
    for(t <- trapezoids) {
-     val top = map(t.top.hashCode)
-     top += t.rightPoint; top += t.leftPoint                    
      val bottom = map(t.bottom.hashCode)     
-     bottom += t.rightPoint; bottom += t.leftPoint
+     bottom += t.leftPoint; bottom += t.rightPoint
+     val top = map(t.top.hashCode)
+     top += t.leftPoint; top += t.rightPoint                    
    }
    
    for(m <- map.keys) {
@@ -143,6 +143,12 @@ class Triangulator(segments: Array[Segment]) {
         val tmp = s.p
         s.p = s.q
         s.q = tmp
+      } else if (s.p.x == s.q.x) {
+        if(s.q.y < s.p.y) {
+          val tmp = s.p
+          s.p = s.q
+          s.q = tmp
+        }
       }
     }
   }

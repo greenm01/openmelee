@@ -109,8 +109,8 @@ class Melee(stateID:Int) extends BasicGameState {
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
     //for(t <- tesselator.allTrapezoids) {
-    for(t <- tesselator.trapezoids) {
-	  debugDraw.drawPolygon(t.vertices, red)
+   for(t <- tesselator.trapezoids) {
+	  //debugDraw.drawPolygon(t.vertices, red)
     }
     
     for(x <- tesselator.xMonoPoly) {
@@ -148,8 +148,8 @@ class Melee(stateID:Int) extends BasicGameState {
     segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400, 500)*scale)
     segments(1) = new Segment(Vector2(250,200)*scale, Vector2(600, 175)*scale)
     segments(2) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
-    segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(300,300)*scale)
-    segments(4) = new Segment(Vector2(300, 300)*scale, Vector2(650,200)*scale)
+    segments(3) = new Segment(Vector2(400, 500)*scale, Vector2(400,300)*scale)
+    segments(4) = new Segment(Vector2(400, 300)*scale, Vector2(650,200)*scale)
     segments(5) = new Segment(Vector2(650, 200)*scale, Vector2(600,175)*scale)
     //segments(6) = new Segment(Vector2(50, 200)*scale, Vector2(200,175)*scale)
     tesselator = new Triangulator(segments)
