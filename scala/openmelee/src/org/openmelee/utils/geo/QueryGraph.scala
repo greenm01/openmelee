@@ -69,14 +69,14 @@ class QueryGraph(var head: Node) {
   
   def case1(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(1)), Sink.init(tList(2)))
-    val qNode = new XNode(s.q, yNode, Sink.init(tList(3)))
-	val pNode = new XNode(s.p, Sink.init(tList(0)), qNode)
+    val qNode = new XNode(new Point(s.q.x, s.q.y, s), yNode, Sink.init(tList(3)))
+	val pNode = new XNode(new Point(s.p.x, s.p.y, s), Sink.init(tList(0)), qNode)
     replace(sink, pNode)
   }
   
   def case2(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(1)), Sink.init(tList(2)))
-	val pNode = new XNode(s.p, Sink.init(tList(0)), yNode)
+	val pNode = new XNode(new Point(s.p.x, s.p.y, s), Sink.init(tList(0)), yNode)
     replace(sink, pNode)
   }
   
@@ -87,7 +87,13 @@ class QueryGraph(var head: Node) {
   
   def case4(sink: Sink, s: Segment, tList: ArrayList[Trapezoid]) {
     val yNode = new YNode(s, Sink.init(tList(0)), Sink.init(tList(1)))
-	val qNode = new XNode(s.q, yNode, Sink.init(tList(2)))
-    replace(sink, qNode)
+    if(s.left != null) {
+      val pNode = new XNode(new Point(s.p.x, s.p.y, s), Sink.init(s.left), yNode)
+      val qNode = new XNode(new Point(s.q.x, s.q.y, s), pNode, Sink.init(tList(2)))
+      replace(sink, qNode)
+    } else {
+      val qNode = new XNode(new Point(s.q.x, s.q.y, s), yNode, Sink.init(tList(2)))
+      replace(sink, qNode)
+    }
   }
 }

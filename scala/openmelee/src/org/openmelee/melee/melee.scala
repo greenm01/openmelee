@@ -1,10 +1,33 @@
-/*
- * Melee.scala
+/* OpenMelee
+ * Copyright (c) 2009, Mason Green
+ * http://github.com/zzzzrrr/openmelee
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ * * Neither the name of OpenMelee nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software without specific
+ *   prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.openmelee.melee
 
 import collection.jcl.ArrayList
@@ -108,27 +131,24 @@ class Melee(stateID:Int) extends BasicGameState {
     if(drawSVG) svg.render
     
     val red = new Color3f(255.0f,0.0f,0.0f,255)
-   //for(t <- tesselator.allTrapezoids) {
-   for(t <- tesselator.trapezoids) {
-	  //debugDraw.drawPolygon(t.vertices, red)
-    }
+    val blue = new Color3f(0f, 0f, 255f, 255)
+    val green = new Color3f(0f, 255f, 0f ,255)
     
+   //for(t <- tesselator.allTrapezoids) {
+   //for(t <- tesselator.trapezoids) {
+	  //debugDraw.drawPolygon(t.vertices, red)
+	  //debugDraw.drawPoint(t.leftPoint, 0f, green)
+	  //debugDraw.drawPoint(t.rightPoint, 0f, green)
+    //}
+   
     for(x <- tesselator.xMonoPoly) {
       val p = new Array[Vector2](x.size)
+      assert(p.size > 2)
       var i = 0
       for(t <- x) { p(i)= t; i += 1}
-      debugDraw.drawPolygon(p, red)
+      debugDraw.drawPolygon(p, green)
     }
-    
-    //val scale = 0.025f
-    //val green = new Color3f(0f, 255f, 0f ,255)
-    //debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(400, 500)*scale, green)
-    //debugDraw.drawSegment(Vector2(250,200)*scale, Vector2(600, 175)*scale, green)
-    //debugDraw.drawSegment(Vector2(100,300)*scale, Vector2(250,200)*scale, green)
-    //debugDraw.drawSegment(Vector2(400,500)*scale, Vector2(300,300)*scale, green)
-    //debugDraw.drawSegment(Vector2(300, 300)*scale, Vector2(650,200)*scale, green)
-    //debugDraw.drawSegment(Vector2(650, 200)*scale, Vector2(600,175)*scale, green)
-    //debugDraw.drawSegment(Vector2(50, 200)*scale, Vector2(200,175)*scale, green)
+
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -142,53 +162,14 @@ class Melee(stateID:Int) extends BasicGameState {
   def testTesselator {
    
     val scale = 0.025f
-    val segments = new Array[Segment](6)
-    segments(0) = new Segment(Vector2(100,300)*scale, Vector2(400,500)*scale)
-    segments(2) = new Segment(Vector2(250,200)*scale, Vector2(600,175)*scale)
-    segments(3) = new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
-    // TODO: Fix X-Monotone bug w/ colinear points
-    segments(1) = new Segment(Vector2(300,300)*scale, Vector2(400,500)*scale)
-    segments(4) = new Segment(Vector2(300,300)*scale, Vector2(650,200)*scale)
-    segments(5) = new Segment(Vector2(600,175)*scale, Vector2(650,200)*scale) 
+    val segments = new ArrayList[Segment]
+    segments += new Segment(Vector2(100,300)*scale, Vector2(400,500)*scale)
+    segments += new Segment(Vector2(250,200)*scale, Vector2(600,175)*scale)
+    segments += new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
+    segments += new Segment(Vector2(400,300)*scale, Vector2(400,500)*scale)
+    segments += new Segment(Vector2(400,300)*scale, Vector2(650,200)*scale)
+    segments += new Segment(Vector2(600,175)*scale, Vector2(650,200)*scale) 
     tesselator = new Triangulator(segments)
     tesselator.process
-   }
-
-  /*
-   override def setup() {
-   kz.loadShape
-   width = 640
-   height = 480
-   val targetFPS = 60
-   size(width, height, PConstants.P3D)
-   frameRate(targetFPS)
-   for (i <- 0 until 100) {
-   requestFocus
-   }
-   frame.setTitle("OpenMelee")
-   }
-
-   // Main processing loop
-   override def draw() {
-        
-   kz.sprite.rotate(0.01f)
-   background(0xFAF0E6)
-   shape(kz.sprite, 320, 240)
-
-   for(o <- objectList)
-   o.updateState()
-
-   world.step(timeStep, iterations)
-   render update world
-   }
-
-   override def keyPressed() {
-   human.onKeyDown(keyCode)
-   }
-
-   override def keyReleased() {
-   human.onKeyUp(keyCode)
-   }
-   */
-    
+   }    
 }

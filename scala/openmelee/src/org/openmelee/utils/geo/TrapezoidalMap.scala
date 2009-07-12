@@ -68,6 +68,8 @@ class TrapezoidalMap {
   //         break trapezoid into 4 smaller trapezoids
   def case1(t: Trapezoid, s: Segment) = {
     
+    assert(s.p.x != s.q.x)
+    
     val trapezoids = new ArrayList[Trapezoid]
     trapezoids += new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
     trapezoids += new Trapezoid(s.p, s.q, t.top, s)
@@ -79,6 +81,9 @@ class TrapezoidalMap {
     trapezoids(2).update(null, trapezoids(0), null, trapezoids(3))
     trapezoids(3).update(trapezoids(1), trapezoids(2), t.upperRight, t.lowerRight)
     
+    s.above = trapezoids(1)
+    s.below = trapezoids(2)
+    
     t.updateNeighbors(trapezoids(0), trapezoids(0), trapezoids(3), trapezoids(3))
     trapezoids
   }
@@ -87,32 +92,42 @@ class TrapezoidalMap {
   //         break trapezoid into 3 smaller trapezoids
   def case2(t: Trapezoid, s: Segment) = {
     
+    val rp = if(s.q.x == t.rightPoint.x) s.q else t.rightPoint
+    
     val trapezoids = new ArrayList[Trapezoid]
     trapezoids += new Trapezoid(t.leftPoint, s.p, t.top, t.bottom)
-    trapezoids += new Trapezoid(s.p, t.rightPoint, t.top, s)
-    trapezoids += new Trapezoid(s.p, t.rightPoint, s, t.bottom)
+    trapezoids += new Trapezoid(s.p, rp, t.top, s)
+    trapezoids += new Trapezoid(s.p, rp, s, t.bottom)
    
-    s.above = trapezoids(1)
-    
     trapezoids(0).update(t.upperLeft, t.lowerLeft, trapezoids(1), trapezoids(2))
     trapezoids(1).update(trapezoids(0), null, t.upperRight, null)
     trapezoids(2).update(null, trapezoids(0), null, t.lowerRight)
     
     bCross = t.bottom
     tCross = t.top
+    s.above = trapezoids(1)
+    s.below = trapezoids(2)
+    
     t.updateNeighbors(trapezoids(0), trapezoids(0), trapezoids(1), trapezoids(2))
     trapezoids
   }
   
   // Case 3: Trapezoid is bisected
-  //         break trapezoid into 2 smaller trapezoids
   def case3(t: Trapezoid, s: Segment) = {
     
-    val trapezoids = new ArrayList[Trapezoid]
-    trapezoids += {if(tCross == t.top) t.upperLeft else new Trapezoid(t.leftPoint, t.rightPoint, t.top, s)}
-    trapezoids += {if(bCross == t.bottom) t.lowerLeft else new Trapezoid(t.leftPoint, t.rightPoint, s, t.bottom)}
+    assert(s.p.x != s.q.x)
     
-    if(tCross == t.top) {
+    val lp = if(s.p.x == t.leftPoint.x) s.p else t.leftPoint
+    val rp = if(s.q.x == t.rightPoint.x) s.q else t.rightPoint
+    
+    val topCross = (tCross == t.top)
+    val bottomCross = (bCross == t.bottom)
+    
+    val trapezoids = new ArrayList[Trapezoid]
+    trapezoids += {if(topCross) t.upperLeft else new Trapezoid(lp, rp, t.top, s)}
+    trapezoids += {if(bottomCross) t.lowerLeft else new Trapezoid(lp, rp, s, t.bottom)}
+    
+    if(topCross) {
       trapezoids(0).upperRight = t.upperRight
       trapezoids(0).rightPoint = t.rightPoint
     } else {
@@ -120,17 +135,19 @@ class TrapezoidalMap {
       if(s.above != null) s.above.lowerRight = trapezoids(0)
     }
     
-    s.above = trapezoids(0)
-    
-    if(bCross == t.bottom) {
+    if(bottomCross) {
       trapezoids(1).lowerRight = t.lowerRight
       trapezoids(1).rightPoint = t.rightPoint
     } else {
-      trapezoids(1).update(null, t.lowerLeft, null, t.lowerRight)
+      trapezoids(1).update(s.below, t.lowerLeft, null, t.lowerRight)
+      if(s.below != null) s.below.upperRight = trapezoids(1)
     }
     
     bCross = t.bottom
     tCross = t.top
+    s.above = trapezoids(0)
+    s.below = trapezoids(1)
+    
     t.updateNeighbors(trapezoids(0), trapezoids(1), trapezoids(0), trapezoids(1))
     trapezoids
   }
@@ -139,12 +156,17 @@ class TrapezoidalMap {
   //         break trapezoid into 3 smaller trapezoids
   def case4(t: Trapezoid, s: Segment) = {
     
+    val lp = if(tCross != null) t.leftPoint else s.p
+    
+    val topCross = (tCross == t.top)
+    val bottomCross = (bCross == t.bottom)
+    
     val trapezoids = new ArrayList[Trapezoid]
-    trapezoids += {if(tCross == t.top) t.upperLeft else new Trapezoid(t.leftPoint, s.q, t.top, s)}
-    trapezoids += {if(bCross == t.bottom) t.lowerLeft else new Trapezoid(t.leftPoint, s.q, s, t.bottom)}
+    trapezoids += {if(topCross) t.upperLeft else new Trapezoid(lp, s.q, t.top, s)}
+    trapezoids += {if(bottomCross) t.lowerLeft else new Trapezoid(lp, s.q, s, t.bottom)}
     trapezoids += new Trapezoid(s.q, t.rightPoint, t.top, t.bottom)
     
-    if(tCross == t.top) {
+    if(topCross) {
       trapezoids(0).upperRight = trapezoids(2)
       trapezoids(0).rightPoint = s.q
     } else {
@@ -152,20 +174,24 @@ class TrapezoidalMap {
       if(s.above != null) s.above.lowerRight = trapezoids(0)
     }
     
-    if(bCross == t.bottom) {
+    if(bottomCross) {
       trapezoids(1).lowerRight = trapezoids(2)
       trapezoids(1).rightPoint = s.q
     } else {
-      trapezoids(1).update(null, t.lowerLeft, null, trapezoids(2))
+      trapezoids(1).update(s.below, t.lowerLeft, null, trapezoids(2))
+      if(s.below != null) s.below.upperRight = trapezoids(1)
     }
     trapezoids(2).update(trapezoids(0), trapezoids(1), t.upperRight, t.lowerRight)
+    
+    s.above = trapezoids(0)
+    s.below = trapezoids(1)
     
     t.updateNeighbors(trapezoids(0), trapezoids(1), trapezoids(2), trapezoids(2))
     trapezoids
   }
   
   // Create an AABB around segments
-  def boundingBox(segments: Array[Segment]): Trapezoid = {
+  def boundingBox(segments: ArrayList[Segment]): Trapezoid = {
    
     var max = segments(0).p + margin
     var min = segments(0).q + margin

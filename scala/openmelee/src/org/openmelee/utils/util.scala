@@ -7,6 +7,8 @@
 
 package org.openmelee.utils
 
+import collection.jcl.ArrayList
+
 import org.villane.vecmath.Vector2
 
 object Util {
@@ -101,7 +103,7 @@ object Random extends scala.util.Random {
    *  @param  seq   the sequence to shuffle
    *  @return       the shuffled sequence
    */
-  def shuffle[T](buf: Array[T]): Array[T] = {
+  def shuffle[T](buf: ArrayList[T]): ArrayList[T] = {
     // It would be better if this preserved the shape of its container, but I have
     // again been defeated by the lack of higher-kinded type inference.  I can
     // only make it work that way if it's called like

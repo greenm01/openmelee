@@ -50,7 +50,16 @@ class SlickDebugDraw(var g: Graphics, var container: GameContainer) extends Debu
     g.draw(circle)
   }
 
-  def drawPoint(position: Vector2, f: Float, color: Color3f) {}
+  def drawPoint(position: Vector2, f: Float, color: Color3f) {
+    val slickColor = new Color(color.r/255.0f,color.g/255.0f,color.b/255.0f)
+    g.setColor(slickColor)
+    val c = worldToScreen(position)
+    val radius = 3
+    // x1, y1 are upper left corner
+    val x1 = c.x - radius
+    val y1 = c.y - radius
+    g.fillOval(x1, y1, 2 * radius, 2 * radius)
+  }
 
   def drawPolygon(vertices: Array[Vector2], color: Color3f) {
     val polygon = new Polygon()

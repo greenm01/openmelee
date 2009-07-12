@@ -39,11 +39,7 @@ import utils.Random
 
 // Based on Raimund Seidel's paper "A simple and fast incremental randomized
 // algorithm for computing trapezoidal decompositions and for triangulating polygons"
-class Triangulator(segments: Array[Segment]) {
-
-  //segments.foreach(s => println(s.p + "," + s.q))
-  //println("********************")
-  //segs.foreach(s => println(s.p + "," + s.q))
+class Triangulator(var segments: ArrayList[Segment]) {
   
   // Trapezoid decomposition list
   var trapezoids : ArrayList[Trapezoid] = null
@@ -84,7 +80,6 @@ class Triangulator(segments: Array[Segment]) {
     }
     trapezoids = trim
     monotonePolygons
-    xMonoPoly.foreach(println)
   }
   
   def allTrapezoids = trapezoidalMap.map.values
@@ -96,7 +91,7 @@ class Triangulator(segments: Array[Segment]) {
   
   val xMonoPoly = new ArrayList[ArrayList[Vector2]]
                                         
-  orderSegments
+  segments = orderSegments
   
   // Build a list of x-monotone polygons 
   private def monotonePolygons {
@@ -141,21 +136,20 @@ class Triangulator(segments: Array[Segment]) {
     traps
   }
  
-  private def orderSegments {
+  private def orderSegments = {
+    // Ignore vertical segments!
+    val segs = new ArrayList[Segment]
     for(s <- segments) {
       // Point p must be to the left of point q
       if(s.p.x > s.q.x) {
         val tmp = s.p
         s.p = s.q
         s.q = tmp
-      } else if (s.p.x == s.q.x) {
-        if(s.q.y < s.p.y) {
-          val tmp = s.p
-          s.p = s.q
-          s.q = tmp
-        }
+        segs += s
+      } else if(s.p.x < s.q.x) {
+        segs += s
       }
     }
-    Random.shuffle(segments)
+    Random.shuffle(segs)
   }
 }
