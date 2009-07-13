@@ -84,7 +84,7 @@ class Triangulator(var segments: ArrayList[Segment]) {
     }
     trapezoids = trim
     monotoneMountains
-    triangulate(xMonoPoly(2))
+    //xMonoPoly(2).triangulate
   }
   
   def allTrapezoids = trapezoidalMap.map.values
@@ -119,26 +119,6 @@ class Triangulator(var segments: ArrayList[Segment]) {
      if(map(m).size > 2) xMonoPoly += map(m)
    }
    
-  }
-  
-  // Partition a x-monotone mountain into triangles o(n)
-  // See "Computational Geometry in C", 2nd edition, by Joseph O'Rourke, page 52
-  private def triangulate(vertices: ArrayList[Point] ) {
-    println(vertices.size)
-    val convexVertices = new Stack[Point]
-    val triList = new ArrayList[Array[Point]]
-    var i = 1
-    while(i < vertices.size - 2) {
-      if(convex(vertices(i-1), vertices(i), vertices(i+1)))
-        convexVertices.push(vertices(i))
-      i += 1
-    }
-    
-    i = 0
-    while(convexVertices.size > 0) {
-      val v = convexVertices.pop
-      println(v)
-    }
   }
   
   // Trim off the extraneous trapezoids surrounding the polygon

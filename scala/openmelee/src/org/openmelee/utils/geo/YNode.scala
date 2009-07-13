@@ -50,5 +50,4 @@ class YNode(segment: Segment, lChild: Node, rChild: Node) extends Node(lChild, r
       }
     }
   }
-
 }

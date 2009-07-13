@@ -41,6 +41,34 @@ class MonotoneMountain(var head: Point, var tail: Point) {
       tail = point
     }
   }
-  def remove(point: Point) {}
+  
+  def remove(point: Point) {
+    val next = point.next
+    val prev = point.prev
+    point.prev.next = next
+    point.next.prev = prev
+  }
+  
+  // Partition a x-monotone mountain into triangles o(n)
+  // See "Computational Geometry in C", 2nd edition, by Joseph O'Rourke, page 52
+  def triangulate {
+    /*
+    println(vertices.size)
+    val convexVertices = new Stack[Point]
+    val triList = new ArrayList[Array[Point]]
+    var i = 1
+    while(i < vertices.size - 2) {
+      if(convex(vertices(i-1), vertices(i), vertices(i+1)))
+        convexVertices.push(vertices(i))
+      i += 1
+    }
+    
+    i = 0
+    while(convexVertices.size > 0) {
+      val v = convexVertices.pop
+      println(v)
+    }
+    */
+  }
   
 }
