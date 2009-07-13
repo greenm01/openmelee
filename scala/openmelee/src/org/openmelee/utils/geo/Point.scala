@@ -30,6 +30,19 @@
  */
 package org.openmelee.utils.geo
 
-class Point(val x: Float, val y: Float, val segment: Segment) {
-
+class Point(val x: Float, val y: Float, var segment: Segment) {
+  
+  def this(x: Float, y: Float) = this(x, y, null)
+  
+  // Pointers to next and previous points in Monontone Mountain
+  var next, prev: Point = null
+  
+  /* Internal angle */
+  var angle = 0f
+  
+  def -(p: Point) = new Point(x - p.x, y - p.y) 
+  def +(p: Point) = new Point(x + p.x, y + p.y)
+  def +(f: Float) = new Point(x + f, y + f)
+  def *(f: Float) = new Point(x * f, y * f)
+  
 }

@@ -30,8 +30,6 @@
  */
 package org.openmelee.utils.geo
 
-import org.villane.vecmath.Vector2
-
 import collection.jcl.ArrayList
 
 // Directed Acyclic graph (DAG)

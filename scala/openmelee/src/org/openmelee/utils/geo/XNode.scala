@@ -30,8 +30,6 @@
  */
 package org.openmelee.utils.geo
 
-import org.villane.vecmath.Vector2
-
 class XNode(point: Point, lChild: Node, rChild: Node) extends Node(lChild, rChild) {
 
   override def locate(s: Segment): Sink = {

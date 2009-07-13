@@ -30,21 +30,17 @@
  */
 package org.openmelee.utils.geo
 
-object Sink {
+class MonotoneMountain(var head: Point, var tail: Point) {
   
-  def init(trapezoid: Trapezoid) = {
-    if(trapezoid.sink != null) {
-      trapezoid.sink
-    } else {
-      new Sink(trapezoid)
+  var size = 0
+  
+  def append(point: Point) {
+    if(point != tail) {
+      tail.next = point
+      point.prev = tail
+      tail = point
     }
   }
-  
-}
-
-class Sink(val trapezoid: Trapezoid) extends Node(null, null) {
-
-  trapezoid.sink = this
-  override def locate(s: Segment): Sink = this
+  def remove(point: Point) {}
   
 }

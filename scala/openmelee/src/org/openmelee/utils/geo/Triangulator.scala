@@ -31,9 +31,7 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
-import scala.collection.mutable.{Set, Map}
-
-import org.villane.vecmath.{Vector2, Preamble}
+import scala.collection.mutable.{Set, Map, Stack, ListBuffer}
 
 import utils.Random
 
@@ -48,6 +46,12 @@ class Triangulator(var segments: ArrayList[Segment]) {
   
   // Build the trapezoidal map and query graph
   def process {
+    val foo = new Point(0f, 0f)
+    val foo2 = new Point(0f, 3f)
+    val foo3 = new Point(10f, 3f)
+    var bar = List(foo, foo3, foo2)
+    bar -= foo
+    
     for(s <- segments) {
       val traps = queryGraph.followSegment(s)
       // Remove trapezoids from trapezoidal Map
@@ -79,7 +83,8 @@ class Triangulator(var segments: ArrayList[Segment]) {
       trapezoidalMap reset
     }
     trapezoids = trim
-    monotonePolygons
+    monotoneMountains
+    triangulate(xMonoPoly(2))
   }
   
   def allTrapezoids = trapezoidalMap.map.values
@@ -89,22 +94,23 @@ class Triangulator(var segments: ArrayList[Segment]) {
   private val boundingBox = trapezoidalMap.boundingBox(segments)
   private val queryGraph = new QueryGraph(new Sink(boundingBox))
   
-  val xMonoPoly = new ArrayList[ArrayList[Vector2]]
+  val xMonoPoly = new ArrayList[ArrayList[Point]]
                                         
   segments = orderSegments
   
-  // Build a list of x-monotone polygons 
-  private def monotonePolygons {
+  // Build a list of x-monotone mountains
+  private def monotoneMountains {
     
-    val map: Map[Int, ArrayList[Vector2]] = Map()
+    val map: Map[Int, ArrayList[Point]] = Map()
     
     for(s <- segments) {
-       map + (s.hashCode -> new ArrayList[Vector2])
+       map + (s.hashCode -> new ArrayList[Point])
     }
     
    for(t <- trapezoids) {
      val bottom = map(t.bottom.hashCode)     
-     bottom += t.leftPoint; bottom += t.rightPoint
+     val p1 = t.leftPoint; val p2 = t.rightPoint
+     bottom += p1; bottom += t.rightPoint
      val top = map(t.top.hashCode)
      top += t.leftPoint; top += t.rightPoint                    
    }
@@ -115,10 +121,24 @@ class Triangulator(var segments: ArrayList[Segment]) {
    
   }
   
-  // Partition the x-monotone polygons into triangles o(n)
-  // See "Computational Geometry", 3rd edition, by Mark de Berg et al, page 57
-  private def triangulateMonotonePolygon {
+  // Partition a x-monotone mountain into triangles o(n)
+  // See "Computational Geometry in C", 2nd edition, by Joseph O'Rourke, page 52
+  private def triangulate(vertices: ArrayList[Point] ) {
+    println(vertices.size)
+    val convexVertices = new Stack[Point]
+    val triList = new ArrayList[Array[Point]]
+    var i = 1
+    while(i < vertices.size - 2) {
+      if(convex(vertices(i-1), vertices(i), vertices(i+1)))
+        convexVertices.push(vertices(i))
+      i += 1
+    }
     
+    i = 0
+    while(convexVertices.size > 0) {
+      val v = convexVertices.pop
+      println(v)
+    }
   }
   
   // Trim off the extraneous trapezoids surrounding the polygon
@@ -134,6 +154,14 @@ class Triangulator(var segments: ArrayList[Segment]) {
     // Collect interior trapezoids
     for(t <- trapezoidalMap.map.values) if(!t.outside) traps += t
     traps
+  }
+  
+  // Determines if the inslide angle between edge v2-v3 and edge v2-v1 is convex (< PI)
+  private def convex(v1: Point, v2: Point, v3: Point) = {
+    val a = (v2 - v3) 
+    val b = (v2 - v1) 
+    v2.angle = Math.atan2(a.y,a.x).toFloat - Math.atan2(b.y,b.x).toFloat
+    (v2.angle > 0)
   }
  
   private def orderSegments = {

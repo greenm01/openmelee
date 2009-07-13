@@ -46,7 +46,7 @@ import objects.ships.{Orz, UrQuan}
 
 import ai.Human
 import utils.svg.SVG
-import utils.geo.{Triangulator, Segment, Trapezoid}
+import utils.geo.{Triangulator, Segment, Trapezoid, Point}
 
 class Melee(stateID:Int) extends BasicGameState {
 
@@ -145,7 +145,7 @@ class Melee(stateID:Int) extends BasicGameState {
       val p = new Array[Vector2](x.size)
       assert(p.size > 2)
       var i = 0
-      for(t <- x) { p(i)= t; i += 1}
+      for(t <- x) { p(i) = Vector2(t.x, t.y); i += 1}
       debugDraw.drawPolygon(p, green)
     }
 
@@ -163,12 +163,12 @@ class Melee(stateID:Int) extends BasicGameState {
    
     val scale = 0.025f
     val segments = new ArrayList[Segment]
-    segments += new Segment(Vector2(100,300)*scale, Vector2(400,500)*scale)
-    segments += new Segment(Vector2(250,200)*scale, Vector2(600,175)*scale)
-    segments += new Segment(Vector2(100,300)*scale, Vector2(250,200)*scale)
-    segments += new Segment(Vector2(400,300)*scale, Vector2(400,500)*scale)
-    segments += new Segment(Vector2(400,300)*scale, Vector2(650,200)*scale)
-    segments += new Segment(Vector2(600,175)*scale, Vector2(650,200)*scale) 
+    segments += new Segment(new Point(100,300)*scale, new Point(400,500)*scale)
+    segments += new Segment(new Point(250,200)*scale, new Point(600,175)*scale)
+    segments += new Segment(new Point(100,300)*scale, new Point(250,200)*scale)
+    segments += new Segment(new Point(400,300)*scale, new Point(400,500)*scale)
+    segments += new Segment(new Point(400,300)*scale, new Point(650,200)*scale)
+    segments += new Segment(new Point(600,175)*scale, new Point(650,200)*scale) 
     tesselator = new Triangulator(segments)
     tesselator.process
    }    

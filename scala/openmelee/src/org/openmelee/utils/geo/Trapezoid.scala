@@ -30,9 +30,7 @@
  */
 package org.openmelee.utils.geo
 
-import org.villane.vecmath.Vector2
-
-class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segment, val bottom: Segment) {
+class Trapezoid(val leftPoint: Point, var rightPoint: Point, val top: Segment, val bottom: Segment) {
 
   var sink: Sink = null
   var outside = false
@@ -65,12 +63,12 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   }
   
   // Determines if this point lies inside the trapezoid
-  def contains(point: Vector2) = {
+  def contains(point: Point) = {
      (point.x > leftPoint.x && point.x < rightPoint.x && top > point && bottom < point)
   }
   
-  def vertices: Array[Vector2] = {
-    val verts = new Array[Vector2](4)
+  def vertices: Array[Point] = {
+    val verts = new Array[Point](4)
     verts(0) = lineIntersect(top, leftPoint.x)
     verts(1) = lineIntersect(bottom, leftPoint.x)
     verts(2) = lineIntersect(bottom, rightPoint.x)
@@ -80,7 +78,7 @@ class Trapezoid(val leftPoint: Vector2, var rightPoint: Vector2, val top: Segmen
   
   def lineIntersect(s: Segment, x: Float) = {
     val y =  s.slope * x + s.b
-    Vector2(x, y)
+    new Point(x, y)
   } 
 
 }

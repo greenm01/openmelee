@@ -33,8 +33,6 @@ package org.openmelee.utils.geo
 import collection.jcl.ArrayList
 import scala.collection.mutable.Map
 
-import org.villane.vecmath.Vector2
-
 // See "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
 
 class TrapezoidalMap {
@@ -197,18 +195,18 @@ class TrapezoidalMap {
     var min = segments(0).q + margin
 
     for(s <- segments) {
-      if(s.p.x > max.x) max = Vector2(s.p.x+margin, max.y)
-      if(s.p.y > max.y) max = Vector2(max.x, s.p.y+margin)
-      if(s.q.x > max.x) max = Vector2(s.q.x+margin, max.y)
-      if(s.q.y > max.y) max = Vector2(max.x, s.q.y+margin)
-      if(s.p.x < min.x) min = Vector2(s.p.x-margin, min.y)
-      if(s.p.y < min.y) min = Vector2(min.x, s.p.y-margin)
-      if(s.q.x < min.x) min = Vector2(s.q.x-margin, min.y)
-      if(s.q.y < min.y) min = Vector2(min.x, s.q.y-margin)
+      if(s.p.x > max.x) max = new Point(s.p.x + margin, max.y)
+      if(s.p.y > max.y) max = new Point(max.x, s.p.y + margin)
+      if(s.q.x > max.x) max = new Point(s.q.x+margin, max.y)
+      if(s.q.y > max.y) max = new Point(max.x, s.q.y+margin)
+      if(s.p.x < min.x) min = new Point(s.p.x-margin, min.y)
+      if(s.p.y < min.y) min = new Point(min.x, s.p.y-margin)
+      if(s.q.x < min.x) min = new Point(s.q.x-margin, min.y)
+      if(s.q.y < min.y) min = new Point(min.x, s.q.y-margin)
     }
 
-    val top = new Segment(Vector2(min.x, max.y), Vector2(max.x, max.y))
-    val bottom = new Segment(Vector2(min.x, min.y), Vector2(max.x, min.y))
+    val top = new Segment(new Point(min.x, max.y), new Point(max.x, max.y))
+    val bottom = new Segment(new Point(min.x, min.y), new Point(max.x, min.y))
     val left = bottom.p
     val right = top.q
     

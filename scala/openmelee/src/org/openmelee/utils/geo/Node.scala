@@ -32,8 +32,6 @@ package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
 
-import org.villane.vecmath.Vector2
-
 // Node for a Directed Acyclic graph (DAG)
 abstract class Node(var left: Node, var right: Node) {
 
