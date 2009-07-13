@@ -31,12 +31,16 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
+import scala.collection.mutable.HashSet
 
 // Represents a simple polygon's edge
 class Segment(var p: Point, var q: Point) {
 
   // Pointer used for building trapezoidal map
   var above, below, left: Trapezoid = null
+  
+  // Montone mountain points
+  val mPoints = HashSet(p, q)
   
   // Equation of a line: y = m*x + b
   // Slope of the line (m)

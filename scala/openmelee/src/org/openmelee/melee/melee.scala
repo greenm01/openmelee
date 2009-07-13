@@ -135,20 +135,27 @@ class Melee(stateID:Int) extends BasicGameState {
     val green = new Color3f(0f, 255f, 0f ,255)
     
    //for(t <- tesselator.allTrapezoids) {
-   //for(t <- tesselator.trapezoids) {
-	  //debugDraw.drawPolygon(t.vertices, red)
+   for(t <- tesselator.trapezoids) {
+     val p = new Array[Vector2](4)
+     var i = 0
+     for(v <- t.vertices) {
+       p(i) = Vector2(v.x, v.y); i += 1
+     }
+	  //debugDraw.drawPolygon(p, red)
 	  //debugDraw.drawPoint(t.leftPoint, 0f, green)
 	  //debugDraw.drawPoint(t.rightPoint, 0f, green)
-    //}
+    }
    
     for(x <- tesselator.xMonoPoly) {
-      val p = new Array[Vector2](x.size)
-      assert(p.size > 2)
+      val p = new Array[Vector2](x.triangles(0).size)
+      var t = x.triangles
       var i = 0
-      for(t <- x) { p(i) = Vector2(t.x, t.y); i += 1}
-      debugDraw.drawPolygon(p, green)
+      for(t <- x.triangles) { 
+        t.foreach(v => {p(i) = Vector2(v.x, v.y); i += 1})
+        debugDraw.drawPolygon(p, green)
+        i = 0
+      }
     }
-
   }
 
   override def keyPressed(key:Int, c:Char) {
@@ -162,13 +169,21 @@ class Melee(stateID:Int) extends BasicGameState {
   def testTesselator {
    
     val scale = 0.025f
+    val p1 = new Point(100,300)*scale
+    val p2 = new Point(400,500)*scale
+    val p3 = new Point(260,200)*scale
+    val p4 = new Point(600,175)*scale
+    val p5 = new Point(400,300)*scale
+    val p6 = new Point(650,250)*scale
+    
     val segments = new ArrayList[Segment]
-    segments += new Segment(new Point(100,300)*scale, new Point(400,500)*scale)
-    segments += new Segment(new Point(250,200)*scale, new Point(600,175)*scale)
-    segments += new Segment(new Point(100,300)*scale, new Point(250,200)*scale)
-    segments += new Segment(new Point(400,300)*scale, new Point(400,500)*scale)
-    segments += new Segment(new Point(400,300)*scale, new Point(650,200)*scale)
-    segments += new Segment(new Point(600,175)*scale, new Point(650,200)*scale) 
+    segments += new Segment(p1, p2)
+    segments += new Segment(p3, p4)
+    segments += new Segment(p1, p3)
+    segments += new Segment(p5, p2)
+    segments += new Segment(p5, p6)
+    segments += new Segment(p4, p6) 
+    
     tesselator = new Triangulator(segments)
     tesselator.process
    }    

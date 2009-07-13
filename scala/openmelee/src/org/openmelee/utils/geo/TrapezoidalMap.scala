@@ -31,14 +31,14 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
-import scala.collection.mutable.Map
+import scala.collection.mutable.{Map, HashSet}
 
 // See "Computational Geometry", 3rd edition, by Mark de Berg et al, Chapter 6.2
 
 class TrapezoidalMap {
 
   // Trapezoid associated array
-  val map: Map[Int, Trapezoid] = Map()
+  val map = HashSet.empty[Trapezoid]
   // AABB margin
   var margin = 2f
     
@@ -49,12 +49,12 @@ class TrapezoidalMap {
   
   // Add a trapezoid to the map
   def add(t: Trapezoid) {
-    map + (t.hashCode -> t)
+    map += t
   }
   
   // Remove a trapezoid from the map
   def remove(t: Trapezoid) {
-    map - t.hashCode
+    map -=t
   }
   
   def reset {
@@ -154,7 +154,7 @@ class TrapezoidalMap {
   //         break trapezoid into 3 smaller trapezoids
   def case4(t: Trapezoid, s: Segment) = {
     
-    val lp = if(tCross != null) t.leftPoint else s.p
+    val lp = if(s.p.x == t.leftPoint.x) s.p else t.leftPoint
     
     val topCross = (tCross == t.top)
     val bottomCross = (bCross == t.bottom)

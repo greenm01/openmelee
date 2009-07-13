@@ -45,4 +45,14 @@ class Point(val x: Float, val y: Float, var segment: Segment) {
   def +(f: Float) = new Point(x + f, y + f)
   def *(f: Float) = new Point(x * f, y * f)
   
+  def <(p: Point) = {
+    if(p.x == x) 
+      if(y > p.y) true
+      else false
+    else
+      (x < p.x)
+  }
+    
+  
+  override def clone = new Point(x, y)
 }

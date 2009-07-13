@@ -80,5 +80,22 @@ class Trapezoid(val leftPoint: Point, var rightPoint: Point, val top: Segment, v
     val y =  s.slope * x + s.b
     new Point(x, y)
   } 
+  
+  // Add points to monotone mountain
+  // Use HashSet to aboid repeats
+  def mark {
+    bottom.mPoints += leftPoint
+    bottom.mPoints += rightPoint
+    top.mPoints += leftPoint
+    top.mPoints += rightPoint
+  }
+  
+  // Clear points when dividing this trapezoid
+  def clear {
+    bottom.mPoints -= leftPoint
+    bottom.mPoints -= rightPoint
+    top.mPoints -= leftPoint
+    top.mPoints -= rightPoint
+  }
 
 }

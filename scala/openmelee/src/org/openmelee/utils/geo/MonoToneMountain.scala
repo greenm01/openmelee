@@ -30,45 +30,109 @@
  */
 package org.openmelee.utils.geo
 
-class MonotoneMountain(var head: Point, var tail: Point) {
-  
-  var size = 0
-  
-  def append(point: Point) {
-    if(point != tail) {
-      tail.next = point
-      point.prev = tail
-      tail = point
+import scala.collection.mutable.{ArrayBuffer, Queue}
+
+class MonotoneMountain {
+
+	var tail, head: Point = null
+	var size = 0
+
+	val convexPoints = new Queue[Point]
+	val triangles = new ArrayBuffer[Array[Point]]
+ 
+	// Append
+	def +=(point: Point) {
+	  size match {
+	    case 0 => 
+	      head = point
+        case 1 =>
+          tail = point
+		  tail.prev = head
+		  head.next = tail
+        case _ =>
+          tail.next = point
+          point.prev = tail
+          tail = point
+	  }
+	  size += 1
+	}
+
+	// Remove
+	private def remove(point: Point) {
+		val next = point.next
+		val prev = point.prev
+		point.prev.next = next
+		point.next.prev = prev
+		size -= 1
+	}
+ 
+	// Determines if the inslide angle between edge v2-v3 and edge v2-v1 is convex (< PI)
+	private def angle(v1: Point, v2: Point, v3: Point) = {
+	  val a = (v2 - v1) 
+	  val b = (v2 - v3) 
+      val angle = Math.atan2(b.y,b.x).toFloat - Math.atan2(a.y,a.x).toFloat
+      angle
     }
-  }
-  
-  def remove(point: Point) {
-    val next = point.next
-    val prev = point.prev
-    point.prev.next = next
-    point.next.prev = prev
-  }
-  
-  // Partition a x-monotone mountain into triangles o(n)
-  // See "Computational Geometry in C", 2nd edition, by Joseph O'Rourke, page 52
-  def triangulate {
-    /*
-    println(vertices.size)
-    val convexVertices = new Stack[Point]
-    val triList = new ArrayList[Array[Point]]
-    var i = 1
-    while(i < vertices.size - 2) {
-      if(convex(vertices(i-1), vertices(i), vertices(i+1)))
-        convexVertices.push(vertices(i))
-      i += 1
-    }
+
+	def lastTriangle = {
+	  assert(size == 3, "Number of points = " + size)
+	  val triangle = new Array[Point](3)
+	  var i = 0
+      var p = head
+	  while(p != null) {
+	      triangle(i) = p
+	      p = p.next
+          i += 1
+	  }
+	  triangles += triangle
+	}
+ 
+	// Partition a x-monotone mountain into triangles o(n)
+	// See "Computational Geometry in C", 2nd edition, by Joseph O'Rourke, page 52
+	def triangulate {
+	  if(size == 3) {
+	    lastTriangle
+	  } else {
+	   // Initialize internal angles at each nonbase vertex
+	   var p = head.next
+	   while(p != tail) {
+	     p.angle = Math.abs(angle(p.prev, p, p.next))
+	     println("angle = " + p.angle)
+	     // Link strictly convex vertices into a list
+	     if(p.angle > 0 && p.angle <= Math.Pi) convexPoints.enqueue(p)
+	     p = p.next
+	   }
     
-    i = 0
-    while(convexVertices.size > 0) {
-      val v = convexVertices.pop
-      println(v)
-    }
-    */
-  }
-  
+	   while(!convexPoints.isEmpty) {
+	     val ear = convexPoints.dequeue
+	     val a = ear.prev.clone
+	     val b = ear
+	     val c = ear.next.clone
+	     val triangle = Array(a, b, c)
+	     triangles += triangle
+      
+	     // Remove ear, update angles and convex list
+	     remove(ear) 
+	     a.angle -= ear.angle
+	     if(a.angle > 0) convexPoints.enqueue(a)
+	     c.angle -= ear.angle
+	     if(c.angle > 0) convexPoints.enqueue(c)
+	   }
+    
+	   if(size == 3) lastTriangle
+	}
+   }
+ 
+	def monoPoly {
+	  val triangle = new Array[Point](size)
+	  var i = 0
+      var p = head
+	  while(p != null) {
+	      triangle(i) = p
+	      p = p.next
+          i += 1
+	  }
+	  triangles += triangle
+	  println(size)
+	}
 }

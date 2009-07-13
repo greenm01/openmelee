@@ -31,7 +31,7 @@
 package org.openmelee.utils.geo
 
 import collection.jcl.ArrayList
-import scala.collection.mutable.{Set, Map, Stack, ListBuffer}
+import scala.collection.mutable.{HashSet, Map, Stack, ListBuffer}
 
 import utils.Random
 
@@ -46,6 +46,7 @@ class Triangulator(var segments: ArrayList[Segment]) {
   
   // Build the trapezoidal map and query graph
   def process {
+    
     val foo = new Point(0f, 0f)
     val foo2 = new Point(0f, 3f)
     val foo3 = new Point(10f, 3f)
@@ -55,7 +56,7 @@ class Triangulator(var segments: ArrayList[Segment]) {
     for(s <- segments) {
       val traps = queryGraph.followSegment(s)
       // Remove trapezoids from trapezoidal Map
-      traps.foreach(trapezoidalMap.remove)
+      traps.foreach(t => {trapezoidalMap.remove(t); t.clear})
       for(t <- traps) {
         var tList: ArrayList[Trapezoid] = null
         val containsP = t.contains(s.p)
@@ -83,67 +84,58 @@ class Triangulator(var segments: ArrayList[Segment]) {
       trapezoidalMap reset
     }
     trapezoids = trim
-    monotoneMountains
-    //xMonoPoly(2).triangulate
+    createMountains
   }
   
-  def allTrapezoids = trapezoidalMap.map.values
+  def allTrapezoids = trapezoidalMap.map
   
   // Initialize trapezoidal map and query structure
   private val trapezoidalMap = new TrapezoidalMap
   private val boundingBox = trapezoidalMap.boundingBox(segments)
   private val queryGraph = new QueryGraph(new Sink(boundingBox))
   
-  val xMonoPoly = new ArrayList[ArrayList[Point]]
+  val xMonoPoly = new ArrayList[MonotoneMountain]
                                         
   segments = orderSegments
   
   // Build a list of x-monotone mountains
-  private def monotoneMountains {
-    
-    val map: Map[Int, ArrayList[Point]] = Map()
-    
+  private def createMountains {
     for(s <- segments) {
-       map + (s.hashCode -> new ArrayList[Point])
-    }
-    
-   for(t <- trapezoids) {
-     val bottom = map(t.bottom.hashCode)     
-     val p1 = t.leftPoint; val p2 = t.rightPoint
-     bottom += p1; bottom += t.rightPoint
-     val top = map(t.top.hashCode)
-     top += t.leftPoint; top += t.rightPoint                    
-   }
-   
-   for(m <- map.keys) {
-     if(map(m).size > 2) xMonoPoly += map(m)
-   }
-   
+       if(s.mPoints.size > 2) {
+         val mountain = new MonotoneMountain
+         // TODO: Optomize sort? The number of points should be 
+         // fairly small => insertion or merge?
+         val points = s.mPoints.toList
+         for(p <- points.sort((e1,e2) => e1 < e2)) {
+           mountain += p.clone
+         }
+         if(mountain.size > 2) {
+           mountain.triangulate
+           //mountain.monoPoly
+           xMonoPoly += mountain
+         }
+       }
+    }   
   }
   
   // Trim off the extraneous trapezoids surrounding the polygon
   private def trim = {
     val traps = new ArrayList[Trapezoid]
     // Mark outside trapezoids
-    for(t <- trapezoidalMap.map.values) {
+    for(t <- trapezoidalMap.map) {
 	  if(t.top == boundingBox.top || t.bottom == boundingBox.bottom) {
 	    t.outside = true
 	    t.markNeighbors
 	  }
     }
     // Collect interior trapezoids
-    for(t <- trapezoidalMap.map.values) if(!t.outside) traps += t
+    for(t <- trapezoidalMap.map) if(!t.outside) {
+      traps += t
+      t.mark
+    }
     traps
   }
   
-  // Determines if the inslide angle between edge v2-v3 and edge v2-v1 is convex (< PI)
-  private def convex(v1: Point, v2: Point, v3: Point) = {
-    val a = (v2 - v3) 
-    val b = (v2 - v1) 
-    v2.angle = Math.atan2(a.y,a.x).toFloat - Math.atan2(b.y,b.x).toFloat
-    (v2.angle > 0)
-  }
- 
   private def orderSegments = {
     // Ignore vertical segments!
     val segs = new ArrayList[Segment]
