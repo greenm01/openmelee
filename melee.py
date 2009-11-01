@@ -17,158 +17,184 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
-from math import pi, sin, cos, floor
-import time 
-
-import pyglet
-from pyglet.window import Window, key
-from pyglet import clock
-from pyglet.gl import *
-
-import pymunk as pm
+from actors.asteroid import Asteroid
+from actors.planet import Planet
+from history import History
+from players.net import NetConn, NetPlayer
 from pymunk import Vec2d
 
-from utils import squirtle
-from actors.ships.kzerZa import KzerZa
-from actors.ships.nemesis import Nemesis
-from actors.planet import Planet
-from actors.asteroid import Asteroid
-from players import Human
-from utils import clamp
-from render import Color
+#from render.gl import Window
+from render.sdl import Window
+
+import config
+import os
+import pymunk
+import struct
+import sys
+
+NUM_ASTEROIDS = 7
 
 class Melee(Window):
-    
-    def __init__(self): 
-        
-        NUM_ASTEROIDS = 7
-        
-        # Vertical retrace synchronisation
-        # Set to false to limit FPS
-        vs = True
-        
-        #clock.set_fps_limit(90)
-        self.timeStep = 1.0/60.0
-        
-        self.sizeX = 800
-        self.sizeY = 600
+    WINDOW_POSITION = "800,0"
 
-        # Space upper and lower bounds
-        self.upperBound = Vec2d(30000.0, 30000.0)
-        self.lowerBound = Vec2d(-30000.0, -30000.0)
+    frameRate = 30
+    timeStep = 1.0 / frameRate
+    ts_ms = timeStep * 1000.0
+
+    sizeX = 800
+    sizeY = 600
+
+    button_change = False   # Buttons pressed/released _locally_ since update?
+
+    # Space upper and lower bounds
+    upperBound = Vec2d(20000.0, 20000.0)
+    lowerBound = Vec2d(-20000.0, -20000.0)
+
+    vs = True
+
+    ##
+    ## INITIALIZATION
+    ##
+
+    def __init__(self): 
+        Window.__init__(self)
+
+        self.set_caption("OpenMelee Demo")
         
-        try:
-            # Try and create a window with multisampling (antialiasing)
-            config = Config(sample_buffers=1, samples=4, 
-                          depth_size=16, double_buffer=True,)
-            super(Melee, self).__init__(self.sizeX, self.sizeY, vsync=vs, 
-                                        resizable=False, config=config)
-        except pyglet.window.NoSuchConfigException:
-            # Fall back to no multisampling for old hardware
-            super(Melee, self).__init__(self.sizeX, self.sizeY, vsync=vs, 
-                                        resizable=False)
-        
-        # Initialize OpenGL
-        squirtle.setup_gl()
+        # Init network
+        if REMOTE:
+            self.net = NetConn(LOCAL, REMOTE, self)
+
+            if LOCAL[1] == 8888:
+                self.local_player, self.remote_player = 0,1
+            else:
+                self.local_player, self.remote_player = 1,0
+
+            config.PLAYERS[self.remote_player] = NetPlayer
+        else:
+            self.net = None
       
-        #Initialize chipmunk
-        pm.init_pymunk()
-        self.space = pm.Space()
+        # Initialize Chipmunk physics engine
+        pymunk.init_pymunk()
+        self.space = pymunk.Space()
         
-        # Game ship list
+        # Create players/controllers
+        self.players = list(cls() for cls in config.PLAYERS)
+
+        # Create game objects (they add themselves to self.actors if necessary)
         self.actors = []
-        # Create ships
-        kzerZa = KzerZa(self)
-        nemesis = Nemesis(self)
-        
-        # Create asteroids
+
+        for i in 0,1:
+            ship = config.SHIP_CHOICES[i]
+            #player = self.players[i]
+            config.SHIP_CLASSES[ship](self)  # , player ?
+
+        self.planet = Planet(self)
+  
         for i in range(NUM_ASTEROIDS):
-            asteroid = Asteroid(self)
+            Asteroid(self)
         
-        # Add ship to human player
-        self.human = Human(kzerZa)
-        # Create the planet
-        self.planet = Planet(self.space)
-        self.enemy = False
-    
-    def update(self, dt):
+        # Save state for rollback
+        self.time = self.get_time_ms()
+        self.history = History(self)
+
+        # Network handshake  # TODO move to NetConn and randomize master/slave
+        if self.net:
+            if self.local_player == 0:
+                # Master
+                self.net.handshake()
+            else:
+                # Slave
+                state = self.net.wait_handshake()
+                if state:
+                    self.deserialize(state)
+                else:
+                    print "Network handshake failed or timed out"
+                    return
+
+        self.mainloop()
+
+    ##
+    ## NETWORK
+    ##
         
-        global iters
-        
+    def serialize(self):  # TODO move to NetConn
+        lst = []
+        for ship in self.actors:
+            s = ship.body
+            lst += (list(s.position)
+                   +list(s.velocity)
+                   +[s.angle, s.angular_velocity]
+                   )
+        n = len(self.actors)
+        return struct.pack("!B %df" % (n*6), n, *lst)
+
+    def deserialize(self, state):
+        nlen = 1  # Encoded length of 'n'
+        n, = struct.unpack("!B", state[:nlen])
+        if (len(state) - nlen) != (struct.calcsize("!6f") * n):
+            print "deserialize(): PACKET SIZE MISMATCH -- PACKET DROPPED"
+            return
+        lst = struct.unpack("!%df" % (n*6), state[nlen:])
+        for i,ship in enumerate(self.actors):
+            s = ship.body
+            p = lst[i*6 : (i+1)*6]
+            s.position = Vec2d(p[0], p[1])
+            s.velocity = Vec2d(p[2], p[3])
+            s.angle = p[4]
+            s.angular_velocity = p[5]
+
+    ##
+    ## EVENTS
+    ##
+
+    def update(self):
+        # TODO handle frame skips... repeat until self.time < pygame time ?
+
         # Update states
-        for actor in self.actors:
-            if actor.check_death(): continue
-            actor.update_state()
-            actor.apply_gravity()
+        for a in self.actors:
+            if a.check_death(): continue
+            a.update_state()
+            a.apply_gravity()
         
         # Update game mechanics
         self.space.step(self.timeStep)
-            
+        
         # End of frame maintenance 
-        for actor in self.actors:
-            # Reset forces
-            actor.body.reset_forces()
-            # Check and correct for out of bounds 
-            if not self.inBounds(actor.body):
-                self.boundaryViolated(actor.body)
-    
-    # TODO: Refactor this into a specalzed rendering class
-    def on_draw(self):
-        
-        #TODO Cull objects outside zoom window
-        self.set_caption("OpenMelee Demo, FPS = " + str(int(clock.get_fps())))
-        
-        zoom, viewCenter = self.calcView()
-        
-        glLoadIdentity()
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        
-        left = -self.sizeX / zoom
-        right = self.sizeX / zoom
-        bottom = -self.sizeY / zoom
-        top = self.sizeY / zoom
-      
-        gluOrtho2D(left, right, bottom, top)
-        glTranslatef(-viewCenter.x, -viewCenter.y, 0)
-        glMatrixMode(GL_MODELVIEW)
-        glDisable(GL_DEPTH_TEST)
-        glLoadIdentity()
-        glClear(GL_COLOR_BUFFER_BIT)
-        
-        for actor in self.actors:
-            actor.draw()
-            
-        self.planet.draw()
-        
-        ub = self.upperBound
-        lb = self.lowerBound 
+        for a in self.actors:
+            a.body.reset_forces()
+            if not self.inBounds(a.body):
+                self.boundaryViolated(a.body)
 
-        verts = [Vec2d(lb.x, ub.y), Vec2d(lb.x, lb.y), 
-                 Vec2d(ub.x, lb.y), Vec2d(ub.x, ub.y)]
-                 
-        # Draw world bounding box
-        c = Color(0.3, 0.9, 0.9)
-        glColor3f(c.r, c.g, c.b)
-        glBegin(GL_LINE_LOOP)
-        for v in verts:
-            glVertex2f(v.x, v.y)
-        glEnd()
+        self.time += self.ts_ms
+        self.history.update(self.time)
         
+    ##
+    ## PRIVATE HELPER METHODS
+    ##
+
     def calcView(self):
-        
-        ship1 = self.actors[0]
-        ship2 = self.actors[1] if self.actors[1] else self.planet
+        from utils import clamp, bounding_box
+
+        # Zoom in on the ships (and planet?)
+        objects = self.actors[:2] #+ [self.planet]
+        points = [o.body.position for o in objects]
+
+        r = self.planet.radius
+        x1,y1,x2,y2 = bounding_box(points)
+        point1 = Vec2d(x1,y1) - r
+        point2 = Vec2d(x2,y2) + r
             
-        point1 = ship1.body.position
-        point2 = ship2.body.position
         range = point1 - point2
-        zoom = clamp(1000.0/range.length, 0.025, 0.3)
+        #zoom = clamp(1000.0/range.length, 0.05, 0.3)
+        zoom = min(1000.0/range.length, 0.3)    # no maximum zoom-out!
         viewCenter = point1 - (range * 0.5)
-        return (zoom, viewCenter)
+
+        zoom *= 0.4   # XXX fudge factor... zoom calcs aren't quite right for SDL
+
+        return zoom, viewCenter
  	
     def inBounds(self, body):
-        
         ub = self.upperBound
         lb = self.lowerBound
         
@@ -179,7 +205,6 @@ class Melee(Window):
         return True
         
     def boundaryViolated(self, body):
-        
         ub = self.upperBound
         lb = self.lowerBound
         
@@ -196,18 +221,20 @@ class Melee(Window):
             y = ub.y - 5
             body.position = Vec2d(body.position.x, y)
                     
-    def on_mouse_press(self, x, y, button, modifiers):
-        print 'Mouse button pressed in game'
-    
-    def on_key_press(self, symbol, modifiers):
-        self.human.onKeyDown(symbol)
-        
-    def on_key_release(self, symbol, modifiers):
-        self.human.onKeyUp(symbol)
 
-                            	
 if __name__ == '__main__':
-  window = Melee()
-  pyglet.clock.schedule(window.update)
-  #pyglet.vsync = 0
-  pyglet.app.run()
+    '''
+    Usage: melee.py [[remote-address]:port] [local-port] [position]
+    '''
+    REMOTE = None
+    LOCAL  = ('', 8888)
+    if len(sys.argv) > 1:
+        a = sys.argv[1].split(':')
+        REMOTE = (a[0], int(a[1]))
+    if len(sys.argv) > 2:
+        LOCAL = ('', int(sys.argv[2]))
+    if len(sys.argv) > 3:
+        Melee.WINDOW_POSITION = sys.argv[3]
+
+    window = Melee()
+

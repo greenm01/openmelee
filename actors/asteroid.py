@@ -22,7 +22,9 @@ import pymunk as pm
 from pymunk import Vec2d
 
 from actor import Actor
-from render import Color, draw_solid_circle
+#from render import Color, draw_solid_circle
+import pygame
+from utils import transform
 
 class Asteroid(Actor):
 
@@ -58,7 +60,7 @@ class Asteroid(Actor):
         
         # Add body and shapes to space
         melee.space.add(self.body, self.circle1, self.circle2)
-		
+
         # Randomize velocity
         x = randrange(-15000.0, 15000.0)
         y = randrange(-15000.0, 15000.0)
@@ -67,9 +69,15 @@ class Asteroid(Actor):
     #def applyGravity(self):
     #    pass
         
-    def draw(self):
-        fill = Color(1, 0, 0)
+    def draw(self, surface, view):
         center1 = self.body.position + self.circle1.center.cpvrotate(self.body.rotation_vector)
-        draw_solid_circle(center1, self.radius, fill, fill)	
         center2 = self.body.position + self.circle2.center.cpvrotate(self.body.rotation_vector)
-        draw_solid_circle(center2, self.radius, fill, fill)
+        if self.melee.backend == 'sdl':
+            fill = 255,0,0
+            r = transform.scale(self.radius)
+            pygame.draw.circle(surface, fill, transform.to_sdl(center1), r)
+            pygame.draw.circle(surface, fill, transform.to_sdl(center2), r)
+        elif self.melee.backend == 'gl':
+            fill = Color(1, 0, 0)
+            draw_solid_circle(center1, self.radius, fill, fill) 
+            draw_solid_circle(center2, self.radius, fill, fill)

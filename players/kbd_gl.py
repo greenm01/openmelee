@@ -16,3 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
+class KeyboardPlayer: pass
+
+from players.kbd_sdl import compute_keymap, update_ship
+compute_keymap()

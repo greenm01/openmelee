@@ -17,18 +17,22 @@ You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import math
-
 import pymunk as pm
 from pymunk import Vec2d
-
+import pygame
 from actor import Actor
-from utils import squirtle
-from render import Color, draw_solid_circle
 
 class Planet(Actor):
+    is_actor = False
 
-    def __init__(self, space):
+    def __init__(self, melee):
+        Actor.__init__(self, melee)
         
+        if self.melee.backend == 'gl':
+            from utils import squirtle
+        elif self.melee.backend == 'sdl':
+            from utils import squirtle_noGL as squirtle
+
         file = "data/planet.svg"
         self.svg = squirtle.SVG(file, anchor_x='center', anchor_y='center')
         
@@ -39,21 +43,27 @@ class Planet(Actor):
         self.body.position = center
         self.radius = 1000
         shape = pm.Circle(self.body, self.radius, center)  
-        space.add_static(shape)
+
+        melee.space.add_static(shape)
         
-    def draw(self):
-        
-        x = self.body.position.x
-        y = self.body.position.y
-        # convert to degrees
-        a = self.body.angle * 57.2957795
-        
-        #self.svg.draw(x, y, angle=a)
-        
-        center = self.body.position
-        fill = Color(0.5, 0.8, 0.5)
-        outline = Color(1, 0, 0)
-        
-        draw_solid_circle(center, self.radius, fill, outline)
-        
-    
+    def draw(self, surface, view):
+        if self.melee.backend == 'sdl':
+            from utils import transform
+            x1,y1 = transform.to_sdl(self.body.position)
+            r = transform.scale(self.radius)
+            pygame.draw.circle(surface, (26,17,108), (x1,y1), r)
+            pygame.draw.circle(surface, (255,0,0),   (x1,y1), r, 2)
+
+        elif self.melee.backend == 'gl':
+            from render import Color, draw_solid_circle
+            x = self.body.position.x
+            y = self.body.position.y
+            a = self.body.angle * 57.2957795     # convert to degrees
+
+            #self.svg.draw(x, y, angle=a)
+
+            center = self.body.position
+            fill = Color(0.5, 0.8, 0.5)
+            outline = Color(1, 0, 0)
+            
+            draw_solid_circle(center, self.radius, fill, outline)

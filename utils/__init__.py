@@ -27,5 +27,43 @@ def rotate(v, angle):
     return Vec2d((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x))
     
 def clamp(a, low, high):
-    return max(low, min(a, high)) 	
+    return max(low, min(a, high))
+    
+# Color for drawing. Each value has the range [0,1].
+class Color():
+    # Red, green, blue
+    def __init__(self, r, g, b):
+       self.r = r
+       self.g = g
+       self.b = b 
 
+def bounding_box(pointlist): 	
+    from math import floor, ceil
+    xs = [p.x for p in pointlist]
+    ys = [p.y for p in pointlist]
+    x1 = int(floor(min(xs)))
+    y1 = int(floor(min(ys)))
+    x2 = int(ceil(max(xs)))
+    y2 = int(ceil(max(ys)))
+    return x1,y1,x2,y2
+
+
+class Transform:
+    def set_screen(self, screen):
+        """screen: pygame.Surface instance"""
+        size = Vec2d(screen.get_size())
+        self.sc = size / 2.0   # screen center
+
+    def set_view(self, view):
+        self.zoom, self.vc = view
+
+    def to_sdl(self, p):
+        """Convert pymunk point (Vec2d) to pygame coordinates"""
+        p = (p - self.vc) * self.zoom
+        return int(p.x + self.sc.x), int(-p.y + self.sc.x)
+
+    def scale(self, n):
+        """Scale pymunk units to screen coordinates"""
+        return int(n * self.zoom)
+
+transform = Transform()

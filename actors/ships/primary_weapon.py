@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from actors.actor import Actor
-from render import Color, draw_polygon
 
 class PrimaryWeapon(Actor):
 
@@ -27,7 +26,15 @@ class PrimaryWeapon(Actor):
         self.mother_ship = mother_ship
         self.shapes = []
         
-    def draw(self):
-        color = Color(1, 0, 0)
-        for s in self.shapes:
-            draw_polygon(s, color)
+    def draw(self, surface, view):
+        if self.melee.backend == 'sdl':
+            import pygame
+            from utils import transform
+            fill = 255,0,0
+            r = transform.scale(40.0)
+            pygame.draw.circle(surface, fill, transform.to_sdl(self.body.position), r)
+        elif self.melee.backend == 'gl':
+            from render import Color, draw_polygon
+            color = Color(1, 0, 0)
+            for s in self.shapes:
+                draw_polygon(s, color)
