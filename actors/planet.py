@@ -17,8 +17,9 @@ You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import math
-import pymunk as pm
-from pymunk import Vec2d
+
+from physics import *
+
 import pygame
 from actor import Actor
 
@@ -35,25 +36,27 @@ class Planet(Actor):
 
         file = "data/planet.svg"
         self.svg = squirtle.SVG(file, anchor_x='center', anchor_y='center')
+                
+        # Create body
+        bodydef = Body()
+        bodydef.position = Vec2(0, 0) 
+        self.body = melee.world.append_body(bodydef)
         
-        mass = pm.inf
-        inertia = pm.inf
-        center = Vec2d(0,0)
-        self.body = pm.Body(mass, inertia)  
-        self.body.position = center
-        self.radius = 1000
-        shape = pm.Circle(self.body, self.radius, center)  
-
-        melee.space.add_static(shape)
+        # Create shape
+        self.radius = 10
+        circledef = Circle()
+        circledef.radius = self.radius 
+        self.body.append_shape(circledef)
         
     def draw(self, surface, view):
         if self.melee.backend == 'sdl':
             from utils import transform
-            x1,y1 = transform.to_sdl(self.body.position)
+            p = self.body.position
+            x1,y1 = transform.to_sdl((p.x, p.y))
             r = transform.scale(self.radius)
-            pygame.draw.circle(surface, (26,17,108), (x1,y1), r)
-            pygame.draw.circle(surface, (255,0,0),   (x1,y1), r, 2)
-
+            pygame.draw.circle(surface, (26, 17, 108), (x1, y1), r)
+            pygame.draw.circle(surface, (255, 0, 0), (x1, y1), r, 2)
+        
         elif self.melee.backend == 'gl':
             from render import Color, draw_solid_circle
             x = self.body.position.x

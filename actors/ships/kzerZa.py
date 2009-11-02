@@ -16,27 +16,31 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
-import pymunk
+
+from physics import *
 
 from primary_weapon import PrimaryWeapon
-from pymunk import Vec2d
 from ship import Ship
+from utils import rotate
 
 class KzerZa(Ship):
     name = "Kzer-Za"
     parts = ["bridge", "body", "tail", "rightStrut", "leftStrut", "rightWing", "leftWing"]
     center_part = "bridge"
+    scale = 0.001
 
     # Ship characteristics
-    engineForce = Vec2d(0, -6000)
-    turnForce = Vec2d(0, 200000)
-    rightTurnPoint = Vec2d(-200, 0)
-    leftTurnPoint = Vec2d(200, 0)
+    engineForce = 0, -500
+    turnForce = 0, 9000
+    rightTurnPoint = -0.5, 0
+    leftTurnPoint = 0.5, 0
 
-    initial_position = 900, 3000
-    initial_velocity = 4000, 500
+    # Physics properties
+    initial_position = Vec2(10, 10)
+    initial_velocity = Vec2(0, 0)
     initial_ang_vel = 0
-
+    density = 5.0
+    
     health = 42
     health_capacity = 42
     battery = 42
@@ -49,10 +53,8 @@ class KzerZa(Ship):
     bDelay = 0.05   # Batter recharge rate
     
     def __init__(self, melee):
-        #super(KzerZa, self).__init__(melee)
-        Ship.__init__(self, melee)
-
-
+        super(KzerZa, self).__init__(melee)
+       
     def fire(self):
         if not self.primary_time() or self.battery <= self.pEnergy:
             return  
@@ -68,10 +70,10 @@ class KzerZa(Ship):
         shell = pymunk.Body(mass, inertia) 
         angle = self.body.angle
         shell.angle = angle 
-        velocity = Vec2d(0.0, -10000.0)
-        velocity.rotate(angle * 57.3)
+        velocity = 0.0, -10000.0
+        rotate(velocity, angle * 57.3)
         shell.velocity = velocity
-        shell.position = self.body.local_to_world(Vec2d(0, -500))
+        shell.position = self.body.local_to_world(Vec2(0, -500))
         poly = pymunk.Poly(shell, verts)
 
         #Add to space

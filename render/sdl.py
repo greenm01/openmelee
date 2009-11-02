@@ -65,8 +65,8 @@ class Window:
     def on_draw(self):
         self.screen.fill(BLACK)
 
-        view = self.calcView()
-        zoom, viewCenter = view
+        view = self.calculate_view()
+        zoom, view_center = view
         transform.set_view(view)
 
         # Display debug info
@@ -82,7 +82,7 @@ class Window:
         s = "fps=%3d zoom=%3.3f center=%5d,%5d" % (
                 self.clock.get_fps(),
                 zoom,
-                viewCenter.x, viewCenter.y,
+                view_center[0], view_center[1],
         )
         surf = self.font.render(s, False, WHITE)
         self.screen.blit(surf, (0,0))
@@ -104,15 +104,15 @@ class Window:
 
         # Draw world bounding box
         c = 90, 230, 230
-        ub = self.upperBound
-        lb = self.lowerBound 
-        x1,y1 = transform.to_sdl(lb)
-        x2,y2 = transform.to_sdl(ub)
+        ub = self.aabb.upper_bound
+        lb = self.aabb.lower_bound 
+        x1,y1 = transform.to_sdl((lb.x, lb.y))
+        x2,y2 = transform.to_sdl((ub.x, ub.y))
         pygame.draw.rect(self.screen, c, pygame.Rect(x1, y1, x2-x1, y2-y1), 2)
 
         # End of frame
         pygame.display.update()
-        self.clock.tick(self.frameRate)
+        self.clock.tick(self.frame_rate)
 
     def mainloop(self):
         while 1:

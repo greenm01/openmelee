@@ -9,7 +9,6 @@ Example usage:
     
 """
 
-from pymunk import Vec2d
 from xml.etree.cElementTree import parse
 import re
 import math
@@ -610,7 +609,7 @@ class SVG(object):
                         loop.append(pt)
                 path.append(loop)
                 for i in loop:
-                    verts.append(Vec2d(i[0], i[1]))            
+                    verts.append((i[0], i[1]))            
             self.paths.append((path if self.stroke else None, self.stroke,
                                self.triangulate(path) if self.fill else None, self.fill,
                                self.transform))

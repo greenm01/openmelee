@@ -20,10 +20,10 @@ import math
 import sys
 import time
 
-from pymunk import Vec2d
-from pymunk.util import calc_center
+from physics import Vec2
+from utils.geo import calc_center
 
-class Actor():
+class Actor(object):
     is_actor = True
 
     def __init__(self, melee):
@@ -71,6 +71,7 @@ class Actor():
 
 
     def draw(self, surface, view):
+    
         zoom, vc = view
 
         x = self.body.position.x
@@ -84,26 +85,28 @@ class Actor():
         elif self.melee.backend == 'sdl':
             import pygame
             from utils import transform
+            """
             img = pygame.transform.rotozoom(self.image, a, zoom)
-            x1,y1 = transform.to_sdl(self.body.position)
+            p = self.body.position
+            x1,y1 = transform.to_sdl((p.x, p.y))
             w,h = img.get_size()
             cx,cy = w/2, h/2
             surface.blit(img, (x1-cx, y1-cy))
-
-            '''
+            """
+            
             # Vector drawing (probably too slow)
             W,H = surface.get_size()
             cx = x * zoom + W/2
             cy = y * zoom + H/2
             #print cx,cy
             for shape in self.lines:
-                pointlist = [(int(p.x*zoom)+cx, int(p.y*zoom)+cy) for p in shape]
+                pointlist = [(int(p[0]*zoom)+cx, int(p[1]*zoom)+cy) for p in shape]
                 pygame.draw.lines(surface, (0,255,0), False, pointlist)
 
             # Center crosshair
             pygame.draw.line(surface, (0,0,255), (cx-10,cy), (cx+10,cy))
             pygame.draw.line(surface, (0,0,255), (cx,cy-10), (cx,cy+10))
-            '''
+            
 
     def rasterize_svg(self):
 
@@ -130,20 +133,22 @@ class Actor():
             self.destroy()
             self.dead = True
             self.melee.actors.remove(self)
-            self.melee.space.remove(self.body)
+            self.melee.world.remove(self.body)
             return True
         return False
 
     # Apply planet gravity
     def apply_gravity(self):
         minRadius = 1
-        maxRadius = 3000
-        strength = 4000
+        maxRadius = 30
+        strength = 400
      
-        center = Vec2d(0, 0)
-        r = center - self.body.position
-        d = math.sqrt(r.x * r.x + r.y * r.y)
-        r /= d
+        center = Vec2(0, 0)
+        rx = center.x - self.body.position.x
+        ry = center.y - self.body.position.y
+        d = math.sqrt(rx * rx + ry * ry)
+        rx /= d
+        ry /= d
         ratio = (d - minRadius) / (maxRadius - minRadius)
         
         if ratio < 0.0:
@@ -151,7 +156,9 @@ class Actor():
         elif ratio > 1.0:
             ratio = 1.0
         
-        self.body.apply_force(r * ratio * strength)
+        force = Vec2(rx * ratio * strength, ry * ratio * strength)
+        center = self.body.local_center
+        self.body.apply_force(force, center)
     
     def apply_damage(self, damage):
 		self.health -= damage

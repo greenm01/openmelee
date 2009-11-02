@@ -16,12 +16,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
-import pymunk
 import time
 
+from physics import *
+
 from actors.actor import Actor
-from pymunk.util import calc_center
-from utils import rotate, clamp
+from utils import rotate, clamp, cross
+from utils.geo import calc_center, convex_hull
 
 # Button numbers
 THRUST  = 1
@@ -48,40 +49,45 @@ class Ship(Actor):
         Actor.__init__(self, melee)
 
         # Physics (based on SVG shapes)
-        mass = 1
         translate = calc_center(self.lines[self.parts.index(self.center_part)])
-        
-        inertia = 0
-        for p in self.lines:
-            # Translate points
-            for v in p:
-                v -= translate
-            inertia += pymunk.moment_for_poly(mass, p) 
-        
-        self.body = pymunk.Body(mass, inertia) 
-        self.body.position = self.initial_position
-        self.body.velocity = self.initial_velocity
+                
+        bodydef = Body()
+        bodydef.position = self.initial_position
+        self.body = melee.world.append_body(bodydef)
+        self.body.linear_velocity = self.initial_velocity
         self.body.angular_velocity = self.initial_ang_vel
         
-        self.shapes = []
         for p in self.lines:
-            self.shapes.append(pymunk.Poly(self.body, p))
+            polygondef = Polygon()
+            polygondef.density = self.density
+            # Ensure points are oriented ccw
+            ccw = convex_hull(p)
+            # Translate and scale points
+            verts = []
+            for v in ccw:
+                x = (v[0] - translate[0]) * self.scale
+                y = (v[1] - translate[1]) * self.scale
+                verts.append(Vec2(x, y))
+            polygondef.vertices = verts
+            self.body.append_shape(polygondef)
         
-        melee.space.add(self.body, self.shapes) 
+        self.body.set_mass_from_shapes()
 
     ##
     ## CONTROLLER INTERFACE
     ##
 
     def thrust(self):
-        force = rotate(self.engineForce, self.body.angle)
-        self.body.apply_force(force)
+        f = rotate(self.engineForce, self.body.angle)
+        self.body.apply_force(Vec2(f[0], f[1]), Vec2(0,0))
 
     def turn_left(self):
-        self.body.torque += self.leftTurnPoint.cross(self.turnForce)
+        t = cross(self.leftTurnPoint, self.turnForce)
+        self.body.apply_torque(t)
 
     def turn_right(self):
-        self.body.torque += self.rightTurnPoint.cross(self.turnForce)
+        t = cross(self.rightTurnPoint, self.turnForce)
+        self.body.apply_torque(t)
 
     def fire(self):
         pass

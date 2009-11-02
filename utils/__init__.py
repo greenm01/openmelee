@@ -17,17 +17,24 @@ You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import math
-from pymunk import Vec2d
 
 # Utility functons. Some of these may eventally be moved
 
 def rotate(v, angle):
+    """ Angle is radians """
     cos = math.cos(angle)
     sin = math.sin(angle)
-    return Vec2d((cos * v.x) - (sin * v.y), (cos * v.y) + (sin * v.x))
-    
+    return (cos * v[0]) - (sin * v[1]), (cos * v[0]) + (sin * v[1])
+
 def clamp(a, low, high):
     return max(low, min(a, high))
+    
+def cross(v1, v2):
+    """The cross product between the vector and other vector
+        v1.cross(v2) -> v1.x*v2.y - v2.y*v1.x
+    :return: The cross product
+    """
+    return v1[0]*v2[1] - v1[1]*v2[0]
     
 # Color for drawing. Each value has the range [0,1].
 class Color():
@@ -51,19 +58,19 @@ def bounding_box(pointlist):
 class Transform:
     def set_screen(self, screen):
         """screen: pygame.Surface instance"""
-        size = Vec2d(screen.get_size())
-        self.sc = size / 2.0   # screen center
+        size = screen.get_size()
+        self.sc = size[0]/2.0, size[1]/2.0 # screen center
 
     def set_view(self, view):
         self.zoom, self.vc = view
 
-    def to_sdl(self, p):
-        """Convert pymunk point (Vec2d) to pygame coordinates"""
-        p = (p - self.vc) * self.zoom
-        return int(p.x + self.sc.x), int(-p.y + self.sc.x)
+    def to_sdl(self, v):
+        """Convert point (Vec2) to pygame coordinates"""
+        p = (v[0] - self.vc[0]) * self.zoom, (v[1] - self.vc[1]) * self.zoom
+        return int(p[0] + self.sc[0]), int(-p[0] + self.sc[0])
 
     def scale(self, n):
-        """Scale pymunk units to screen coordinates"""
+        """Scale physics units to screen coordinates"""
         return int(n * self.zoom)
 
 transform = Transform()
