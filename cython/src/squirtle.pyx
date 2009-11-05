@@ -1,22 +1,58 @@
-"""Squirtle mini-library for SVG rendering in Pyglet.
-
-MODIFIED VERSION -- removed GL calls for use with SDL backend (for parsing only)
-
+"""Squirtle mini-library for SVG rendering
 Example usage:
     import squirtle
     my_svg = squirtle.SVG('filename.svg')
     my_svg.draw(100, 200, angle=15)
-    
 """
+
+include "../include/gl.pxd"
 
 from xml.etree.cElementTree import parse
 import re
 import math
+from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys
 
+'''
+tess = gluNewTess()
+gluTessNormal(tess, 0, 0, 1)
+gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
+'''
+
+if sys.platform == 'win32':
+    from ctypes import WINFUNCTYPE
+    c_functype = WINFUNCTYPE
+else:
+    c_functype = CFUNCTYPE
+
+'''    
+callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
+                  GLU_TESS_BEGIN: c_functype(None, GLenum),
+                  GLU_TESS_END: c_functype(None),
+                  GLU_TESS_ERROR: c_functype(None, GLenum),
+                  GLU_TESS_COMBINE: c_functype(None, POINTER(GLdouble), POINTER(POINTER(GLvoid)), POINTER(GLfloat), POINTER(POINTER(GLvoid)))}
+
+def set_tess_callback(which):
+    def set_call(func):
+        cb = callback_types[which](func)
+        gluTessCallback(tess, which, cast(cb, CFUNCTYPE(None)))
+        return cb
+    return set_call
+'''
+   
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
 TOLERANCE = 0.001
+
+'''
+def setup_gl():
+    """Set various pieces of OpenGL state for better rendering of SVG.
+    
+    """
+    glEnable(GL_LINE_SMOOTH)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+'''
 
 def parse_list(string):
     return re.findall("([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)", string)
@@ -268,7 +304,12 @@ class SVG(object):
                 f = open(self.filename, 'rb')
             self.tree = parse(f)
             self.parse_doc()
-
+            self.disp_list = glGenLists(1)
+            glNewList(self.disp_list, GL_COMPILE)
+            self.render_slowly()
+            glEndList()
+            self._disp_list_cache[self.filename, self.bezier_points] = (self.disp_list, self.width, self.height)
+    '''
     def draw(self, x, y, z=0, angle=0, scale=1):
         """Draws the SVG to screen.
         
@@ -287,7 +328,19 @@ class SVG(object):
                 of two floats (xscale, yscale).
         
         """
-        pass
+        glPushMatrix()
+        glTranslatef(x, y, z)
+        if angle:
+            glRotatef(angle, 0, 0, 1)
+        if scale != 1:
+            try:
+                glScalef(scale[0], scale[1], 1)
+            except TypeError:
+                glScalef(scale, scale, 1)
+        if self._a_x or self._a_y:  
+            glTranslatef(-self._a_x, -self._a_y, 0)
+        glCallList(self.disp_list)
+        glPopMatrix()
 
     def render_slowly(self):
         self.n_tris = 0
@@ -328,14 +381,15 @@ class SVG(object):
                         vtx = transform(vtx)
                         glColor4ub(*clr)
                         glVertex3f(vtx[0], vtx[1], 0)
-                    glEnd()                     
+                    glEnd()   
+    '''
+    
     def parse_float(self, txt):
         if txt.endswith('px'):
             return float(txt[:-2])
         else:
             return float(txt)
     
-
     def parse_doc(self):
         self.paths = []
         self.width = self.parse_float(self.tree._root.get("width", '0'))
@@ -615,10 +669,78 @@ class SVG(object):
                                self.transform))
             self.shapes[self.id] = verts
         self.path = []
-
+    '''
     def triangulate(self, looplist):
-        return None
+        tlist = []
+        self.curr_shape = []
+        spareverts = []
 
+        @set_tess_callback(GLU_TESS_VERTEX)
+        def vertexCallback(vertex):
+            vertex = cast(vertex, POINTER(GLdouble))
+            self.curr_shape.append(list(vertex[0:2]))
 
+        @set_tess_callback(GLU_TESS_BEGIN)
+        def beginCallback(which):
+            self.tess_style = which
+
+        @set_tess_callback(GLU_TESS_END)
+        def endCallback():
+            if self.tess_style == GL_TRIANGLE_FAN:
+                c = self.curr_shape.pop(0)
+                p1 = self.curr_shape.pop(0)
+                while self.curr_shape:
+                    p2 = self.curr_shape.pop(0)
+                    tlist.extend([c, p1, p2])
+                    p1 = p2
+            elif self.tess_style == GL_TRIANGLE_STRIP:
+                p1 = self.curr_shape.pop(0)
+                p2 = self.curr_shape.pop(0)
+                while self.curr_shape:
+                    p3 = self.curr_shape.pop(0)
+                    tlist.extend([p1, p2, p3])
+                    p1 = p2
+                    p2 = p3
+            elif self.tess_style == GL_TRIANGLES:
+                tlist.extend(self.curr_shape)
+            else:
+                self.warn("Unrecognised tesselation style: %d" % (self.tess_style,))
+            self.tess_style = None
+            self.curr_shape = []
+
+        @set_tess_callback(GLU_TESS_ERROR)
+        def errorCallback(code):
+            ptr = gluErrorString(code)
+            err = ''
+            idx = 0
+            while ptr[idx]: 
+                err += chr(ptr[idx])
+                idx += 1
+            self.warn("GLU Tesselation Error: " + err)
+
+        @set_tess_callback(GLU_TESS_COMBINE)
+        def combineCallback(coords, vertex_data, weights, dataOut):
+            x, y, z = coords[0:3]
+            data = (GLdouble * 3)(x, y, z)
+            dataOut[0] = cast(pointer(data), POINTER(GLvoid))
+            spareverts.append(data)
+        
+        data_lists = []
+        for vlist in looplist:
+            d_list = []
+            for x, y in vlist:
+                v_data = (GLdouble * 3)(x, y, 0)
+                d_list.append(v_data)
+            data_lists.append(d_list)
+        gluTessBeginPolygon(tess, None)
+        for d_list in data_lists:    
+            gluTessBeginContour(tess)
+            for v_data in d_list:
+                gluTessVertex(tess, v_data, v_data)
+            gluTessEndContour(tess)
+        gluTessEndPolygon(tess)
+        return tlist       
+    '''
+    
     def warn(self, message):
         print "Warning: SVG Parser (%s) - %s" % (self.filename, message)

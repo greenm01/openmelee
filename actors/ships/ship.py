@@ -19,7 +19,6 @@ along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 import time
 
 from physics import *
-
 from actors.actor import Actor
 from utils import rotate, clamp, cross
 from utils.geo import calc_center, convex_hull
@@ -46,12 +45,13 @@ class Ship(Actor):
     ##
 
     def __init__(self, melee):
-        Actor.__init__(self, melee)
+        super(Ship, self).__init__(melee)
 
         # Physics (based on SVG shapes)
         translate = calc_center(self.lines[self.parts.index(self.center_part)])
                 
         bodydef = Body()
+        bodydef.ccd = True
         bodydef.position = self.initial_position
         self.body = melee.world.append_body(bodydef)
         self.body.linear_velocity = self.initial_velocity
@@ -62,12 +62,13 @@ class Ship(Actor):
             polygondef.density = self.density
             # Ensure points are oriented ccw
             ccw = convex_hull(p)
+            
             # Translate and scale points
             verts = []
             for v in ccw:
                 x = (v[0] - translate[0]) * self.scale
                 y = (v[1] - translate[1]) * self.scale
-                verts.append(Vec2(x, y))
+                verts.append(Vec2(x, y))   
             polygondef.vertices = verts
             self.body.append_shape(polygondef)
         

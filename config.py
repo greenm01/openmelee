@@ -17,21 +17,21 @@ You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 ##
-## KEYBOARD CONFIG   XXX pygame dependent
+## KEYBOARD CONFIG   
 ##
-from pygame.locals import *
 
+'''
 KEYS = [
         # [thrust, left, right, fire, special],
         [K_w, K_a, K_d, K_LSHIFT, K_LCTRL],
         [K_UP, K_LEFT, K_RIGHT, K_PERIOD, K_SLASH],
 ]
+'''
 
 ##
 ## PLAYER CONFIG
 ##
-from players.kbd_sdl import KeyboardPlayer
-#from players.kbd_gl import KeyboardPlayer
+from players.kbd import KeyboardPlayer
 from players.net import NetConn, NetPlayer
 from players.ai import AIPlayer
 

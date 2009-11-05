@@ -24,7 +24,7 @@ class Nemesis(Ship):
     name = "Nemesis"
     parts = "B1 B2 B3 R1 R2 R3 R4 R5 L1 L2 L3 L4 L5".split()
     center_part = "B1"
-    scale = 0.001
+    scale = 0.075
     
     # Ship characteristics
     engineForce = 0, -500

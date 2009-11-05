@@ -18,13 +18,9 @@ along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from random import randrange
 
-import pymunk as pm
-from pymunk import Vec2d
-
+from engine import vforangle, rotate
+from physics import Body, Circle, Vec2
 from actor import Actor
-#from render import Color, draw_solid_circle
-import pygame
-from utils import transform
 
 class Asteroid(Actor):
 
@@ -34,50 +30,57 @@ class Asteroid(Actor):
 
     def __init__(self, melee):
         Actor.__init__(self, melee)
-        
-        self.radius = 150
-        self.offset1 = -self.radius, self.radius
-        self.offset2 = self.radius, self.radius
-        
-        # Calculate mass and inertia
-        mass = 0.5
-        i1 = pm.moment_for_circle(mass, 0, self.radius, self.offset1)
-        i2 = pm.moment_for_circle(mass, 0, self.radius, self.offset2)
-        
-        # Create body
-        self.body = pm.Body(mass, i1+i2) 
-        
-        ub = melee.upperBound
-        lb = melee.lowerBound
+                
+        # Randomize velocity
+        ub = melee.aabb.upper_bound
+        lb = melee.aabb.lower_bound
         x = randrange(lb.x, ub.x)
         y = randrange(lb.y, ub.y)
-        self.body.position = x, y
-        self.body.angular_velocity = 1.5
+        av = 0.1
+        vx = randrange(-50.0, 50.0)
+        vy = randrange(-50.0, 50.0)
         
-        # Create shapes
-        self.circle1 = pm.Circle(self.body, self.radius, self.offset1)
-        self.circle2 = pm.Circle(self.body, self.radius, self.offset2)
+        # Create body
+        bodydef = Body()
+        bodydef.ccd = True
+        bodydef.position = Vec2(x, y) 
+        self.body = melee.world.append_body(bodydef)
+        self.body.angular_velocity = av
+        self.body.linear_velocity = Vec2(vx, vy)
         
-        # Add body and shapes to space
-        melee.space.add(self.body, self.circle1, self.circle2)
+        # Create shape
+        self.radius = 0.5
+        density = 5.0
+        
+        c1 = Circle()
+        c1.radius = self.radius 
+        self.c1_local = -0.5, 0.5
+        c1.local_position = Vec2(*self.c1_local)
+        c1.density = density
+        self.c1 = self.body.append_shape(c1)
+        
+        c2 = Circle()
+        c2.radius = self.radius 
+        self.c2_local = 0.5, 0.5
+        c2.local_position = Vec2(*self.c2_local)
+        c2.density = density
+        self.c2 = self.body.append_shape(c2)
+        
+        self.body.set_mass_from_shapes()
 
-        # Randomize velocity
-        x = randrange(-15000.0, 15000.0)
-        y = randrange(-15000.0, 15000.0)
-        self.body.velocity = Vec2d(x, y)
-    
     #def applyGravity(self):
     #    pass
         
-    def draw(self, surface, view):
-        center1 = self.body.position + self.circle1.center.cpvrotate(self.body.rotation_vector)
-        center2 = self.body.position + self.circle2.center.cpvrotate(self.body.rotation_vector)
-        if self.melee.backend == 'sdl':
-            fill = 255,0,0
-            r = transform.scale(self.radius)
-            pygame.draw.circle(surface, fill, transform.to_sdl(center1), r)
-            pygame.draw.circle(surface, fill, transform.to_sdl(center2), r)
-        elif self.melee.backend == 'gl':
-            fill = Color(1, 0, 0)
-            draw_solid_circle(center1, self.radius, fill, fill) 
-            draw_solid_circle(center2, self.radius, fill, fill)
+    def draw(self):
+        from engine import draw_solid_circle
+        vec = vforangle(self.body.angle)
+        p1 = rotate(vec, self.c1_local)
+        p = self.body.position
+        c1x = p.x + p1[0]
+        c1y = p.y + p1[1]
+        p2 = rotate(vec, self.c2_local)
+        c2x = p.x + p2[0]
+        c2y = p.y + p2[1]
+        fill = 255, 0, 0
+        draw_solid_circle((c1x, c1y), self.radius, fill, fill) 
+        draw_solid_circle((c2x, c2y), self.radius, fill, fill)

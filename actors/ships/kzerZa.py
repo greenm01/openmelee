@@ -16,18 +16,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+from engine import draw_solid_polygon, vforangle, rotate
 from physics import *
-
 from primary_weapon import PrimaryWeapon
 from ship import Ship
-from utils import rotate
 
 class KzerZa(Ship):
+
     name = "Kzer-Za"
-    parts = ["bridge", "body", "tail", "rightStrut", "leftStrut", "rightWing", "leftWing"]
+    parts = ["bridge", "body", "tail_left", "tail_right", "rightStrut", "leftStrut", "rightWing", "leftWing"]
     center_part = "bridge"
-    scale = 0.001
+    scale = 0.0075
 
     # Ship characteristics
     engineForce = 0, -500
@@ -36,7 +35,7 @@ class KzerZa(Ship):
     leftTurnPoint = 0.5, 0
 
     # Physics properties
-    initial_position = Vec2(10, 10)
+    initial_position = Vec2(30, 30)
     initial_velocity = Vec2(0, 0)
     initial_ang_vel = 0
     density = 5.0
@@ -54,8 +53,9 @@ class KzerZa(Ship):
     
     def __init__(self, melee):
         super(KzerZa, self).__init__(melee)
-       
+            
     def fire(self):
+        return
         if not self.primary_time() or self.battery <= self.pEnergy:
             return  
         
@@ -86,3 +86,16 @@ class KzerZa(Ship):
         projectile.damage = 10
         projectile.health = 5
         projectile.shapes = [poly]
+        
+    def draw(self):
+        green = 0, 255, 0
+        pos = self.body.position
+        vec = vforangle(self.body.angle)
+        for s in self.body.shapes:
+            verts = []
+            for v in s.vertices:
+                p = rotate(vec, (v.x, v.y))
+                px = pos.x + p[0]
+                py = pos.y + p[1]
+                verts.append((px, py))
+            draw_solid_polygon(verts, green, green)        

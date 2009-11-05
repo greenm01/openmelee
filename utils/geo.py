@@ -230,11 +230,7 @@ def calc_perimeter(points):
    
 def get_poly_UA(pointlist, points_as_Vec2d=True):
     """Calculates the perimeter and area of a given polygon
-
     Use calc_area() to get the area instead of this method
-   
-    :deprecated: Scheduled for deletion in pymunk 0.8.5+
-   
     :return: U, A    
     """
     return calc_perimeter(pointlist), calc_area(pointlist) # ugly fix until this method is removed

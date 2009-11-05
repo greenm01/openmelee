@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.6
+#
 # Copyright 2009 Mason Green & Tom Novelli
 #
 # This file is part of OpenMelee.
@@ -13,4 +15,25 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
+# along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>
+
+import sys
+import os
+
+from melee import Melee
+
+if __name__ == '__main__':
+    '''
+    Usage: melee.py [[remote-address]:port] [local-port] [position]
+    '''
+    REMOTE = None
+    LOCAL  = ('', 8888)
+    if len(sys.argv) > 1:
+        a = sys.argv[1].split(':')
+        REMOTE = (a[0], int(a[1]))
+    if len(sys.argv) > 2:
+        LOCAL = ('', int(sys.argv[2]))
+    if len(sys.argv) > 3:
+        Melee.WINDOW_POSITION = sys.argv[3]
+
+    window = Melee(REMOTE)

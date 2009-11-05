@@ -1,56 +1,29 @@
-"""Squirtle mini-library for SVG rendering in Pyglet.
+########################
+### NON GL VERSION
+########################
 
+"""Squirtle mini-library for SVG parsing.
+ 
+MODIFIED VERSION -- removed GL calls for use with SDL backend (for parsing only)
+ 
 Example usage:
-    import squirtle
-    my_svg = squirtle.SVG('filename.svg')
-    my_svg.draw(100, 200, angle=15)
-    
+import squirtle
+my_svg = squirtle.SVG('filename.svg')
+my_svg.draw(100, 200, angle=15)
 """
-
-from pyglet.gl import *
+ 
 from xml.etree.cElementTree import parse
 import re
 import math
-from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys
-
-tess = gluNewTess()
-gluTessNormal(tess, 0, 0, 1)
-gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
-
-if sys.platform == 'win32':
-    from ctypes import WINFUNCTYPE
-    c_functype = WINFUNCTYPE
-else:
-    c_functype = CFUNCTYPE
-    
-callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
-                  GLU_TESS_BEGIN: c_functype(None, GLenum),
-                  GLU_TESS_END: c_functype(None),
-                  GLU_TESS_ERROR: c_functype(None, GLenum),
-                  GLU_TESS_COMBINE: c_functype(None, POINTER(GLdouble), POINTER(POINTER(GLvoid)), POINTER(GLfloat), POINTER(POINTER(GLvoid)))}
-
-def set_tess_callback(which):
-    def set_call(func):
-        cb = callback_types[which](func)
-        gluTessCallback(tess, which, cast(cb, CFUNCTYPE(None)))
-        return cb
-    return set_call
-    
+ 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
 TOLERANCE = 0.001
-def setup_gl():
-    """Set various pieces of OpenGL state for better rendering of SVG.
-    
-    """
-    glEnable(GL_LINE_SMOOTH)
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
+ 
 def parse_list(string):
     return re.findall("([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)", string)
-
+ 
 def parse_style(string):
     sdict = {}
     for item in string.split(';'):
@@ -77,7 +50,7 @@ def parse_color(c, default=None):
             g = int(c[1], 16) * 17
             b = int(c[2], 16) * 17
         else:
-            raise Exception("Incorrect length for colour " + str(c) + " length " + str(len(c)))            
+            raise Exception("Incorrect length for colour " + str(c) + " length " + str(len(c)))
         return [r,g,b,255]
     except Exception, ex:
         print 'Exception parsing color', ex
@@ -94,7 +67,7 @@ class Matrix(object):
                 self.values = [1, 0, 0, 1, x, y]
             elif string.startswith('scale('):
                 sx, sy = [float(x) for x in parse_list(string[6:-1])]
-                self.values = [sx, 0, 0, sy, 0, 0]           
+                self.values = [sx, 0, 0, sy, 0, 0]
         elif string is not None:
             self.values = list(string)
     
@@ -107,7 +80,7 @@ class Matrix(object):
         return Matrix([self.values[3]/d, -self.values[1]/d, -self.values[2]/d, self.values[0]/d,
                        (self.values[2]*self.values[5] - self.values[3]*self.values[4])/d,
                        (self.values[1]*self.values[4] - self.values[0]*self.values[5])/d])
-
+ 
     def __mul__(self, other):
         a, b, c, d, e, f = self.values
         u, v, w, x, y, z = other.values
@@ -115,31 +88,30 @@ class Matrix(object):
                                
 class TriangulationError(Exception):
     """Exception raised when triangulation of a filled area fails. For internal use only.
-    
-    """
+"""
     pass
-
+ 
 class GradientContainer(dict):
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
         self.callback_dict = {}
-
+ 
     def call_me_on_add(self, callback, grad_id):
         '''The client wants to know when the gradient with id grad_id gets
-        added.  So store this callback for when that happens.
-        When the desired gradient is added, the callback will be called
-        with the gradient as the first and only argument.
-        '''
+added. So store this callback for when that happens.
+When the desired gradient is added, the callback will be called
+with the gradient as the first and only argument.
+'''
         cblist = self.callback_dict.get(grad_id, None)
         if cblist == None:
             cblist = [callback]
             self.callback_dict[grad_id] = cblist
             return
         cblist.append(callback)
-
+ 
     def update(self, *args, **kwargs):
         raise NotImplementedError('update not done for GradientContainer')
-
+ 
     def __setitem__(self, key, val):
         dict.__setitem__(self, key, val)
         callbacks = self.callback_dict.get(key, [])
@@ -164,7 +136,7 @@ class Gradient(object):
         self.stops = sorted(self.stops.items())
         self.svg = svg
         self.inv_transform = Matrix(element.get('gradientTransform')).inverse()
-
+ 
         inherit = self.element.get('{http://www.w3.org/1999/xlink}href')
         parent = None
         delay_params = False
@@ -191,7 +163,7 @@ class Gradient(object):
                 alpha = (t - u)/(v - u)
                 return [int(x[0] * (1 - alpha) + x[1] * alpha) for x in zip(bottom[1], top[1])]
         return self.stops[-1][1]
-
+ 
     def get_params(self, parent):
         for param in self.params:
             v = None
@@ -202,7 +174,7 @@ class Gradient(object):
                 v = float(my_v)
             if v:
                 setattr(self, param, v)
-
+ 
     def tardy_gradient_parsed(self, gradient):
         self.get_params(gradient)
         
@@ -210,40 +182,36 @@ class LinearGradient(Gradient):
     params = ['x1', 'x2', 'y1', 'y2', 'stops']
     def grad_value(self, pt):
         return ((pt[0] - self.x1)*(self.x2 - self.x1) + (pt[1] - self.y1)*(self.y2 - self.y1)) / ((self.x1 - self.x2)**2 + (self.y1 - self.y2)**2)
-
+ 
 class RadialGradient(Gradient):
     params = ['cx', 'cy', 'r', 'stops']
-
+ 
     def grad_value(self, pt):
         return math.sqrt((pt[0] - self.cx) ** 2 + (pt[1] - self.cy) ** 2)/self.r
         
 class SVG(object):
     """Opaque SVG image object.
-    
-    Users should instantiate this object once for each SVG file they wish to 
-    render.
-    
-    """
+Users should instantiate this object once for each SVG file they wish to
+render.
+"""
     
     _disp_list_cache = {}
     def __init__(self, filename, anchor_x=0, anchor_y=0, bezier_points=BEZIER_POINTS, circle_points=CIRCLE_POINTS):
         """Creates an SVG object from a .svg or .svgz file.
-        
-            `filename`: str
-                The name of the file to be loaded.
-            `anchor_x`: float
-                The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic 
-                values 'left', 'center' and 'right' are also accepted.
-            `anchor_y`: float
-                The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic 
-                values 'bottom', 'center' and 'top' are also accepted.
-            `bezier_points`: int
-                The number of line segments into which to subdivide Bezier splines. Defaults to 10.
-            `circle_points`: int
-                The number of line segments into which to subdivide circular and elliptic arcs. 
-                Defaults to 10.
-                
-        """
+`filename`: str
+The name of the file to be loaded.
+`anchor_x`: float
+The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic
+values 'left', 'center' and 'right' are also accepted.
+`anchor_y`: float
+The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic
+values 'bottom', 'center' and 'top' are also accepted.
+`bezier_points`: int
+The number of line segments into which to subdivide Bezier splines. Defaults to 10.
+`circle_points`: int
+The number of line segments into which to subdivide circular and elliptic arcs.
+Defaults to 10.
+"""
         
         self.shapes = {}
         self.filename = filename
@@ -281,7 +249,7 @@ class SVG(object):
             self._a_y = self.height
         else:
             self._a_y = self.anchor_y
-
+ 
     def _get_anchor_y(self):
         return self._anchor_y
         
@@ -298,44 +266,25 @@ class SVG(object):
                 f = open(self.filename, 'rb')
             self.tree = parse(f)
             self.parse_doc()
-            self.disp_list = glGenLists(1)
-            glNewList(self.disp_list, GL_COMPILE)
-            self.render_slowly()
-            glEndList()
-            self._disp_list_cache[self.filename, self.bezier_points] = (self.disp_list, self.width, self.height)
-
+ 
     def draw(self, x, y, z=0, angle=0, scale=1):
         """Draws the SVG to screen.
-        
-        :Parameters
-            `x` : float
-                The x-coordinate at which to draw.
-            `y` : float
-                The y-coordinate at which to draw.
-            `z` : float
-                The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not 
-                give expected results when transparency is used.
-            `angle` : float
-                The angle by which the image should be rotated (in degrees). Defaults to 0.
-            `scale` : float
-                The amount by which the image should be scaled, either as a float, or a tuple 
-                of two floats (xscale, yscale).
-        
-        """
-        glPushMatrix()
-        glTranslatef(x, y, z)
-        if angle:
-            glRotatef(angle, 0, 0, 1)
-        if scale != 1:
-            try:
-                glScalef(scale[0], scale[1], 1)
-            except TypeError:
-                glScalef(scale, scale, 1)
-        if self._a_x or self._a_y:  
-            glTranslatef(-self._a_x, -self._a_y, 0)
-        glCallList(self.disp_list)
-        glPopMatrix()
-
+:Parameters
+`x` : float
+The x-coordinate at which to draw.
+`y` : float
+The y-coordinate at which to draw.
+`z` : float
+The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not
+give expected results when transparency is used.
+`angle` : float
+The angle by which the image should be rotated (in degrees). Defaults to 0.
+`scale` : float
+The amount by which the image should be scaled, either as a float, or a tuple
+of two floats (xscale, yscale).
+"""
+        pass
+ 
     def render_slowly(self):
         self.n_tris = 0
         self.n_lines = 0
@@ -347,9 +296,9 @@ class SVG(object):
                     fills = [g.interp(x) for x in tris]
                 else:
                     fills = [fill for x in tris]
-                #pyglet.graphics.draw(len(tris), GL_TRIANGLES, 
-                #                     ('v3f', sum((x + [0] for x in tris), [])), 
-                #                     ('c3B', sum(fills, [])))
+                #pyglet.graphics.draw(len(tris), GL_TRIANGLES,
+                # ('v3f', sum((x + [0] for x in tris), [])),
+                # ('c3B', sum(fills, [])))
                 glBegin(GL_TRIANGLES)
                 for vtx, clr in zip(tris, fills):
                     vtx = transform(vtx)
@@ -367,22 +316,22 @@ class SVG(object):
                         strokes = [g.interp(x) for x in loop_plus]
                     else:
                         strokes = [stroke for x in loop_plus]
-                    #pyglet.graphics.draw(len(loop_plus), GL_LINES, 
-                    #                     ('v3f', sum((x + [0] for x in loop_plus), [])), 
-                    #                     ('c3B', sum((stroke for x in loop_plus), [])))
+                    #pyglet.graphics.draw(len(loop_plus), GL_LINES,
+                    # ('v3f', sum((x + [0] for x in loop_plus), [])),
+                    # ('c3B', sum((stroke for x in loop_plus), [])))
                     glBegin(GL_LINES)
                     for vtx, clr in zip(loop_plus, strokes):
                         vtx = transform(vtx)
                         glColor4ub(*clr)
                         glVertex3f(vtx[0], vtx[1], 0)
-                    glEnd()                     
+                    glEnd()
     def parse_float(self, txt):
         if txt.endswith('px'):
             return float(txt[:-2])
         else:
             return float(txt)
     
-
+ 
     def parse_doc(self):
         self.paths = []
         self.width = self.parse_float(self.tree._root.get("width", '0'))
@@ -431,20 +380,20 @@ class SVG(object):
         if self.fill == default:
             self.fill = [0, 0, 0, 255]
         if self.stroke == default:
-            self.stroke = [0, 0, 0, 0]  
+            self.stroke = [0, 0, 0, 0]
         if isinstance(self.stroke, list):
             self.stroke[3] = int(self.opacity * stroke_opacity * self.stroke[3])
         if isinstance(self.fill, list):
-            self.fill[3] = int(self.opacity * fill_opacity * self.fill[3])                 
+            self.fill[3] = int(self.opacity * fill_opacity * self.fill[3])
         if isinstance(self.stroke, list) and self.stroke[3] == 0: self.stroke = self.fill #Stroked edges antialias better
         
         if e.tag.endswith('path'):
-            pathdata = e.get('d', '')               
+            pathdata = e.get('d', '')
             pathdata = re.findall("([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)", pathdata)
-
+ 
             def pnext():
                 return (float(pathdata.pop(0)), float(pathdata.pop(0)))
-
+ 
             self.new_path()
             while pathdata:
                 opcode = pathdata.pop(0)
@@ -563,14 +512,14 @@ class SVG(object):
                 print 'Exception while parsing element', c
                 raise
         self.transform = oldtransform
-        self.opacity = oldopacity                        
-
+        self.opacity = oldopacity
+ 
     def new_path(self):
         self.x = 0
         self.y = 0
         self.close_index = 0
         self.path = []
-        self.loop = [] 
+        self.loop = []
     def close_path(self):
         self.loop.append(self.loop[0][:])
         self.path.append(self.loop)
@@ -594,7 +543,7 @@ class SVG(object):
         x_ = cp * dx + sp * dy
         y_ = -sp * dx + cp * dy
         r2 = (((rx * ry)**2 - (rx * y_)**2 - (ry * x_)**2)/
-	      ((rx * y_)**2 + (ry * x_)**2))
+((rx * y_)**2 + (ry * x_)**2))
         if r2 < 0: r2 = 0
         r = math.sqrt(r2)
         if large_arc == sweep:
@@ -609,7 +558,7 @@ class SVG(object):
             return sgn * a
         
         psi = angle((1,0), ((x_ - cx_)/rx, (y_ - cy_)/ry))
-        delta = angle(((x_ - cx_)/rx, (y_ - cy_)/ry), 
+        delta = angle(((x_ - cx_)/rx, (y_ - cy_)/ry),
                       ((-x_ - cx_)/rx, (-y_ - cy_)/ry))
         if sweep and delta < 0: delta += math.pi * 2
         if not sweep and delta > 0: delta -= math.pi * 2
@@ -621,7 +570,7 @@ class SVG(object):
             st = math.sin(theta)
             self.line_to(cp * rx * ct - sp * ry * st + cx,
                          sp * rx * ct + cp * ry * st + cy)
-
+ 
     def curve_to(self, x1, y1, x2, y2, x, y):
         if not self.bezier_coefficients:
             for i in xrange(self.bezier_points+1):
@@ -637,12 +586,12 @@ class SVG(object):
             px = t[0] * self.x + t[1] * x1 + t[2] * x2 + t[3] * x
             py = t[0] * self.y + t[1] * y1 + t[2] * y2 + t[3] * y
             self.loop.append([px, py])
-
+ 
         self.x, self.y = px, py
-
+ 
     def line_to(self, x, y):
         self.set_position(x, y)
-
+ 
     def end_path(self):
         self.path.append(self.loop)
         verts = []
@@ -656,83 +605,23 @@ class SVG(object):
                         loop.append(pt)
                 path.append(loop)
                 for i in loop:
-                    verts.append((i[0], i[1]))            
+                    verts.append((i[0], i[1]))
             self.paths.append((path if self.stroke else None, self.stroke,
                                self.triangulate(path) if self.fill else None, self.fill,
                                self.transform))
             self.shapes[self.id] = verts
         self.path = []
-
-    def triangulate(self, looplist):
-        tlist = []
-        self.curr_shape = []
-        spareverts = []
-
-        @set_tess_callback(GLU_TESS_VERTEX)
-        def vertexCallback(vertex):
-            vertex = cast(vertex, POINTER(GLdouble))
-            self.curr_shape.append(list(vertex[0:2]))
-
-        @set_tess_callback(GLU_TESS_BEGIN)
-        def beginCallback(which):
-            self.tess_style = which
-
-        @set_tess_callback(GLU_TESS_END)
-        def endCallback():
-            if self.tess_style == GL_TRIANGLE_FAN:
-                c = self.curr_shape.pop(0)
-                p1 = self.curr_shape.pop(0)
-                while self.curr_shape:
-                    p2 = self.curr_shape.pop(0)
-                    tlist.extend([c, p1, p2])
-                    p1 = p2
-            elif self.tess_style == GL_TRIANGLE_STRIP:
-                p1 = self.curr_shape.pop(0)
-                p2 = self.curr_shape.pop(0)
-                while self.curr_shape:
-                    p3 = self.curr_shape.pop(0)
-                    tlist.extend([p1, p2, p3])
-                    p1 = p2
-                    p2 = p3
-            elif self.tess_style == GL_TRIANGLES:
-                tlist.extend(self.curr_shape)
-            else:
-                self.warn("Unrecognised tesselation style: %d" % (self.tess_style,))
-            self.tess_style = None
-            self.curr_shape = []
-
-        @set_tess_callback(GLU_TESS_ERROR)
-        def errorCallback(code):
-            ptr = gluErrorString(code)
-            err = ''
-            idx = 0
-            while ptr[idx]: 
-                err += chr(ptr[idx])
-                idx += 1
-            self.warn("GLU Tesselation Error: " + err)
-
-        @set_tess_callback(GLU_TESS_COMBINE)
-        def combineCallback(coords, vertex_data, weights, dataOut):
-            x, y, z = coords[0:3]
-            data = (GLdouble * 3)(x, y, z)
-            dataOut[0] = cast(pointer(data), POINTER(GLvoid))
-            spareverts.append(data)
+ 
+    
+    def flatten(l):
+        if isinstance(l,list):
+            return sum(map(flatten,l))
+        else:
+            return l
         
-        data_lists = []
-        for vlist in looplist:
-            d_list = []
-            for x, y in vlist:
-                v_data = (GLdouble * 3)(x, y, 0)
-                d_list.append(v_data)
-            data_lists.append(d_list)
-        gluTessBeginPolygon(tess, None)
-        for d_list in data_lists:    
-            gluTessBeginContour(tess)
-            for v_data in d_list:
-                gluTessVertex(tess, v_data, v_data)
-            gluTessEndContour(tess)
-        gluTessEndPolygon(tess)
-        return tlist       
-
+    def triangulate(self, looplist):
+        return None
+ 
+ 
     def warn(self, message):
         print "Warning: SVG Parser (%s) - %s" % (self.filename, message)
