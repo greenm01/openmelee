@@ -6,6 +6,8 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 # Usage: python setup.py build_ext --i
+[build_ext]
+inplace=1
 
 version = '0.01'
 

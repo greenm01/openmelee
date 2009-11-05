@@ -29,10 +29,10 @@ class KzerZa(Ship):
     scale = 0.0075
 
     # Ship characteristics
-    engineForce = 0, -500
-    turnForce = 0, 9000
-    rightTurnPoint = -0.5, 0
-    leftTurnPoint = 0.5, 0
+    engineForce = 0, -100
+    turnForce = 0, 10000
+    rightTurnPoint = -1.1, 0
+    leftTurnPoint = 1.1, 0
 
     # Physics properties
     initial_position = Vec2(30, 30)
@@ -50,6 +50,10 @@ class KzerZa(Ship):
     pDelay = 0.1    # Primary delay
     sDelay = 0.5    # Secondary delay
     bDelay = 0.05   # Batter recharge rate
+    
+    # Debug draw colors 
+    fill = 0, 255, 0
+    outline = 0, 255, 0
     
     def __init__(self, melee):
         super(KzerZa, self).__init__(melee)
@@ -85,17 +89,4 @@ class KzerZa(Ship):
         projectile.lifetime = 2.5
         projectile.damage = 10
         projectile.health = 5
-        projectile.shapes = [poly]
-        
-    def draw(self):
-        green = 0, 255, 0
-        pos = self.body.position
-        vec = vforangle(self.body.angle)
-        for s in self.body.shapes:
-            verts = []
-            for v in s.vertices:
-                p = rotate(vec, (v.x, v.y))
-                px = pos.x + p[0]
-                py = pos.y + p[1]
-                verts.append((px, py))
-            draw_solid_polygon(verts, green, green)        
+        projectile.shapes = [poly]    

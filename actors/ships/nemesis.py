@@ -24,7 +24,7 @@ class Nemesis(Ship):
     name = "Nemesis"
     parts = "B1 B2 B3 R1 R2 R3 R4 R5 L1 L2 L3 L4 L5".split()
     center_part = "B1"
-    scale = 0.075
+    scale = 0.0075
     
     # Ship characteristics
     engineForce = 0, -500
@@ -49,6 +49,10 @@ class Nemesis(Ship):
     pDelay = 0.15
     sDelay = 0.5
     bDelay = 0.25
+    
+    # Debug draw colors 
+    fill = 42, 38, 127
+    outline = 42, 38, 127
     
     def __init__(self, melee):
         super(Nemesis, self).__init__(melee)

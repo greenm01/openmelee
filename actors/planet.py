@@ -25,6 +25,10 @@ from actor import Actor
 class Planet(Actor):
     is_actor = False
 
+    # Debug draw colors 
+    fill = 50, 100, 200
+    outline = 255, 0, 0
+        
     def __init__(self, melee):
         Actor.__init__(self, melee)
         
@@ -42,24 +46,11 @@ class Planet(Actor):
         circledef = Circle()
         circledef.radius = self.radius 
         self.body.append_shape(circledef)
+        
+        melee.actors += [self]
     
     def check_death(self):
         pass
         
     def apply_gravity(self):
-        pass
-        
-    def draw(self):
-        from engine import draw_solid_circle
-        
-        x = self.body.position.x
-        y = self.body.position.y
-        #a = self.body.angle * 57.2957795     # convert to degrees
-
-        #self.svg.draw(x, y, angle=a)
-
-        center = x, y
-        fill = 50, 100, 200
-        outline = 255, 0, 0
-        draw_solid_circle(center, self.radius, fill, outline)
-       
+        pass       

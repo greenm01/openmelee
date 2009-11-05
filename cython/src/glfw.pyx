@@ -6,10 +6,18 @@ cdef extern from 'math.h':
     double cos(double)
     double sin(double)
     double sqrt(double)
+
+key_id = 0
+key_state = 0
     
+cdef extern void __stdcall callback(int id, int state):
+    global key_id, key_state
+    key_id = id
+    key_state = state
+        
 cdef class Game:
 
-    title = ""
+    title = "OpenMelee 0.01"
     
     def __init__(self, window_width, window_height):
     
@@ -19,12 +27,14 @@ cdef class Game:
         if not glfwOpenWindow(window_width, window_height, 8, 8, 8, 8, 24, 0, GLFW_WINDOW):
             glfwTerminate()
             raise SystemError('Unable to create GLFW window')
-        else:
-            glfwEnable(GLFW_STICKY_KEYS)
-            glfwSwapInterval(1) #VSync on
         
+        glfwEnable(GLFW_STICKY_KEYS)
+        glfwSwapInterval(1) #VSync on
+        # Set key callback            
+        glfwSetKeyCallback(callback)
+
     def main_loop(self):
-    
+        
         frame_count = 1
         start_time = glfwGetTime()
 
@@ -46,11 +56,13 @@ cdef class Game:
             # Check if the ESC key was pressed or the window was closed
             running = ((not glfwGetKey(GLFW_KEY_ESC))
                        and glfwGetWindowParam(GLFW_OPENED))
-            
-            self.update()
+             
+            self.update(key_id, key_state)
             self.render()
+        
             glfwSwapBuffers()
 
+            
         glfwTerminate()
         
     property window_title:
@@ -59,7 +71,7 @@ cdef class Game:
     property time:
         def __get__(self): return glfwGetTime()
         def __set__(self, t): glfwSetTime(t)
-
+        
 # TODO: Refactor math functions into a math module  
      
 def vforangle(angle):

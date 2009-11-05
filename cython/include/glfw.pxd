@@ -24,23 +24,47 @@ cdef extern from "GL/glfw.h":
         GLFW_STICKY_KEYS
         GLFW_OPENED
         GLFW_KEY_ESC 
+        GLFW_PRESS
     
-    void glfwSetWindowTitle(char *title)
-    
-    int GLFW_PRESS
+    # Function pointer types
+    ctypedef void (__stdcall * GLFWwindowsizefun)(int, int)
+    ctypedef int  (__stdcall * GLFWwindowclosefun)()
+    ctypedef void (__stdcall * GLFWwindowrefreshfun)()
+    ctypedef void (__stdcall * GLFWmousebuttonfun)(int, int)
+    ctypedef void (__stdcall * GLFWmouseposfun)(int, int)
+    ctypedef void (__stdcall * GLFWmousewheelfun)(int)
+    ctypedef void (__stdcall * GLFWkeyfun)(int, int)
+    ctypedef void (__stdcall * GLFWcharfun)(int, int)
+    ctypedef void (__stdcall * GLFWthreadfun)()
         
     int glfwInit()
     void glfwTerminate()
+    void glfwSetWindowTitle(char *title)
     int glfwOpenWindow( int width, int height,
             int redbits, int greenbits, int bluebits, int alphabits,
             int depthbits, int stencilbits, int mode )
     void glfwSwapInterval( int interval )
     void glfwSwapBuffers()
     void glfwEnable( int token )
-    int  glfwGetWindowParam( int param )
-    int  glfwGetKey( int key )
-    int  glfwGetWindowParam( int param )
+    int glfwGetWindowParam( int param )
+    int glfwGetKey( int key )
+    int glfwGetWindowParam( int param )
     void glfwGetWindowSize( int *width, int *height )
     double glfwGetTime()
     void glfwSetTime(double time)
+    
+    # Input handling
+    void glfwPollEvents()
+    void glfwWaitEvents()
+    int glfwGetKey( int key )
+    int glfwGetMouseButton( int button )
+    void glfwGetMousePos( int *xpos, int *ypos )
+    void glfwSetMousePos( int xpos, int ypos )
+    int  glfwGetMouseWheel()
+    void glfwSetMouseWheel( int pos )
+    void glfwSetKeyCallback(GLFWkeyfun cbfun)
+    void glfwSetCharCallback( GLFWcharfun cbfun )
+    void glfwSetMouseButtonCallback( GLFWmousebuttonfun cbfun )
+    void glfwSetMousePosCallback( GLFWmouseposfun cbfun )
+    void glfwSetMouseWheelCallback( GLFWmousewheelfun cbfun )
     

@@ -24,6 +24,10 @@ from actor import Actor
 
 class Asteroid(Actor):
 
+    # Debug draw colors 
+    fill = 255, 0, 0
+    outline = 255, 0, 0
+        
     ##
     ## INITIALIZATION
     ##
@@ -67,20 +71,3 @@ class Asteroid(Actor):
         self.c2 = self.body.append_shape(c2)
         
         self.body.set_mass_from_shapes()
-
-    #def applyGravity(self):
-    #    pass
-        
-    def draw(self):
-        from engine import draw_solid_circle
-        vec = vforangle(self.body.angle)
-        p1 = rotate(vec, self.c1_local)
-        p = self.body.position
-        c1x = p.x + p1[0]
-        c1y = p.y + p1[1]
-        p2 = rotate(vec, self.c2_local)
-        c2x = p.x + p2[0]
-        c2y = p.y + p2[1]
-        fill = 255, 0, 0
-        draw_solid_circle((c1x, c1y), self.radius, fill, fill) 
-        draw_solid_circle((c2x, c2y), self.radius, fill, fill)

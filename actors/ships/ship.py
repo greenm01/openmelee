@@ -80,7 +80,7 @@ class Ship(Actor):
 
     def thrust(self):
         f = rotate(self.engineForce, self.body.angle)
-        self.body.apply_force(Vec2(f[0], f[1]), Vec2(0,0))
+        self.body.apply_force(Vec2(f[0], f[1]), Vec2(0, 0))
 
     def turn_left(self):
         t = cross(self.leftTurnPoint, self.turnForce)

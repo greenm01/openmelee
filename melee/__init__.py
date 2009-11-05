@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
+
 from physics import *
 from engine import Game, init_gl, reset_zoom, draw_polygon
 
@@ -24,9 +25,9 @@ from actors.ships.nemesis import Nemesis
 #from history import History
 from players.net import NetConn, NetPlayer
 from utils import clamp
-
-#import config
+import config
 import struct
+from players.kbd import update_ship
 
 NUM_ASTEROIDS = 7
 
@@ -49,6 +50,9 @@ class Melee(Game):
     aabb.lower_bound = Vec2(-100, -100)
     aabb.upper_bound = Vec2(100, 100)
 
+    last_key_id = 0
+    last_key_state = 0
+    
     ##
     ## INITIALIZATION
     ##
@@ -77,17 +81,17 @@ class Melee(Game):
         self.world = World(-width/2, -height/2, width, height, gravity)
             
         # Create players/controllers
-        #self.players = list(cls() for cls in config.PLAYERS)
-
+        self.players = list(cls() for cls in config.PLAYERS)
+        
         # Create game objects (they add themselves to self.actors if necessary)
         self.actors = []
-        self.planet = Planet(self)
-        self.actors += [self.planet]
-        self.ship1 = KzerZa(self)
-        #self.ship2 = Nemesis(self)
+        
+        KzerZa(self)
+        Nemesis(self)
+        Planet(self)
         
         for i in range(NUM_ASTEROIDS):
-            self.actors += [Asteroid(self)]
+            Asteroid(self)
             
         # Save state for rollback
         self.run_time = self.time
@@ -112,9 +116,14 @@ class Melee(Game):
     ##
     ## EVENTS
     ##
-
-    def update(self):
-
+        
+    def update(self, key_id, key_state):
+ 
+        if self.last_key_id != key_id or self.last_key_state != key_state:
+            self.last_key_id = key_id
+            self.last_key_state = key_state
+            update_ship(self, key_id, key_state)
+            
         # Update states
         for a in self.actors:
             if a.check_death(): continue
@@ -144,7 +153,7 @@ class Melee(Game):
         draw_polygon(verts, cyan)
         
         for a in self.actors:
-            a.draw()
+            a.debug_draw()
         
     ##
     ## NETWORK
