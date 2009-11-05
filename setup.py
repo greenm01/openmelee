@@ -21,7 +21,7 @@ elif sys.platform == 'darwin':
     raise SystemError('OSX is unsupported in this version')
 else:
     # GNU/Linux, BSD, etc
-    libs = ['GLEW', 'GLU', 'GLFW', 'GL']
+    libs = ['GLEW', 'GLU', 'glfw', 'GL']
     
 mod_engine = Extension(
     "engine",
