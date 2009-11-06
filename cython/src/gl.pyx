@@ -10,11 +10,12 @@ SEGMENTS = 25
 INCREMENT = 2.0 * PI / SEGMENTS
     
 def init_gl(width, height):
-    glEnable(GL_LINE_SMOOTH)
+    #glEnable(GL_LINE_SMOOTH)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glClearColor(0.0, 0.0, 0.0, 0.0)
-
+    glHint (GL_LINE_SMOOTH_HINT, GL_NICEST)
+    
 def reset_zoom(zoom, center, size):
 
     left = -size[0] / zoom
@@ -55,7 +56,30 @@ def draw_test():
     glVertex2f(50.0, -50.0)
     glEnd()
     glFlush()
+
+def draw_circle(center, radius, outline):
+
+    c = cos(INCREMENT)
+    s = sin(INCREMENT)
+ 
+    points = []
+    x = radius
+    y = 0
+ 
+    cx, cy = center
+    for i in range(SEGMENTS ):
+        points += [[x + cx, y + cy]]
+        t = x
+        x = c * x - s * y
+        y = s * t + c * y
     
+    glColor3ub(outline[0], outline[1], outline[2])
+    glBegin(GL_LINE_LOOP)
+    for p in points:
+        glVertex2f(p[0], p[1])
+    glEnd()
+    
+        
 def draw_solid_circle(center, radius, fill, outline):
    
     r, g, b = fill
@@ -76,7 +100,7 @@ def draw_solid_circle(center, radius, fill, outline):
  
     cx, cy = center
     for i in range(SEGMENTS ):
-        points.append([x + cx, y + cy])
+        points += [[x + cx, y + cy]]
         t = x
         x = c * x - s * y
         y = s * t + c * y

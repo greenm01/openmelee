@@ -18,9 +18,10 @@ along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import time
 
+from engine import vforangle, rotate
 from physics import *
 from actors.actor import Actor
-from utils import rotate, clamp, cross
+from utils import clamp, cross
 from utils.geo import calc_center, convex_hull
 
 # Button numbers
@@ -31,6 +32,7 @@ FIRE    = 8
 SPECIAL = 16
 
 class Ship(Actor):
+
     # Button state - 5-bit bitmask, with 1=pressed
     buttons = 0
     # Button state of previous update
@@ -79,8 +81,9 @@ class Ship(Actor):
     ##
 
     def thrust(self):
-        f = rotate(self.engineForce, self.body.angle)
-        self.body.apply_force(Vec2(f[0], f[1]), Vec2(0, 0))
+        a = vforangle(self.body.angle)
+        f = rotate(self.engineForce, a)
+        self.body.apply_force(Vec2(f[0], f[1]), self.body.world_center)
 
     def turn_left(self):
         t = cross(self.leftTurnPoint, self.turnForce)

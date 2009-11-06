@@ -47,8 +47,8 @@ class Melee(Game):
 
     # Space upper and lower bounds
     aabb = AABB()
-    aabb.lower_bound = Vec2(-100, -100)
-    aabb.upper_bound = Vec2(100, 100)
+    aabb.lower_bound = Vec2(-200, -200)
+    aabb.upper_bound = Vec2(200, 200)
 
     last_key_id = 0
     last_key_state = 0
@@ -76,8 +76,8 @@ class Melee(Game):
       
         # Initialize physics engine
         gravity = Vec2(0, 0)
-        width = 300
-        height = 300
+        width = 700
+        height = 700
         self.world = World(-width/2, -height/2, width, height, gravity)
             
         # Create players/controllers

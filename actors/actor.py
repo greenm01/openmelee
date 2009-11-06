@@ -21,7 +21,7 @@ import sys
 import time
 
 from engine import calc_planet_gravity, vforangle, rotate
-from engine import draw_solid_circle, draw_solid_polygon
+from engine import draw_solid_circle, draw_solid_polygon, draw_circle
 from physics import Vec2, BoundPolygon, BoundCircle
 from utils.geo import calc_center
 
@@ -79,7 +79,10 @@ class Actor(object):
                 c1x = pos.x + p[0]
                 c1y = pos.y + p[1]
                 draw_solid_circle((c1x, c1y), s.radius, self.fill, self.outline) 
-            
+        
+        # Draw center of mass
+        #red = 255, 0, 0
+        #draw_circle((pos.x, pos.y), 0.5, red) 
             
     def check_death(self):
         age = time.time() - self.birthday

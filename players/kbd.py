@@ -26,8 +26,6 @@ def compute_keymap():
             keymap[key] = player, button
             
 compute_keymap()
-for k in keymap:
-    print k
     
 def process_events(game):
     "Called once per game loop to process I/O events"
@@ -64,9 +62,7 @@ def update_ship(game, key, press):
     bit = 1 << button
     if press:
         game.actors[player].buttons |= bit
-        #game.players[player].on_key_press(n)
     else:
         game.actors[player].buttons &= (0x1f ^ bit)
-        #game.players[player].on_key_release(n)
 
     game.button_change = True

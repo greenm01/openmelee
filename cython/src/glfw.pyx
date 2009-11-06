@@ -81,9 +81,10 @@ def rotate(v1, v2):
     return (v1[0]*v2[0] - v1[1]*v2[1], v1[0]*v2[1] + v1[1]*v2[0])
     
 def calc_planet_gravity(pos):
+
     min_radius = 0.1
-    max_radius = 30
-    strength = 15
+    max_radius = 50
+    strength = 50
  
     center = 0, 0
     rx = center[0] - pos.x

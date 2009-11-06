@@ -25,14 +25,14 @@ class KzerZa(Ship):
 
     name = "Kzer-Za"
     parts = ["bridge", "body", "tail_left", "tail_right", "rightStrut", "leftStrut", "rightWing", "leftWing"]
-    center_part = "bridge"
+    center_part = "body"
     scale = 0.0075
 
     # Ship characteristics
-    engineForce = 0, -100
-    turnForce = 0, 10000
-    rightTurnPoint = -1.1, 0
-    leftTurnPoint = 1.1, 0
+    engineForce = 0, -3000
+    turnForce = 0, 8000
+    rightTurnPoint = -2.0, 0
+    leftTurnPoint = 2.0, 0
 
     # Physics properties
     initial_position = Vec2(30, 30)
