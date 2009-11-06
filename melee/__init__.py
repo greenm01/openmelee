@@ -1,4 +1,5 @@
-# Copyright 2009 Mason Green & Tom Novelli
+#
+# Copyright (c) 2009 Mason Green & Tom Novelli
 #
 # This file is part of OpenMelee.
 #
@@ -14,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 from physics import *
 from engine import Game, init_gl, reset_zoom, draw_polygon
