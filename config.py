@@ -24,7 +24,7 @@ from utils.key_map import *
 
 KEYS = [
         # [thrust, left, right, fire, special],
-        [K_W, K_A, K_D, K_PERIOD, K_BACKSLASH],
+        [K_W, K_A, K_D, K_PERIOD, K_SLASH],
         [K_UP, K_LEFT, K_RIGHT, K_LSHIFT, K_LCTRL],
 ]
 

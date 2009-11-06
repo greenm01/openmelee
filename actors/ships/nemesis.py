@@ -104,7 +104,7 @@ class Nemesis(Ship):
         if(self.buttons & SPECIAL):
             if(self.buttons & LEFT):
                 self.turret_angle += PI / 32
-            if(self.button & RIGHT):
+            if(self.buttons & RIGHT):
                 self.turret_angle -= PI / 32
                 
         self.turret.angle = self.body.angle + (PI * 0.5) + self.turret_angle

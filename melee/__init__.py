@@ -121,7 +121,7 @@ class Melee(Game):
     def update(self, key_id, key_state):
  
         if self.last_key_id != key_id or self.last_key_state != key_state:
-            print "%d , %d" % (key_id, key_state)
+            #print "%d , %d" % (key_id, key_state)
             self.last_key_id = key_id
             self.last_key_state = key_state
             update_ship(self, key_id, key_state)

@@ -110,13 +110,13 @@ class Ship(Actor):
         self.time = self.melee.time   
         self.recharge_battery()
 
-        if buttons_changed & LEFT:
+        if buttons_changed & LEFT and (not self.buttons & SPECIAL):
             if self.buttons & LEFT:
                 self.turn_left()
             else:
                 self.body.angular_velocity = 0
 
-        if buttons_changed & RIGHT:
+        if buttons_changed & RIGHT and (not self.buttons & SPECIAL):
             if self.buttons & RIGHT:
                 self.turn_right()
             else:
@@ -124,7 +124,7 @@ class Ship(Actor):
 
         if (self.buttons & FIRE) and (not self.buttons & SPECIAL):
             self.fire()
-        
+          
         self.update_special()
 
         if (self.buttons & THRUST):

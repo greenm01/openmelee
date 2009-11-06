@@ -111,26 +111,6 @@ class Actor(object):
 		#state.pos.set(rBody.x, rBody.y)
 		#state.linVel = rBody.v
         pass
-
-    '''
-    def calcRadius(self):
-		for s in self.body.shapes:
-			if s.type == phx.Shape.CIRCLE:
-				if s.r > self.radius: self.radius = s.r
-			else:
-				// Polygon
-				var poly : phx.Polygon = cast(s);
-				var v = poly.verts;
-				while (v != null) {
-					var l = v.length();
-					if (l > radius) radius = l;
-					v = v.next;
-				}
-			}
-		}
-		
-        #state.radius = radius;
-	'''
-        
+ 
     def destroy(self):
         pass
