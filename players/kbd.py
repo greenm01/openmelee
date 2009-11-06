@@ -57,7 +57,7 @@ def update_ship(game, key, press):
     if not isinstance(game.players[player], KeyboardPlayer):
         print "Player %d is not keyboard controlled." % player
         return
-
+    
     # Update Ship.buttons bitmask
     bit = 1 << button
     if press:

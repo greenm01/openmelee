@@ -87,9 +87,8 @@ class Melee(Game):
         
         # Create game objects (they add themselves to self.actors if necessary)
         self.actors = []
-        
-        KzerZa(self)
-        Nemesis(self)
+        self.me = Nemesis(self)
+        self.enemy = KzerZa(self)
         Planet(self)
         
         for i in range(NUM_ASTEROIDS):
@@ -122,6 +121,7 @@ class Melee(Game):
     def update(self, key_id, key_state):
  
         if self.last_key_id != key_id or self.last_key_state != key_state:
+            print "%d , %d" % (key_id, key_state)
             self.last_key_id = key_id
             self.last_key_state = key_state
             update_ship(self, key_id, key_state)
@@ -196,10 +196,10 @@ class Melee(Game):
         from utils import clamp, bounding_box
 
         # Zoom in on the ships (and planet?)
-        objects = self.actors[:2] #+ [self.planet]
+        #objects = self.actors[:2] 
     
-        p1 = objects[0].body.position
-        p2 = objects[1].body.position
+        p1 = self.me.body.position
+        p2 = self.enemy.body.position
         
         range = Vec2(p1.x - p2.x, p1.y - p2.y)
         zoom = clamp(1000/range.length, 2, 60)   

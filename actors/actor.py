@@ -96,7 +96,8 @@ class Actor(object):
 
     # Apply planet gravity
     def apply_gravity(self):
-        fx, fy = calc_planet_gravity(self.body.position)
+        p = self.body.position
+        fx, fy = calc_planet_gravity(p.x, p.y)
         self.body.apply_force(Vec2(fx, fy), self.body.world_center)
     
     def apply_damage(self, damage):

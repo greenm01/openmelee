@@ -28,12 +28,12 @@ cdef extern from 'math.h':
 
 key_id = 0
 key_state = 0
-    
+
 cdef extern void __stdcall callback(int id, int state):
     global key_id, key_state
     key_id = id
     key_state = state
-        
+    
 cdef class Game:
 
     title = "OpenMelee 0.01"
@@ -100,15 +100,15 @@ def rotate(v1, v2):
     return (v1[0]*v2[0] - v1[1]*v2[1], v1[0]*v2[1] + v1[1]*v2[0])
 
 # TODO develop a better gravity attractor?
-def calc_planet_gravity(pos):
+def calc_planet_gravity(float px, float py):
 
     min_radius = 1
     max_radius = 20
     strength = 500
  
     center = 0, 0
-    rx = center[0] - pos.x
-    ry = center[1] - pos.y
+    rx = center[0] - px
+    ry = center[1] - py
     d = sqrt(rx * rx + ry * ry)
     rx /= d
     ry /= d
@@ -119,5 +119,5 @@ def calc_planet_gravity(pos):
     elif ratio > 1.0:
         ratio = 1.0
     
-    return rx * ratio * strength, ry * ratio * strength
+    return (rx * ratio * strength, ry * ratio * strength)
     

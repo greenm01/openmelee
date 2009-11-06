@@ -27,7 +27,7 @@ class KzerZa(Ship):
     parts = ["bridge", "body", "tail_left", "tail_right", "rightStrut", "leftStrut", "rightWing", "leftWing"]
     center_part = "body"
     scale = 0.0075
-
+    
     # Ship characteristics
     engineForce = 0, -50
     turnForce = 0, 8000
@@ -56,7 +56,8 @@ class KzerZa(Ship):
     outline = 0, 255, 0
     
     def __init__(self, melee):
-        super(KzerZa, self).__init__(melee)
+        group = -2
+        Ship.__init__(self, melee, group)
             
     def fire(self):
         
@@ -90,4 +91,7 @@ class KzerZa(Ship):
         projectile.lifetime = 2.5
         projectile.damage = 10
         projectile.health = 5
-        projectile.shapes = verts    
+        projectile.shapes = verts 
+
+    def update_special(self):
+        pass

@@ -16,21 +16,24 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-from physics import Vec2
+from math import pi as PI
 
-from ship import Ship
+from physics import Vec2, Circle, Body, Polygon
+from ship import *
+from secondary_weapon import SecondaryWeapon
 
 class Nemesis(Ship):
+
     name = "Nemesis"
     parts = "B1 B2 B3 R1 R2 R3 R4 R5 L1 L2 L3 L4 L5".split()
     center_part = "B1"
     scale = 0.0075
     
     # Ship characteristics
-    engineForce = 0, -500
+    engineForce = 0, 30
     turnForce = 0, 5000
-    rightTurnPoint = -0.5, 0
-    leftTurnPoint = 0.5, 0
+    rightTurnPoint = -1.5, 0
+    leftTurnPoint = 1.5, 0
 
     # Physics properties
     initial_position = Vec2(-10, -10)
@@ -54,5 +57,55 @@ class Nemesis(Ship):
     fill = 42, 38, 127
     outline = 42, 38, 127
     
+    turret_angle = -PI * 0.5
+    
     def __init__(self, melee):
-        super(Nemesis, self).__init__(melee)
+        group = -1
+        Ship.__init__(self, melee, group)
+   
+        # Create body
+        bodydef = Body()
+        bodydef.ccd = True
+        bodydef.position = self.body.position 
+        self.turret = melee.world.append_body(bodydef)
+        self.turret.angular_velocity = self.body.angular_velocity
+        self.turret.linear_velocity = self.body.linear_velocity
+        
+        # Create shapes
+        self.radius = 0.85
+        density = 2.0
+        # Base
+        base = Circle()
+        base.collision_group = group
+        base.radius = self.radius 
+        base.density = density
+        # Barrel
+        verts = [Vec2(0.15, 2), Vec2( -0.15, 2), Vec2(-0.15, 0), Vec2(0.15, 0)]
+        barrel = Polygon()
+        barrel.vertices = verts
+        barrel.collision_group = group
+        barrel.density = density
+        
+        self.turret.append_shape(base)
+        self.turret.append_shape(barrel)
+        self.turret.set_mass_from_shapes()
+       
+		# Create turret
+        SecondaryWeapon(self, melee, self.turret);
+    
+    def update_special(self):
+    
+        # Update turret state
+        self.turret.position = self.body.position
+        self.turret.angular_velocity = self.body.angular_velocity
+        self.turret.linear_velocity = self.body.linear_velocity
+        
+        # Adjust turret angle
+        if(self.buttons & SPECIAL):
+            if(self.buttons & LEFT):
+                self.turret_angle += PI / 32
+            if(self.button & RIGHT):
+                self.turret_angle -= PI / 32
+                
+        self.turret.angle = self.body.angle + (PI * 0.5) + self.turret_angle
+        

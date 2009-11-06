@@ -46,9 +46,9 @@ class Ship(Actor):
     ## INITIALIZATION
     ##
 
-    def __init__(self, melee):
-        super(Ship, self).__init__(melee)
-
+    def __init__(self, melee, group):
+        Actor.__init__(self, melee)
+               
         # Physics (based on SVG shapes)
         translate = calc_center(self.lines[self.parts.index(self.center_part)])
                 
@@ -71,6 +71,7 @@ class Ship(Actor):
                 y = (v[1] - translate[1]) * self.scale
                 verts.append(Vec2(x, y))   
             polygondef.vertices = verts
+            polygondef.collision_group = group
             self.body.append_shape(polygondef)
         
         self.body.set_mass_from_shapes()
@@ -123,8 +124,8 @@ class Ship(Actor):
 
         if (self.buttons & FIRE) and (not self.buttons & SPECIAL):
             self.fire()
-
-        #self.update_special
+        
+        self.update_special()
 
         if (self.buttons & THRUST):
             self.thrust()

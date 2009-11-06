@@ -29,16 +29,4 @@ class PrimaryWeapon(Actor):
         Actor.__init__(self, melee)
         self.mother_ship = mother_ship
         self.shapes = []
-        
-    def draw(self, surface, view):
-        if self.melee.backend == 'sdl':
-            import pygame
-            from utils import transform
-            fill = 255,0,0
-            r = transform.scale(40.0)
-            pygame.draw.circle(surface, fill, transform.to_sdl(self.body.position), r)
-        elif self.melee.backend == 'gl':
-            from render import Color, draw_polygon
-            color = Color(1, 0, 0)
-            for s in self.shapes:
-                draw_polygon(s, color)
+       
