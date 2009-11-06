@@ -19,7 +19,11 @@ along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 from actors.actor import Actor
 
 class PrimaryWeapon(Actor):
-
+    
+    # Debug draw colors 
+    fill = 255, 0, 0
+    outline = 255, 0, 0
+    
     def __init__(self, mother_ship, melee, body):
         self.body = body
         Actor.__init__(self, melee)

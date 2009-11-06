@@ -53,19 +53,19 @@ class Asteroid(Actor):
         self.body.linear_velocity = Vec2(vx, vy)
         
         # Create shape
-        self.radius = 0.5
-        density = 5.0
+        self.radius = 1.0
+        density = 2.0
         
         c1 = Circle()
         c1.radius = self.radius 
-        self.c1_local = -0.5, 0.5
+        self.c1_local = -1.0, 1.0
         c1.local_position = Vec2(*self.c1_local)
         c1.density = density
         self.c1 = self.body.append_shape(c1)
         
         c2 = Circle()
         c2.radius = self.radius 
-        self.c2_local = 0.5, 0.5
+        self.c2_local = 1.0, 1.0
         c2.local_position = Vec2(*self.c2_local)
         c2.density = density
         self.c2 = self.body.append_shape(c2)

@@ -29,7 +29,7 @@ class KzerZa(Ship):
     scale = 0.0075
 
     # Ship characteristics
-    engineForce = 0, -3000
+    engineForce = 0, -50
     turnForce = 0, 8000
     rightTurnPoint = -2.0, 0
     leftTurnPoint = 2.0, 0
@@ -59,29 +59,30 @@ class KzerZa(Ship):
         super(KzerZa, self).__init__(melee)
             
     def fire(self):
-        return
+        
         if not self.primary_time() or self.battery <= self.pEnergy:
             return  
         
         # Drain battery
         self.battery_cost(self.pEnergy)
         
-        verts = (31.25, 50), (31.25, -50), (-31.25, -50), (-31.25, 50)
-        mass = 10
-        inertia = pymunk.moment_for_poly(mass, verts)
-
         # Create body and shape
-        shell = pymunk.Body(mass, inertia) 
-        angle = self.body.angle
-        shell.angle = angle 
-        velocity = 0.0, -10000.0
-        rotate(velocity, angle * 57.3)
-        shell.velocity = velocity
-        shell.position = self.body.local_to_world(Vec2(0, -500))
-        poly = pymunk.Poly(shell, verts)
-
-        #Add to space
-        self.melee.space.add(shell, poly) 
+        bodydef = Body()
+        bodydef.ccd = True
+        bodydef.angle = self.body.angle
+        bodydef.position = self.body.get_world_point(Vec2(0, -5))
+        shell = self.melee.world.append_body(bodydef)
+        angle = vforangle(self.body.angle)
+        velocity = rotate(angle, (0.0, -100.0))
+        shell.linear_velocity = Vec2(velocity[0], velocity[1])
+        
+        polydef = Polygon()
+        verts = [Vec2(0.5, 0.8), Vec2(-0.5, 0.8), Vec2(-0.5, -0.8), Vec2(0.5, -0.8)]
+        polydef.vertices = verts
+        polydef.density = 5
+        
+        shell.append_shape(polydef)
+        shell.set_mass_from_shapes()
         
         # Create projectile
         projectile = PrimaryWeapon(self, self.melee, shell)
@@ -89,4 +90,4 @@ class KzerZa(Ship):
         projectile.lifetime = 2.5
         projectile.damage = 10
         projectile.health = 5
-        projectile.shapes = [poly]    
+        projectile.shapes = verts    

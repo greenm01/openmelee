@@ -61,13 +61,13 @@ class Actor(object):
     
     def debug_draw(self):
         pos = self.body.position
-        vec = vforangle(self.body.angle)
+        angle = vforangle(self.body.angle)
         for s in self.body.shapes:
             verts = []
             if isinstance(s, BoundPolygon):
                 # Draw polygon
                 for v in s.vertices:
-                    p = rotate(vec, (v.x, v.y))
+                    p = rotate(angle, (v.x, v.y))
                     px = pos.x + p[0]
                     py = pos.y + p[1]
                     verts.append((px, py))
@@ -75,7 +75,7 @@ class Actor(object):
             else:
                 # Draw circle
                 v = s.local_position
-                p = rotate(vec, (v.x, v.y))
+                p = rotate(angle, (v.x, v.y))
                 c1x = pos.x + p[0]
                 c1y = pos.y + p[1]
                 draw_solid_circle((c1x, c1y), s.radius, self.fill, self.outline) 
@@ -90,15 +90,14 @@ class Actor(object):
             self.destroy()
             self.dead = True
             self.melee.actors.remove(self)
-            self.melee.world.remove(self.body)
+            self.melee.world.remove_body(self.body)
             return True
         return False
 
     # Apply planet gravity
     def apply_gravity(self):
         fx, fy = calc_planet_gravity(self.body.position)
-        center = self.body.local_center
-        self.body.apply_force(Vec2(fx, fy), center)
+        self.body.apply_force(Vec2(fx, fy), self.body.world_center)
     
     def apply_damage(self, damage):
 		self.health -= damage

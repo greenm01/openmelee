@@ -79,12 +79,13 @@ def vforangle(angle):
     
 def rotate(v1, v2):
     return (v1[0]*v2[0] - v1[1]*v2[1], v1[0]*v2[1] + v1[1]*v2[0])
-    
+
+# TODO develop a better gravity attractor?
 def calc_planet_gravity(pos):
 
-    min_radius = 0.1
-    max_radius = 50
-    strength = 50
+    min_radius = 1
+    max_radius = 20
+    strength = 500
  
     center = 0, 0
     rx = center[0] - pos.x

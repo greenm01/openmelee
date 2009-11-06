@@ -64,7 +64,6 @@ class Ship(Actor):
             polygondef.density = self.density
             # Ensure points are oriented ccw
             ccw = convex_hull(p)
-            
             # Translate and scale points
             verts = []
             for v in ccw:
@@ -83,7 +82,7 @@ class Ship(Actor):
     def thrust(self):
         a = vforangle(self.body.angle)
         f = rotate(self.engineForce, a)
-        self.body.apply_force(Vec2(f[0], f[1]), self.body.world_center)
+        self.body.apply_impulse(Vec2(f[0], f[1]), self.body.world_center)
 
     def turn_left(self):
         t = cross(self.leftTurnPoint, self.turnForce)
@@ -104,9 +103,10 @@ class Ship(Actor):
     ##
 
     def update_state(self):
+    
         buttons_changed = self.buttons_prev ^ self.buttons
 
-        self.time = time.time()   # XXX use pygame.time?
+        self.time = self.melee.time   
         self.recharge_battery()
 
         if buttons_changed & LEFT:
