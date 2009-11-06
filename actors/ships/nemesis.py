@@ -21,6 +21,7 @@ from math import pi as PI
 from physics import Vec2, Circle, Body, Polygon
 from ship import *
 from secondary_weapon import SecondaryWeapon
+from primary_weapon import PrimaryWeapon
 
 class Nemesis(Ship):
 
@@ -32,8 +33,8 @@ class Nemesis(Ship):
     # Ship characteristics
     engineForce = 0, 30
     turnForce = 0, 5000
-    rightTurnPoint = -1.5, 0
-    leftTurnPoint = 1.5, 0
+    rightTurnPoint = -2.5, 0
+    leftTurnPoint = 2.5, 0
 
     # Physics properties
     initial_position = Vec2(-10, -10)
@@ -60,9 +61,8 @@ class Nemesis(Ship):
     turret_angle = -PI * 0.5
     
     def __init__(self, melee):
-        group = -1
-        Ship.__init__(self, melee, group)
-   
+        Ship.__init__(self, melee, -1)
+        self.group = -1
         # Create body
         bodydef = Body()
         bodydef.ccd = True
@@ -76,14 +76,14 @@ class Nemesis(Ship):
         density = 2.0
         # Base
         base = Circle()
-        base.collision_group = group
+        base.collision_group = self.group
         base.radius = self.radius 
         base.density = density
         # Barrel
         verts = [Vec2(0.15, 2), Vec2( -0.15, 2), Vec2(-0.15, 0), Vec2(0.15, 0)]
         barrel = Polygon()
         barrel.vertices = verts
-        barrel.collision_group = group
+        barrel.collision_group = self.group
         barrel.density = density
         
         self.turret.append_shape(base)
@@ -93,6 +93,42 @@ class Nemesis(Ship):
 		# Create turret
         SecondaryWeapon(self, melee, self.turret);
     
+    def fire(self):
+        
+        if not self.primary_time() or self.battery <= self.pEnergy:
+            return  
+        
+        # Drain battery
+        self.battery_cost(self.pEnergy)
+        
+        # Create body and shape
+        bodydef = Body()
+        bodydef.ccd = True
+        bodydef.angle = self.body.angle + (PI * 0.5) + self.turret_angle
+        bodydef.position = self.turret.get_world_point(Vec2(0, 3))
+        shell = self.melee.world.append_body(bodydef)
+        angle = vforangle(bodydef.angle)
+        velocity = rotate(angle, (0.0, 150.0))
+        vb = self.body.linear_velocity
+        shell.linear_velocity = Vec2(velocity[0]+vb.x, velocity[1]+vb.y)
+        
+        polydef = Polygon()
+        verts = [Vec2(0.5, 0.8), Vec2(-0.5, 0.8), Vec2(-0.5, -0.8), Vec2(0.5, -0.8)]
+        polydef.vertices = verts
+        polydef.density = 5
+        polydef.collision_group = self.group
+        
+        shell.append_shape(polydef)
+        shell.set_mass_from_shapes()
+        
+        # Create projectile
+        projectile = PrimaryWeapon(self, self.melee, shell)
+        projectile.group = self.group
+        projectile.lifetime = 2.5
+        projectile.damage = 10
+        projectile.health = 5
+        projectile.shapes = verts 
+        
     def update_special(self):
     
         # Update turret state
