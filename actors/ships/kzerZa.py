@@ -56,9 +56,9 @@ class KzerZa(Ship):
     outline = 0, 255, 0
     
     def __init__(self, melee):
-        group = -2
-        Ship.__init__(self, melee, group)
-            
+        Ship.__init__(self, melee, -2)
+        self.group = -2
+        
     def fire(self):
         
         if not self.primary_time() or self.battery <= self.pEnergy:

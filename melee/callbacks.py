@@ -18,14 +18,15 @@
 #
 from physics import ContactHub
 
-class MyContactHub(ContactHub):
-    def add(self, p):
-        global point
-        global executed_add
-        print "Hurra Hurra, Kontakt!"
-        
-        executed_add = True
-        point = p
+class ContactListener(ContactHub):
 
+    def __init__(self, melee):
+        self.melee = melee
+        ContactHub.__init__(self, melee.world)
+        
+    def add(self, p):
+        shapes = p.get_shapes(self.melee.world)
+        self.melee.collision_callback(*shapes)
+        
     def remove(self, p):
-        print "Oje, der Kontakt ist wieder weg!!"
+        pass

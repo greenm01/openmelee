@@ -26,7 +26,6 @@ from physics import Vec2, BoundPolygon, BoundCircle
 from utils.geo import calc_center
 
 class Actor(object):
-    is_actor = True
 
     def __init__(self, melee):
         self.melee = melee
@@ -41,13 +40,10 @@ class Actor(object):
             self.lifetime = 1e308
 
         self.damage = 5
-        self.healthCapacity = sys.maxint
-        self.health = sys.maxint
         self.dead = False
 
-        if self.is_actor:
-            melee.actors.append(self)
-            self.birthday = time.time()
+        melee.actors.append(self)
+        self.birthday = time.time()
 
         # Load SVG file
         if hasattr(self, 'parts') and hasattr(self, 'name'):
@@ -55,7 +51,7 @@ class Actor(object):
             file = "data/ships/%s.svg" % self.name
             self.svg = squirtle.SVG(file, anchor_x='center', anchor_y='center')
             self.lines = list(self.svg.shapes[part] for part in self.parts)
-                
+            
     def draw(self):
         pass
     
@@ -101,11 +97,12 @@ class Actor(object):
         self.body.apply_force(Vec2(fx, fy), self.body.world_center)
     
     def apply_damage(self, damage):
-		self.health -= damage
-		if self.health <= 0:
-			self.destroy()
-			self.dead = True
-			#melee.destroyList.set(rBody);
+        self.health -= damage
+        if self.health <= 0:
+            print "I'm dead!"
+            self.destroy()
+            self.dead = True
+            #melee.destroyList.set(rBody);
     
     def update_state(self):
 		#state.pos.set(rBody.x, rBody.y)

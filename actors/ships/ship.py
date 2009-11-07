@@ -72,8 +72,10 @@ class Ship(Actor):
                 verts.append(Vec2(x, y))   
             polygondef.vertices = verts
             polygondef.collision_group = group
-            self.body.append_shape(polygondef)
-        
+            shape = self.body.append_shape(polygondef)
+            # Register shapes for collision callbacks
+            melee.contact_register[hash(shape)] = self
+            
         self.body.set_mass_from_shapes()
 
     ##

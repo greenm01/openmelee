@@ -61,13 +61,21 @@ class Asteroid(Actor):
         self.c1_local = -1.0, 1.0
         c1.local_position = Vec2(*self.c1_local)
         c1.density = density
-        self.c1 = self.body.append_shape(c1)
+        s1 = self.body.append_shape(c1)
         
         c2 = Circle()
         c2.radius = self.radius 
         self.c2_local = 1.0, 1.0
         c2.local_position = Vec2(*self.c2_local)
         c2.density = density
-        self.c2 = self.body.append_shape(c2)
+        s2 = self.body.append_shape(c2)
         
         self.body.set_mass_from_shapes()
+        
+        # Register shapes for collision callbacks
+        melee.contact_register[hash(s1)] = self
+        melee.contact_register[hash(s2)] = self
+        
+    def apply_damage(self, damage):
+        """ Asteroids don't take any damage """
+        pass

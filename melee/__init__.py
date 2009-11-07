@@ -30,6 +30,7 @@ from utils import clamp
 import config
 import struct
 from players.kbd import update_ship
+from callbacks import ContactListener
 
 NUM_ASTEROIDS = 7
 
@@ -54,6 +55,9 @@ class Melee(Game):
 
     last_key_id = 0
     last_key_state = 0
+    
+    # Collision callback dictionary
+    contact_register = {}
     
     ##
     ## INITIALIZATION
@@ -81,7 +85,10 @@ class Melee(Game):
         width = 700
         height = 700
         self.world = World(-width/2, -height/2, width, height, gravity)
-            
+        
+        # Register collision callbacks
+        self.contacthub = ContactListener(self)
+        
         # Create players/controllers
         self.players = list(cls() for cls in config.PLAYERS)
         
@@ -224,16 +231,29 @@ class Melee(Game):
     def boundary_violated(self, body):
         ub = self.aabb.upper_bound
         lb = self.aabb.lower_bound
+        pos = body.position
         
-        if body.position.x > ub.x:
+        if pos.x > ub.x:
             x = lb.x + 5
-            body.position = Vec2(x, body.position.y)
-        elif body.position.x < lb.x:
+            body.position = Vec2(x, pos.y)
+        elif pos.x < lb.x:
             x = ub.x - 5
-            body.position = Vec2(x, body.position.y)
-        elif body.position.y > ub.y:
+            body.position = Vec2(x, pos.y)
+        elif pos.y > ub.y:
             y = lb.y + 5
-            body.position = Vec2(body.position.x, y)
-        elif body.position.y < lb.y:
+            body.position = Vec2(pos.x, y)
+        elif pos.y < lb.y:
             y = ub.y - 5
-            body.position = Vec2(body.position.x, y)
+            body.position = Vec2(pos.x, y)
+            
+    def collision_callback(self, shape1, shape2):
+        key1 = hash(shape1)
+        key2 = hash(shape2)
+        
+        try:
+            actor1 = self.contact_register[key1]
+            actor2 = self.contact_register[key2]
+            actor1.apply_damage(actor2.damage)
+            actor2.apply_damage(actor1.damage)
+        except:
+            print "Opps, shape not registered for callbacks!"  

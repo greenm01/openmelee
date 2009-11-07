@@ -28,4 +28,7 @@ class SecondaryWeapon(Actor):
         self.body = body
         Actor.__init__(self, melee)
         self.mother_ship = mother_ship
-        self.shapes = []
+        
+        # Register shapes for collision callbacks
+        for s in self.body.shapes:
+            melee.contact_register[hash(s)] = self

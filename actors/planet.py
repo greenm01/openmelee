@@ -23,7 +23,6 @@ from physics import *
 from actor import Actor
 
 class Planet(Actor):
-    is_actor = False
 
     # Debug draw colors 
     fill = 50, 100, 200
@@ -45,12 +44,17 @@ class Planet(Actor):
         self.radius = 7
         circledef = Circle()
         circledef.radius = self.radius 
-        self.body.append_shape(circledef)
+        shape = self.body.append_shape(circledef)
         
-        melee.actors += [self]
+        # Register shapes for collision callbacks
+        melee.contact_register[hash(shape)] = self
     
     def check_death(self):
         pass
         
     def apply_gravity(self):
-        pass       
+        pass    
+
+    def apply_damage(self, damage):
+        """ Planet doesn't take any damage """
+        pass
