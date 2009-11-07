@@ -33,3 +33,4 @@ class PrimaryWeapon(Actor):
         for s in self.body.shapes:
             melee.contact_register[hash(s)] = self
        
+    

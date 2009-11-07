@@ -25,7 +25,7 @@ from engine import draw_solid_circle, draw_solid_polygon, draw_circle
 from physics import Vec2, BoundPolygon, BoundCircle
 from utils.geo import calc_center
 
-class Actor(object):
+class Actor:
 
     def __init__(self, melee):
         self.melee = melee
@@ -108,3 +108,6 @@ class Actor(object):
         self.destroy()
         self.melee.actors.remove(self)
         self.melee.world.remove_body(self.body)
+
+    def destroy(self):
+        pass
