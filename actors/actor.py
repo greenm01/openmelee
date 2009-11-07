@@ -82,11 +82,8 @@ class Actor(object):
             
     def check_death(self):
         age = time.time() - self.birthday
-        if age >= self.lifetime:
-            self.destroy()
-            self.dead = True
-            self.melee.actors.remove(self)
-            self.melee.world.remove_body(self.body)
+        if age >= self.lifetime or self.dead:
+            self.kill()
             return True
         return False
 
@@ -100,14 +97,14 @@ class Actor(object):
         self.health -= damage
         if self.health <= 0:
             print "I'm dead!"
-            self.destroy()
             self.dead = True
-            #melee.destroyList.set(rBody);
     
     def update_state(self):
 		#state.pos.set(rBody.x, rBody.y)
 		#state.linVel = rBody.v
         pass
  
-    def destroy(self):
-        pass
+    def kill(self):
+        self.destroy()
+        self.melee.actors.remove(self)
+        self.melee.world.remove_body(self.body)

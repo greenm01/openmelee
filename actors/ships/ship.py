@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-import time
+from random import randrange
 
 from engine import vforangle, rotate
-from physics import *
+from physics import Vec2, Body, Polygon, BoundPolygon
 from actors.actor import Actor
 from utils import clamp, cross
 from utils.geo import calc_center, convex_hull
@@ -154,3 +154,14 @@ class Ship(Actor):
 		if dt >= self.bDelay and self.battery < self.battery_capacity:
 			self.bTime = self.time
 			self.battery += 1
+
+    def destroy(self):
+        print "boom!"
+        # Create explosion
+        for s in self.body.shapes:
+            bodydef = Body()
+            vx = randrange(-50.0, 50.0)
+            vy = randrange(-50.0, 50.0)
+            if isinstance(s, BoundPolygon):
+                polydef = Polygon()
+                #body.set_mass_from_shapes()
