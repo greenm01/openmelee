@@ -129,9 +129,10 @@ class Melee(Game):
  
         if self.last_key_id != key_id or self.last_key_state != key_state:
             #print "%d , %d" % (key_id, key_state)
-            self.last_key_id = key_id
-            self.last_key_state = key_state
-            update_ship(self, key_id, key_state)
+            if not self.me.dead and not self.enemy.dead:
+                self.last_key_id = key_id
+                self.last_key_state = key_state
+                update_ship(self, key_id, key_state)
             
         # Update states
         for a in self.actors:
@@ -204,12 +205,16 @@ class Melee(Game):
 
         # Zoom in on the ships (and planet?)
         #objects = self.actors[:2] 
-    
-        p1 = self.me.body.position
-        p2 = self.enemy.body.position
         
+        if not self.me.dead and not self.enemy.dead:
+            p1 = self.me.body.position
+            p2 = self.enemy.body.position
+        else:
+            p1 = Vec2(250, 250)
+            p2 = Vec2(-250, -250)
+            
         range = Vec2(p1.x - p2.x, p1.y - p2.y)
-        zoom = clamp(1000/range.length, 2, 60)   
+        zoom = clamp(1000/range.length, 5, 60)   
         # Calculate view center
         vcx = p1.x - range.x * 0.5
         vcy = p1.y - range.y * 0.5

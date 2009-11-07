@@ -37,6 +37,7 @@ class Planet(Actor):
                 
         # Create body
         bodydef = Body()
+        bodydef.ccd = True
         bodydef.position = Vec2(0, 0) 
         self.body = melee.world.append_body(bodydef)
         

@@ -27,6 +27,7 @@ class KzerZa(Ship):
     parts = ["bridge", "body", "tail_left", "tail_right", "rightStrut", "leftStrut", "rightWing", "leftWing"]
     center_part = "body"
     scale = 0.0075
+    group = -2
     
     # Ship characteristics
     engineForce = 0, -50
@@ -56,8 +57,7 @@ class KzerZa(Ship):
     outline = 0, 255, 0
     
     def __init__(self, melee):
-        Ship.__init__(self, melee, -2)
-        self.group = -2
+        Ship.__init__(self, melee)
         
     def fire(self):
         

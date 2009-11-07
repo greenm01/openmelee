@@ -21,6 +21,7 @@ from random import randrange
 from engine import vforangle, rotate
 from physics import Vec2, Body, Polygon, BoundPolygon
 from actors.actor import Actor
+from actors.debris import Debris
 from utils import clamp, cross
 from utils.geo import calc_center, convex_hull
 
@@ -46,7 +47,7 @@ class Ship(Actor):
     ## INITIALIZATION
     ##
 
-    def __init__(self, melee, group):
+    def __init__(self, melee):
         Actor.__init__(self, melee)
                
         # Physics (based on SVG shapes)
@@ -71,7 +72,7 @@ class Ship(Actor):
                 y = (v[1] - translate[1]) * self.scale
                 verts.append(Vec2(x, y))   
             polygondef.vertices = verts
-            polygondef.collision_group = group
+            polygondef.collision_group = self.group
             shape = self.body.append_shape(polygondef)
             # Register shapes for collision callbacks
             melee.contact_register[hash(shape)] = self
@@ -160,8 +161,24 @@ class Ship(Actor):
         # Create explosion
         for s in self.body.shapes:
             bodydef = Body()
-            vx = randrange(-50.0, 50.0)
-            vy = randrange(-50.0, 50.0)
+            bodydef.ccd = True
+            debris = self.melee.world.append_body(bodydef)
+            debris.linear_velocity = Vec2(randrange(-100.0, 100.0), 
+                                        randrange(-100.0, 100.0))
             if isinstance(s, BoundPolygon):
+                # Polygon
+                debris.position = self.body.position + s.centroid
                 polydef = Polygon()
-                #body.set_mass_from_shapes()
+                polydef.density = 10
+                polydef.vertices = s.vertices
+                debris.append_shape(polydef)
+            else:
+                # Circle
+                debris.position = self.body.position + s.local_position
+                circdef = Circle()
+                circdef.density = 10
+                circle.radis = s.radius
+                debris.append_shape(circdef)
+                
+            debris.set_mass_from_shapes()
+            Debris(self.melee, debris)

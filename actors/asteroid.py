@@ -79,3 +79,6 @@ class Asteroid(Actor):
     def apply_damage(self, damage):
         """ Asteroids don't take any damage """
         pass
+    
+    def apply_gravity(self):
+        pass

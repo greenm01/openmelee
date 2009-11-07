@@ -29,7 +29,8 @@ class Nemesis(Ship):
     parts = "B1 B2 B3 R1 R2 R3 R4 R5 L1 L2 L3 L4 L5".split()
     center_part = "B1"
     scale = 0.0075
-   
+    group = -1
+    
     # Ship characteristics
     engineForce = 0, 30
     turnForce = 0, 5000
@@ -61,8 +62,7 @@ class Nemesis(Ship):
     turret_angle = -PI * 0.5
     
     def __init__(self, melee):
-        Ship.__init__(self, melee, -1)
-        self.group = -1
+        Ship.__init__(self, melee)
         
         ##
         ## Manually Create turret

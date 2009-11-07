@@ -29,9 +29,6 @@ class Actor:
 
     def __init__(self, melee):
         self.melee = melee
-
-        # Default values
-        self.group = 0
         
         # TODO 'permanent' objects should not have a lifetime... only bullets etc.
         try:
