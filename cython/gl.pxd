@@ -1112,7 +1112,18 @@ cdef extern from "GL/glew.h" :
   cdef GLenum    glewInit        ( )
   cdef GLboolean glewIsSupported ( char* )
 
-#cdef extern from "GL/glu.h":
-#  cdef struct GLUtesselator GLUtesselator
-#  cdef void gluTessNormal (GLUtesselator* tess, GLdouble valueX, GLdouble valueY, GLdouble valueZ)
+'''
+cdef extern from "GL/glu.h":
+    int GLU_TESS_WINDING_RULE 
+    int GLU_TESS_WINDING_NONZERO
+    ctypedef struct GLUtesselator "GLUtesselator"
+    cdef GLUtesselator* gluNewTess ()
+    cdef void gluTessNormal (GLUtesselator*, GLdouble, GLdouble, GLdouble)
+    cdef void gluTessProperty (GLUtesselator*, GLenum, GLdouble)
+    cdef void gluTessBeginPolygon (GLUtesselator*, GLvoid*)
+    cdef void gluTessBeginContour (GLUtesselator*)
+    cdef void gluTessVertex (GLUtesselator*, GLdouble *, GLvoid*)
+    cdef void gluTessEndContour (GLUtesselator*)
+    cdef void gluTessEndPolygon (GLUtesselator*)
+'''
  

@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-include "../include/gl.pxd"
-
 from math import pi as PI
+
+from gl cimport *
 
 cdef extern from 'math.h':
     double cos(double)

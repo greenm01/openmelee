@@ -118,7 +118,6 @@ with the gradient as the first and only argument.
         for callback in callbacks:
             callback(val)
         
-    
 class Gradient(object):
     def __init__(self, element, svg):
         self.element = element
@@ -269,68 +268,27 @@ Defaults to 10.
  
     def draw(self, x, y, z=0, angle=0, scale=1):
         """Draws the SVG to screen.
-:Parameters
-`x` : float
-The x-coordinate at which to draw.
-`y` : float
-The y-coordinate at which to draw.
-`z` : float
-The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not
-give expected results when transparency is used.
-`angle` : float
-The angle by which the image should be rotated (in degrees). Defaults to 0.
-`scale` : float
-The amount by which the image should be scaled, either as a float, or a tuple
-of two floats (xscale, yscale).
-"""
+        :Parameters
+        `x` : float
+        The x-coordinate at which to draw.
+        `y` : float
+        The y-coordinate at which to draw.
+        `z` : float
+        The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not
+        give expected results when transparency is used.
+        `angle` : float
+        The angle by which the image should be rotated (in degrees). Defaults to 0.
+        `scale` : float
+        The amount by which the image should be scaled, either as a float, or a tuple
+        of two floats (xscale, yscale).
+        """
         pass
  
-    def render_slowly(self):
-        self.n_tris = 0
-        self.n_lines = 0
-        for path, stroke, tris, fill, transform in self.paths:
-            if tris:
-                self.n_tris += len(tris)/3
-                if isinstance(fill, str):
-                    g = self.gradients[fill]
-                    fills = [g.interp(x) for x in tris]
-                else:
-                    fills = [fill for x in tris]
-                #pyglet.graphics.draw(len(tris), GL_TRIANGLES,
-                # ('v3f', sum((x + [0] for x in tris), [])),
-                # ('c3B', sum(fills, [])))
-                glBegin(GL_TRIANGLES)
-                for vtx, clr in zip(tris, fills):
-                    vtx = transform(vtx)
-                    glColor4ub(*clr)
-                    glVertex3f(vtx[0], vtx[1], 0)
-                glEnd()
-            if path:
-                for loop in path:
-                    self.n_lines += len(loop) - 1
-                    loop_plus = []
-                    for i in xrange(len(loop) - 1):
-                        loop_plus += [loop[i], loop[i+1]]
-                    if isinstance(stroke, str):
-                        g = self.gradients[stroke]
-                        strokes = [g.interp(x) for x in loop_plus]
-                    else:
-                        strokes = [stroke for x in loop_plus]
-                    #pyglet.graphics.draw(len(loop_plus), GL_LINES,
-                    # ('v3f', sum((x + [0] for x in loop_plus), [])),
-                    # ('c3B', sum((stroke for x in loop_plus), [])))
-                    glBegin(GL_LINES)
-                    for vtx, clr in zip(loop_plus, strokes):
-                        vtx = transform(vtx)
-                        glColor4ub(*clr)
-                        glVertex3f(vtx[0], vtx[1], 0)
-                    glEnd()
     def parse_float(self, txt):
         if txt.endswith('px'):
             return float(txt[:-2])
         else:
             return float(txt)
-    
  
     def parse_doc(self):
         self.paths = []
@@ -543,7 +501,7 @@ of two floats (xscale, yscale).
         x_ = cp * dx + sp * dy
         y_ = -sp * dx + cp * dy
         r2 = (((rx * ry)**2 - (rx * y_)**2 - (ry * x_)**2)/
-((rx * y_)**2 + (ry * x_)**2))
+             ((rx * y_)**2 + (ry * x_)**2))
         if r2 < 0: r2 = 0
         r = math.sqrt(r2)
         if large_arc == sweep:

@@ -17,7 +17,7 @@
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include "../include/glfw.pxd"
+from glfw cimport *
 
 import sys
 

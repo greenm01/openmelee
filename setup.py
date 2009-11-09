@@ -6,12 +6,10 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 # Usage: python setup.py build_ext --i
-[build_ext]
-inplace=1
 
 version = '0.01'
 
-include_path =['cython/include/']
+sourcefiles = ['cython/engine.pyx']
 
 # Platform-dependent submodules
 
@@ -27,7 +25,7 @@ else:
     
 mod_engine = Extension(
     "engine",
-    ["cython/src/game_engine.pyx"], 
+    sourcefiles, 
     libraries = libs,
     language = 'c'
 )
@@ -43,5 +41,4 @@ setup(
     url = 'http://openmelee.org/',
     cmdclass = {'build_ext': build_ext},
     ext_modules = [mod_engine],
-    include_dirs = [os.path.abspath(p) for p in include_path]
 )
