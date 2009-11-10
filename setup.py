@@ -9,7 +9,7 @@ from Cython.Distutils import build_ext
 
 version = '0.01'
 
-sourcefiles = ['cython/engine.pyx']
+sourcefiles = ['engine/engine.pyx']
 
 # Platform-dependent submodules
 

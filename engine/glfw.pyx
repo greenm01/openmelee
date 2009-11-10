@@ -39,7 +39,7 @@ cdef class Game:
     title = "OpenMelee 0.01"
     
     def __init__(self, window_width, window_height):
-    
+        
         glfwInit()
         
         # 16 bit color, no depth, alpha or stencil buffers, windowed
@@ -51,7 +51,7 @@ cdef class Game:
         glfwSwapInterval(1) #VSync on
         # Set key callback            
         glfwSetKeyCallback(callback)
-
+        
     def main_loop(self):
         
         frame_count = 1
