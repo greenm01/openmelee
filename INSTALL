@@ -1,0 +1,38 @@
+==================
+INSTALLATION GUIDE
+==================
+
+Dependencies
+------------
+
+	- GLEW (http://glew.sf.net)
+	- GLFW (http://glfw.sf.net)
+	- Cython (http://cython.org)
+	- Cython-Box2D (http://bitbucket.org/timostolz/gamephysics/)
+
+The first three are packaged in most Linux distributions.  To install them in Debian/Ubuntu:
+
+	sudo apt-get install libglew-dev libglfw-dev cython
+
+
+Building the Cython-Box2D game physics library
+----------------------------------------------
+
+Note: this includes a modified version of Box2D, so you don't need to install Box2D.
+
+Currently (Nov. 11, 2009) our branch of Cython-Box2D, which adds some utility functions, is required to run OpenMelee:
+
+	hg clone http://bitbucket.org/timostolz/gamephysics/ cybox2d
+	cd cybox2d
+	hg update -C zzzzrrr
+	python setup.py build_ext -i
+
+Move the resulting physics.so (or .dll) file to the OpenMelee folder.
+
+
+Building OpenMelee
+------------------
+
+Build engine.so (or .dll), which contains the C/C++/Cython parts of the game:
+
+	python setup.py build_ext -i

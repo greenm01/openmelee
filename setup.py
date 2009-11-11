@@ -9,7 +9,7 @@ from Cython.Distutils import build_ext
 
 version = '0.01'
 
-sourcefiles = ['engine/engine.pyx']
+sourcefiles = ['engine/engine.pyx', 'engine/gl.pxd', 'engine/glfw.pxd']
 
 # Platform-dependent submodules
 
