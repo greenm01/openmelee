@@ -88,11 +88,16 @@ class Ship(Actor):
         f = rotate(self.engineForce, a)
         self.body.apply_impulse(Vec2(f[0], f[1]), self.body.world_center)
 
+    def turn_straight(self):
+        self.body.angular_velocity = 0
+
     def turn_left(self):
+        self.body.angular_velocity = 0
         t = cross(self.leftTurnPoint, self.turnForce)
         self.body.apply_torque(t)
 
     def turn_right(self):
+        self.body.angular_velocity = 0
         t = cross(self.rightTurnPoint, self.turnForce)
         self.body.apply_torque(t)
 
@@ -107,33 +112,39 @@ class Ship(Actor):
     ##
 
     def update_state(self):
-    
-        buttons_changed = self.buttons_prev ^ self.buttons
+        buttons = self.buttons
+        buttons_delta = self.buttons_prev ^ buttons
 
         self.time = self.melee.time   
         self.recharge_battery()
 
-        if buttons_changed & LEFT and (not self.buttons & SPECIAL):
-            if self.buttons & LEFT:
-                self.turn_left()
-            else:
-                self.body.angular_velocity = 0
+        if not self.buttons & SPECIAL:
+            # Steering -- yep, it's this complicated.
+            # When you press left or right, start turning that direction.
+            # When you release left AND right, stop turning.
+            rudder_delta = buttons_delta & (LEFT | RIGHT)
+            if rudder_delta:
+                rudder = buttons & (LEFT | RIGHT)
+                if rudder:
+                    if rudder & rudder_delta & LEFT:
+                        print "LEFT"
+                        self.turn_left()
+                    elif rudder & rudder_delta & RIGHT:
+                        print "RIGHT"
+                        self.turn_right()
+                else:
+                    print "STRAIGHT"
+                    self.turn_straight()
 
-        if buttons_changed & RIGHT and (not self.buttons & SPECIAL):
-            if self.buttons & RIGHT:
-                self.turn_right()
-            else:
-                self.body.angular_velocity = 0
-
-        if (self.buttons & FIRE) and (not self.buttons & SPECIAL):
+        if buttons & FIRE:
             self.fire()
           
-        self.update_special()
-
-        if (self.buttons & THRUST):
+        if (buttons & THRUST):
             self.thrust()
 
-        self.buttons_prev = self.buttons
+        self.update_special()
+
+        self.buttons_prev = buttons
 
     ##
     ## HELPERS ?
