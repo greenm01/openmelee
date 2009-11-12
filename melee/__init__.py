@@ -53,9 +53,6 @@ class Melee(Game):
     aabb.lower_bound = Vec2(-200, -200)
     aabb.upper_bound = Vec2(200, 200)
 
-    last_key_id = 0
-    last_key_state = 0
-    
     # Collision callback dictionary
     contact_register = {}
     
@@ -68,6 +65,9 @@ class Melee(Game):
         
         self.window_title = "OpenMelee 0.01"
         init_gl(*self.screen_size)
+
+        # Registe callbacks
+        self.register_kbd_callback(self.on_key_press)
         
         # Init network
         if REMOTE:
@@ -125,15 +125,12 @@ class Melee(Game):
     ## EVENTS
     ##
         
-    def update(self, key_id, key_state):
+    def on_key_press(self, key, state):
+        #print "on_key_press(id=%s state=%s)" % (id, state)
+        update_ship(self, key, state)
+
+    def update(self):
  
-        if self.last_key_id != key_id or self.last_key_state != key_state:
-            #print "%d , %d" % (key_id, key_state)
-            if not self.me.dead and not self.enemy.dead:
-                self.last_key_id = key_id
-                self.last_key_state = key_state
-                update_ship(self, key_id, key_state)
-            
         # Update states
         for a in self.actors:
             if a.check_death(): continue

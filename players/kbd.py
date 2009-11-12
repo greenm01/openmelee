@@ -27,22 +27,6 @@ def compute_keymap():
             
 compute_keymap()
     
-def process_events(game):
-    "Called once per game loop to process I/O events"
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            return True
-        elif e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_ESCAPE:
-                return True
-            # XXX TEST ROLLBACK
-            if e.key == pygame.K_BACKSPACE:
-                game.history.rollback()
-                return
-            update_ship(game, e.key, 1)
-        elif e.type == pygame.KEYUP:
-            update_ship(game, e.key, 0)
-
 
 def update_ship(game, key, press):
     "Given a key event, look up the player/ship and update its button bitmask."

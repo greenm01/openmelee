@@ -175,17 +175,10 @@ cdef extern from 'math.h':
     double sqrt(double)
 
 
-key_id = 0
-key_state = 0
+# Keyboard callback wrapper
+kbd_callback_method = None
 
-cdef extern void __stdcall callback(int id, int state):
-    global key_id, key_state
-    key_id = id
-    key_state = state
-    py_callback_test(id, state)
-
-def py_callback_test(id, state):
-    print "Python callback reached... id=%s state=%s" % (id, state)
+cdef extern void __stdcall kbd_callback(int id, int state):
     kbd_callback_method(id, state)
 
 
@@ -204,9 +197,12 @@ cdef class Game:
         
         glfwEnable(GLFW_STICKY_KEYS)
         glfwSwapInterval(1) #VSync on
-        # Set key callback            
-        glfwSetKeyCallback(callback)
-        
+
+    def register_kbd_callback(self, f):
+        global kbd_callback_method
+        glfwSetKeyCallback(kbd_callback)
+        kbd_callback_method = f
+
     def main_loop(self):
         
         frame_count = 1
@@ -231,7 +227,7 @@ cdef class Game:
             running = ((not glfwGetKey(GLFW_KEY_ESC))
                        and glfwGetWindowParam(GLFW_OPENED))
              
-            self.update(key_id, key_state)
+            self.update()
             self.render()
         
             glfwSwapBuffers()
