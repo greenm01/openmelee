@@ -271,3 +271,43 @@ def calc_planet_gravity(float px, float py):
         ratio = 1.0
     
     return (rx * ratio * strength, ry * ratio * strength)
+    
+def render_display_list(paths, gradients):
+    disp_list = glGenLists(1)
+    glNewList(disp_list, GL_COMPILE)
+    cdef int n_tris = 0
+    cdef int n_lines = 0
+    for path, stroke, tris, fill, transform in paths:
+        if tris:
+            n_tris += len(tris)/3
+            if isinstance(fill, str):
+                g = gradients[fill]
+                fills = [g.interp(x) for x in tris]
+            else:
+                fills = [fill for x in tris]
+            glBegin(GL_TRIANGLES)
+            for vtx, clr in zip(tris, fills):
+                vtx = transform(vtx)
+                r, g, b, a = clr
+                glColor4ub(r, g, b, a)
+                glVertex3f(vtx[0], vtx[1], 0)
+            glEnd()
+        if path:
+            for loop in path:
+                n_lines += len(loop) - 1
+                loop_plus = []
+                for i in xrange(len(loop) - 1):
+                    loop_plus += [loop[i], loop[i+1]]
+                if isinstance(stroke, str):
+                    g = gradients[stroke]
+                    strokes = [g.interp(x) for x in loop_plus]
+                else:
+                    strokes = [stroke for x in loop_plus]
+                glBegin(GL_LINES)
+                for vtx, clr in zip(loop_plus, strokes):
+                    vtx = transform(vtx)
+                    r, g, b, a = clr
+                    glColor4ub(r, g, b, a)
+                    glVertex3f(vtx[0], vtx[1], 0)
+                glEnd() 
+    glEndList()
