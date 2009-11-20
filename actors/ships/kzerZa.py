@@ -16,10 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-from engine import draw_solid_polygon, vforangle, rotate
+from math import pi
+from engine import vforangle, rotate, draw_circle
 from physics import *
 from primary_weapon import PrimaryWeapon
 from ship import Ship
+from actors.actor import Actor
 
 class KzerZa(Ship):
 
@@ -95,3 +97,7 @@ class KzerZa(Ship):
 
     def update_special(self):
         pass
+        
+    def debug_draw(self):
+        pos = self.body.position
+        self.svg.render(pos.x, pos.y, angle = self.body.angle)

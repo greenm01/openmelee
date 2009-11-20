@@ -1113,6 +1113,8 @@ cdef extern from "GL/glew.h" :
   cdef GLboolean glewIsSupported ( char* )
 
 cdef extern from "GL/gl.h":
-    cdef GLuint glGenLists( GLsizei)
-    cdef void glNewList( GLuint, GLenum)
+    cdef GLuint glGenLists(GLsizei)
+    cdef void glNewList(GLuint, GLenum)
     cdef void glEndList()
+    cdef void glCallList(GLuint)
+    cdef void glRotatef(GLfloat, GLfloat, GLfloat, GLfloat)

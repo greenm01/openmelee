@@ -46,7 +46,7 @@ class Actor:
         if hasattr(self, 'parts') and hasattr(self, 'name'):
             from utils import squirtle
             file = "data/ships/%s.svg" % self.name
-            self.svg = squirtle.SVG(file, anchor_x='center', anchor_y='center')
+            self.svg = squirtle.SVG(file)
             self.lines = list(self.svg.shapes[part] for part in self.parts)
             
     def draw(self):

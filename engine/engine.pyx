@@ -272,7 +272,7 @@ def calc_planet_gravity(float px, float py):
     
     return (rx * ratio * strength, ry * ratio * strength)
     
-def render_display_list(paths, gradients):
+def render_display_list(paths, gradients, translate, scale):
     disp_list = glGenLists(1)
     glNewList(disp_list, GL_COMPILE)
     cdef int n_tris = 0
@@ -290,7 +290,9 @@ def render_display_list(paths, gradients):
                 vtx = transform(vtx)
                 r, g, b, a = clr
                 glColor4ub(r, g, b, a)
-                glVertex3f(vtx[0], vtx[1], 0)
+                x = (vtx[0] - translate[0]) * scale
+                y = (vtx[1] - translate[1]) * scale
+                glVertex2f(x, y)
             glEnd()
         if path:
             for loop in path:
@@ -308,6 +310,24 @@ def render_display_list(paths, gradients):
                     vtx = transform(vtx)
                     r, g, b, a = clr
                     glColor4ub(r, g, b, a)
-                    glVertex3f(vtx[0], vtx[1], 0)
+                    x = (vtx[0] - translate[0]) * scale
+                    y = (vtx[1] - translate[1]) * scale
+                    glVertex2f(x, y)
                 glEnd() 
     glEndList()
+    return disp_list
+    
+def render_list(x, y, z, angle, scale, disp_list):
+    glPushMatrix()
+    glTranslatef(x, y, z)
+    glRotatef(angle*57.29578+180, 0, 0, 1)
+    if scale != 1:
+        try:
+            glScalef(scale[0], scale[1], 1)
+        except TypeError:
+            glScalef(scale, scale, 1)
+    #if self._a_x or self._a_y:  
+    #    glTranslatef(-self._a_x, -self._a_y, 0)
+    glCallList(disp_list)
+    glPopMatrix()
+

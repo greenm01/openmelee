@@ -1,22 +1,16 @@
 ########################
-### NON GL VERSION
+### Cython GL VERSION
 ########################
-
-"""Squirtle mini-library for SVG parsing.
- 
-MODIFIED VERSION -- removed GL calls for use with SDL backend (for parsing only)
- 
-Example usage:
-import squirtle
-my_svg = squirtle.SVG('filename.svg')
-my_svg.draw(100, 200, angle=15)
-"""
  
 from xml.etree.cElementTree import parse
 import re
 import math
 import sys
- 
+
+from engine import render_display_list, render_list
+from physics import Vec2
+from utils import Triangulator
+
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
 TOLERANCE = 0.001
@@ -98,10 +92,10 @@ class GradientContainer(dict):
  
     def call_me_on_add(self, callback, grad_id):
         '''The client wants to know when the gradient with id grad_id gets
-added. So store this callback for when that happens.
-When the desired gradient is added, the callback will be called
-with the gradient as the first and only argument.
-'''
+        added. So store this callback for when that happens.
+        When the desired gradient is added, the callback will be called
+        with the gradient as the first and only argument.
+        '''
         cblist = self.callback_dict.get(grad_id, None)
         if cblist == None:
             cblist = [callback]
@@ -190,27 +184,27 @@ class RadialGradient(Gradient):
         
 class SVG(object):
     """Opaque SVG image object.
-Users should instantiate this object once for each SVG file they wish to
-render.
-"""
+    Users should instantiate this object once for each SVG file they wish to
+    render.
+    """
     
     _disp_list_cache = {}
     def __init__(self, filename, anchor_x=0, anchor_y=0, bezier_points=BEZIER_POINTS, circle_points=CIRCLE_POINTS):
         """Creates an SVG object from a .svg or .svgz file.
-`filename`: str
-The name of the file to be loaded.
-`anchor_x`: float
-The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic
-values 'left', 'center' and 'right' are also accepted.
-`anchor_y`: float
-The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic
-values 'bottom', 'center' and 'top' are also accepted.
-`bezier_points`: int
-The number of line segments into which to subdivide Bezier splines. Defaults to 10.
-`circle_points`: int
-The number of line segments into which to subdivide circular and elliptic arcs.
-Defaults to 10.
-"""
+        `filename`: str
+        The name of the file to be loaded.
+        `anchor_x`: float
+        The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic
+        values 'left', 'center' and 'right' are also accepted.
+        `anchor_y`: float
+        The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic
+        values 'bottom', 'center' and 'top' are also accepted.
+        `bezier_points`: int
+        The number of line segments into which to subdivide Bezier splines. Defaults to 10.
+        `circle_points`: int
+        The number of line segments into which to subdivide circular and elliptic arcs.
+        Defaults to 10.
+        """
         
         self.shapes = {}
         self.filename = filename
@@ -219,8 +213,12 @@ Defaults to 10.
         self.bezier_coefficients = []
         self.gradients = GradientContainer()
         self.generate_disp_list()
+        
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
+    
+    def init(self, translate, scale):
+        self.disp_list = render_display_list(self.paths, self.gradients, translate, scale)
         
     def _set_anchor_x(self, anchor_x):
         self._anchor_x = anchor_x
@@ -266,7 +264,7 @@ Defaults to 10.
             self.tree = parse(f)
             self.parse_doc()
  
-    def draw(self, x, y, z=0, angle=0, scale=1):
+    def render(self, x, y, z=0, angle=0, scale=1):
         """Draws the SVG to screen.
         :Parameters
         `x` : float
@@ -282,7 +280,8 @@ Defaults to 10.
         The amount by which the image should be scaled, either as a float, or a tuple
         of two floats (xscale, yscale).
         """
-        pass
+        #print "%f,%f,%f,%f,%f" % (x, y, z, angle, scale)
+        render_list(x, y, z, angle, scale, self.disp_list)
  
     def parse_float(self, txt):
         if txt.endswith('px'):
@@ -302,6 +301,7 @@ Defaults to 10.
             self.height = h
             self.width = w
         self.opacity = 1.0
+        
         for e in self.tree._root.getchildren():
             try:
                 self.parse_element(e)
@@ -578,8 +578,21 @@ Defaults to 10.
             return l
         
     def triangulate(self, looplist):
-        return None
+        loop = looplist[:]
+        for l in loop:
+            if l[0][0] == l[-1][0] and l[0][1] == l[-1][1]:
+                l.pop()
+            seidel = Triangulator(l)
+            tlist = seidel.triangles()
+            return tlist
  
- 
+    def angle(self, a, b, c):
+        v1 = Vec2(a[0], a[1])
+        v2 = Vec2(b[0], b[1])
+        v3 = Vec2(c[0], c[1])
+        a = v3 - v2
+        b = v1 - v2
+        return math.atan2(a.cross(b), a.dot(b))
+        
     def warn(self, message):
         print "Warning: SVG Parser (%s) - %s" % (self.filename, message)

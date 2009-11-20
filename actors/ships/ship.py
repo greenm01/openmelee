@@ -52,7 +52,8 @@ class Ship(Actor):
                
         # Physics (based on SVG shapes)
         translate = calc_center(self.lines[self.parts.index(self.center_part)])
-                
+        self.svg.init(translate, self.scale)
+        
         bodydef = Body()
         bodydef.ccd = True
         bodydef.position = self.initial_position

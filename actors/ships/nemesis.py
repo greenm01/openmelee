@@ -152,3 +152,7 @@ class Nemesis(Ship):
                 
         self.turret.angle = self.body.angle + (PI * 0.5) + self.turret_angle
         
+    def debug_draw(self):
+        pos = self.body.position
+        self.svg.render(pos.x, pos.y, angle = self.body.angle)
+        

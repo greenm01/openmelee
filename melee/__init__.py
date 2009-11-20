@@ -216,8 +216,6 @@ class Melee(Game):
         vcx = p1.x - range.x * 0.5
         vcy = p1.y - range.y * 0.5
 
-        #zoom *= 0.5   # XXX fudge factor... zoom calcs aren't quite right for SDL
-
         return zoom, (vcx, vcy)
 
     def in_bounds(self, body):
@@ -258,4 +256,4 @@ class Melee(Game):
             actor1.apply_damage(actor2.damage)
             actor2.apply_damage(actor1.damage)
         except:
-            print "Opps, shape not registered for callbacks!"  
+            print "oops, shape not registered for callbacks!"  
