@@ -51,8 +51,8 @@ class Ship(Actor):
         Actor.__init__(self, melee)
                
         # Physics (based on SVG shapes)
-        translate = calc_center(self.lines[self.parts.index(self.center_part)])
-        self.svg.init(translate, self.scale)
+        self.translate = calc_center(self.lines[self.parts.index(self.center_part)])
+        self.svg.init(self.translate, self.scale)
         
         bodydef = Body()
         bodydef.ccd = True
@@ -69,8 +69,8 @@ class Ship(Actor):
             # Translate and scale points
             verts = []
             for v in ccw:
-                x = (v[0] - translate[0]) * self.scale
-                y = (v[1] - translate[1]) * self.scale
+                x = (v[0] - self.translate[0]) * self.scale
+                y = (v[1] - self.translate[1]) * self.scale
                 verts.append(Vec2(x, y))   
             polygondef.vertices = verts
             polygondef.collision_group = self.group

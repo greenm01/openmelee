@@ -24,11 +24,18 @@ class SecondaryWeapon(Actor):
     fill = 255, 0, 0
     outline = 255, 0, 0
     
-    def __init__(self, mother_ship, melee, body):
+    def __init__(self, mother_ship, melee, body, svg = None):
         self.body = body
         Actor.__init__(self, melee)
         self.mother_ship = mother_ship
+        self.svg = svg
         
         # Register shapes for collision callbacks
         for s in self.body.shapes:
             melee.contact_register[hash(s)] = self
+    
+    def debug_draw(self):
+        if self.svg:
+            pos = self.body.position
+            self.svg.render(pos.x, pos.y, angle = self.body.angle)
+        #Actor.debug_draw(self)

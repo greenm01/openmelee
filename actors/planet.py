@@ -31,6 +31,7 @@ class Planet(Actor):
     def __init__(self, melee):
         Actor.__init__(self, melee)
         
+        self.damage = 1
         #from utils import squirtle
         file = "data/planet.svg"
         #self.svg = squirtle.SVG(file, anchor_x='center', anchor_y='center')

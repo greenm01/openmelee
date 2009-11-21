@@ -312,7 +312,6 @@ class SVG(object):
     def parse_element(self, e):
         
         self.id = e.get('id')
-        
         default = object()
         self.fill = parse_color(e.get('fill'), default)
         self.stroke = parse_color(e.get('stroke'), default)
