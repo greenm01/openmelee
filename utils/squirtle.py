@@ -579,7 +579,11 @@ class SVG(object):
     def triangulate(self, looplist):
         loop = looplist[:]
         for l in loop:
-            if l[0][0] == l[-1][0] and l[0][1] == l[-1][1]:
+            bx = round(l[0][0], 2)
+            by = round(l[0][1], 2)
+            tx = round(l[-1][0], 2)
+            ty = round(l[-1][1], 2)
+            if bx ==  tx and by == ty:
                 l.pop()
             seidel = Triangulator(l)
             tlist = seidel.triangles()
