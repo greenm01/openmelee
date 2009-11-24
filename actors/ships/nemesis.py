@@ -70,7 +70,7 @@ class Nemesis(Ship):
         
         from utils.squirtle import SVG
         svg_turret = SVG('data/ships/nemesis-turret.svg')
-        translate = (380, 518)
+        translate = (0, 0)
         svg_turret.init(translate, self.scale)
         
         # Create body
