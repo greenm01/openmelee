@@ -72,8 +72,6 @@ class Nemesis(Ship):
         svg_turret = SVG('data/ships/nemesis-turret.svg')
         hub = svg_turret.shapes['hub']
         translate = calc_center(hub)
-        print translate
-        print self.translate
         svg_turret.init((105.908, 106.821), self.scale)
         
         # Create body

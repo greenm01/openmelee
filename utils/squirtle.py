@@ -280,7 +280,6 @@ class SVG(object):
         The amount by which the image should be scaled, either as a float, or a tuple
         of two floats (xscale, yscale).
         """
-        #print "%f,%f,%f,%f,%f" % (x, y, z, angle, scale)
         render_list(x, y, z, angle, scale, self.disp_list)
  
     def parse_float(self, txt):
