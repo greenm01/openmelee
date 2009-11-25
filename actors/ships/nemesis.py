@@ -70,8 +70,6 @@ class Nemesis(Ship):
         
         from utils.squirtle import SVG
         svg_turret = SVG('data/ships/nemesis-turret.svg')
-        hub = svg_turret.shapes['hub']
-        translate = calc_center(hub)
         svg_turret.init((105.908, 106.821), self.scale)
         
         # Create body
