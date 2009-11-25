@@ -16,4 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-from ai import *
+
+class Threat(object):
+
+    target = None
+    steering  = None
+    distance = 0.0
+    collision_time = 1e308
+    min_separation = 1e308
+    relative_position = None
+    relative_velocity = None
