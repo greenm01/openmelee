@@ -20,29 +20,21 @@ from math import atan2
 
 class Threat(object):
 
-    var target : GameObject;
-    var steering : Vector;
-    var distance : Float;
-    var collisionTime : Float;
-    var minSeparation : Float;
-    var relativePos : Vector;
-    var relativeVel : Vector;
+    target = None
+    steering  = None
+    distance = 0.0
+    collision_time = 1e308
+    min_separation = 1e308
+    relative_position = None
+    relative_velocity = None
 
 
 class AI(object):
 
-    var steer : Steer;
-    public var enemy : Ship;
-    public var ship : GameObject;
-    var maxPredictionTime : Float;
-    var st : Vector;
-    var range : Float;
-
-    def __init__(self, ship):
+    def __init__(self, ship, actors):
         self.ship = ship
-        self.steer = Steer(ship, gameObjects)
-        self.maxPredictionTime = 0.25
-
+        self.steer = Steer(ship, actors)
+        self.max_prediction_time = 0.25
 
     // Elementary steering AI 
     def move(self):

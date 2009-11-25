@@ -24,18 +24,8 @@ class Steer(object):
     def __init__ (self, ship, actors):
         self.actors = actors
         self.ship = ship
-        self.body = ship.rBody
-    
-    def update(self):
-        ship = self.ship
-        self.position = ship.state.pos
-        self.velocity = ship.state.linVel
-        self.speed = ship.state.speed
-        self.maxForce = ship.state.maxForce
-        self.forward = ship.state.forward
-        self.radius = ship.state.radius
-        self.group = ship.group
-
+        self.body = ship.body
+        self.threat = Threat()
 
     # -------------------------------------------------- steering behaviors
     
@@ -51,88 +41,84 @@ class Steer(object):
     
 
     # Seek behavior
-    def steerForSeek(target):
-        desiredVelocity = target - self.position
-        return desiredVelocity - self.velocity
+    def steer_for_seek(target):
+        desired_velocity = target - self.body.position
+        return desired_velocity - self.body.linear_velocity
     
 
     # Flee behavior
-    def steerForFlee(target):
-        desiredVelocity = target - self.position
-        return desiredVelocity - self.velocity
+    def steer_for_free(target):
+        desired_velocity = target - self.body.position
+        return desired_velocity - self.body.linear_velocity
     
     
     # Steer to avoid
-    def collisionThreat(threat, maxLookAhead = 0.15):
+    def collisionThreat(threat, max_look_ahead = 0.15):
 
         # 1. Find the target closest to collision
         
-        radius = self.radius
-        shortestTime = 1e99
+        radius = self.ship.radius
+        shortest_time = 1e99
     
         # Loop through each target
-        for actor in actors:
-
-            target = actor.state
+        for target in actors:
             
-            if obstacle.rBody == self.body or obstacle.rBody == None or
-               self.group == obstacle.group):
+            if target.body is self.body or target.body is None or
+               self.group is target.group:
                 continue
             
-            
             # Calculate the time to collision
-            pos = target.pos
-            relative_pos = pos - self.position
-            relative_vel = self.velocity - target.linVel
+            relative_position = target.body.position - self.body.position
+            relative_velocity = self.body.linear_velocity - target.body.linear_velocity
             relative_speed = relative_vel.length()
             
             # Time to closest point of approach
-            timeToCPA = relative_pos.dot(relative_vel) /
+            time_cpa = relative_pos.dot(relative_velocity) /
                         (relative_speed * relative_speed)
                                     
             # Threat is separating 
-            if (timeToCPA < 0):
+            if (time_cpa < 0):
                 continue
             
-            distance = relative_pos.length()
+            distance = relative_position.length()
             # Clamp look ahead time
-            timeToCPA = clamp(timeToCPA, 0, maxLookAhead)
+            time_cpa = clamp(time_cpa, 0, max_look_ahead)
             
             # Calculate closest point of approach
-            cpa = self.position + self.velocity * timeToCPA
-            eCpa = pos + target.linVel * timeToCPA
-            relative_pos = eCpa - cpa
-            dCPA = relative_pos.length()
+            cpa = self.body.position + self.body.linear_velocity * time_cpa
+            ecpa = position + target.body.linear_velocity * time_cpa
+            relative_pos = ecpa - cpa
+            dcpa = relative_position.length()
             
             # No collision
-            if (dCPA > radius + obstacle.state.radius):
+            if (dcpa > radius + obstacle.radius):
                 continue
             
             # Check if it's the closest collision threat
-            if timeToCPA < shortestTime and dCPA < threat.minSeparation:
-                shortestTime = timeToCPA
-                threat.target = obstacle
-                threat.distance = distance
-                threat.relative_pos = relative_pos
-                threat.relative_vel = relative_vel
-                threat.minSeparation = dCPA
+            if time_cpa < shortest_time and dcpa < self.threat.min_separation:
+                shortest_time = time_cpa
+                self.threat.target = obstacle
+                self.threat.distance = distance
+                self.threat.relative_position = relative_position
+                self.threat.relative_velocity = relative_velocity
+                self.threat.min_separation = dcpa
            
 
         # 2. Calculate the steering
 
         # If we have no target, then exit
-        if threat.target == None:
+        if threat.target is None:
             return None
 
         # If we’re going to hit exactly, or if we’re already
         # colliding, then do the steering based on current
         # position.
-        #if(threat.minSeparation < self.radius || threat.distance < radius + rad) {
+        #if(threat.min_separation < self.radius || threat.distance < radius + rad) {
             #threat.steering =  self.position - threat.target.state.pos
         #} else {
             # Otherwise calculate the future relative position:
-            threat.steering = threat.relative_pos 
-            return threat.relative_pos
+            threat.steering = threat.relative_position
+            return threat.relative_position
             #trace(threat.steering.x + "," + threat.steering.y)
         #}
  
