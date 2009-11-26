@@ -32,10 +32,10 @@ class Nemesis(Ship):
     group = -1
     
     # Ship characteristics
-    engineForce = 0, 30
-    turnForce = 0, 5000
-    rightTurnPoint = -2.5, 0
-    leftTurnPoint = 2.5, 0
+    engine_force = 0, 30
+    turn_force = 0, 5000
+    right_turn_point = -2.5, 0
+    left_turn_point = 2.5, 0
 
     # Physics properties
     initial_position = Vec2(-10, -10)

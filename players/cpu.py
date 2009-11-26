@@ -16,5 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ai import AI
 
-class AIPlayer: pass
+class CPU: pass

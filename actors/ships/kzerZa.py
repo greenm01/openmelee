@@ -32,10 +32,10 @@ class KzerZa(Ship):
     group = -2
     
     # Ship characteristics
-    engineForce = 0, -50
-    turnForce = 0, 8000
-    rightTurnPoint = -2.0, 0
-    leftTurnPoint = 2.0, 0
+    engine_force = 0, -50
+    turn_force = 0, 8000
+    right_turn_point = -2.0, 0
+    left_turn_point = 2.0, 0
 
     # Physics properties
     initial_position = Vec2(30, 30)

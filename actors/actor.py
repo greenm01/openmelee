@@ -27,6 +27,9 @@ from utils.geo import calc_center
 
 class Actor:
 
+    ai = None
+    radius = 0
+    
     def __init__(self, melee):
         self.melee = melee
         
@@ -49,6 +52,39 @@ class Actor:
             self.svg = squirtle.SVG(file)
             self.lines = list(self.svg.shapes[part] for part in self.parts)
             
+    def check_death(self):
+        age = time.time() - self.birthday
+        if age >= self.lifetime or self.dead:
+            self.kill()
+            return True
+        return False
+
+    # Apply planet gravity
+    def apply_gravity(self):
+        p = self.body.position
+        fx, fy = calc_planet_gravity(p.x, p.y)
+        self.body.apply_force(Vec2(fx, fy), self.body.world_center)
+    
+    def apply_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            print "I'm dead!"
+            self.dead = True
+    
+    def update_ai(self):
+        pass
+        
+    def update_state(self):
+        pass
+ 
+    def kill(self):
+        self.destroy()
+        self.melee.actors.remove(self)
+        self.melee.world.remove_body(self.body)
+
+    def destroy(self):
+        pass
+        
     def draw(self):
         pass
     
@@ -76,35 +112,3 @@ class Actor:
         # Draw center of mass
         #red = 255, 0, 0
         #draw_circle((pos.x, pos.y), 0.5, red) 
-            
-    def check_death(self):
-        age = time.time() - self.birthday
-        if age >= self.lifetime or self.dead:
-            self.kill()
-            return True
-        return False
-
-    # Apply planet gravity
-    def apply_gravity(self):
-        p = self.body.position
-        fx, fy = calc_planet_gravity(p.x, p.y)
-        self.body.apply_force(Vec2(fx, fy), self.body.world_center)
-    
-    def apply_damage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            print "I'm dead!"
-            self.dead = True
-    
-    def update_state(self):
-		#state.pos.set(rBody.x, rBody.y)
-		#state.linVel = rBody.v
-        pass
- 
-    def kill(self):
-        self.destroy()
-        self.melee.actors.remove(self)
-        self.melee.world.remove_body(self.body)
-
-    def destroy(self):
-        pass

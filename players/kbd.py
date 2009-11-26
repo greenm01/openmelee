@@ -27,7 +27,6 @@ def compute_keymap():
             
 compute_keymap()
     
-
 def update_ship(game, key, press):
     "Given a key event, look up the player/ship and update its button bitmask."
     # Lookup key

@@ -16,10 +16,20 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
+from physics import Vec2
+    
+class Threat(object):
+
+    target = None
+    steering  = None
+    distance = 0.0
+    collision_time = 1e308
+    min_separation = 1e308
+    relative_position = None
+    relative_velocity = None
+    
 class Steer(object):
 
-    actors : Sprite
-    
     # Constructor: initializes state
     def __init__ (self, ship, actors):
         self.actors = actors
@@ -28,7 +38,7 @@ class Steer(object):
         self.threat = Threat()
 
     # -------------------------------------------------- steering behaviors
-    
+    '''
     def steerForWander(dt):
         # random walk m_wanderSide and m_wanderUp between -1 and +1
         # maybe (12) should be an argument?
@@ -38,22 +48,22 @@ class Steer(object):
 
         # return a pure lateral steering vector: (+/-Side) + (+/-Up)
         return m_side * m_wanderSide + m_up * m_wanderUp
-    
+    '''
 
     # Seek behavior
-    def steer_for_seek(target):
+    def steer_for_seek(self, target):
         desired_velocity = target - self.body.position
         return desired_velocity - self.body.linear_velocity
     
 
     # Flee behavior
-    def steer_for_free(target):
+    def steer_for_free(self, target):
         desired_velocity = target - self.body.position
         return desired_velocity - self.body.linear_velocity
     
     
     # Steer to avoid
-    def collisionThreat(threat, max_look_ahead = 0.15):
+    def collision_threat(self, max_look_ahead = 0.15):
 
         # 1. Find the target closest to collision
         
@@ -63,8 +73,7 @@ class Steer(object):
         # Loop through each target
         for target in actors:
             
-            if target.body is self.body or target.body is None or
-               self.group is target.group:
+            if target.body is self.body or target.body is None or self.group is target.group:
                 continue
             
             # Calculate the time to collision
@@ -73,8 +82,7 @@ class Steer(object):
             relative_speed = relative_vel.length()
             
             # Time to closest point of approach
-            time_cpa = relative_pos.dot(relative_velocity) /
-                        (relative_speed * relative_speed)
+            time_cpa = relative_pos.dot(relative_velocity) / (relative_speed * relative_speed)
                                     
             # Threat is separating 
             if (time_cpa < 0):
@@ -110,15 +118,15 @@ class Steer(object):
         if threat.target is None:
             return None
 
-        # If we’re going to hit exactly, or if we’re already
+        # If we arere going to hit exactly, or if we are already
         # colliding, then do the steering based on current
         # position.
         #if(threat.min_separation < self.radius || threat.distance < radius + rad) {
             #threat.steering =  self.position - threat.target.state.pos
         #} else {
             # Otherwise calculate the future relative position:
-            threat.steering = threat.relative_position
-            return threat.relative_position
+        threat.steering = threat.relative_position
+        return threat.relative_position
             #trace(threat.steering.x + "," + threat.steering.y)
         #}
  
@@ -166,88 +174,81 @@ class Steer(object):
         otherFinal = other.pos.plus(otherTravel)
 
         return myFinal.minus(otherFinal).length()
-    
+    '''
 
-    def target(quarry:State, maxPredictionTime:Float):
-
+    def target(self, quarry, max_preditcion_time):
+        
         # offset from self to quarry, that distance, unit vector toward quarry
-        offset = quarry.pos.minus(self.position)
-        distance = offset.length()
-        unitOffset = offset.div(distance)
+        offset = quarry.body.position - self.body.position
+        distance = offset.length
+        unit_offset = offset / distance
 
         # how parallel are the paths of "self" and the quarry
         # (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-        parallelness = self.forward.dot(quarry.forward)
+        fwd = self.ship.forward()
+        forward = Vec2(fwd[0], fwd[1])
+        fwd = quarry.forward()
+        qforward = Vec2(fwd[0], fwd[1])
+        parallelness = forward.dot(qforward)
 
         # how "forward" is the direction to the quarry
         # (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-        forwardness = self.forward.dot(unitOffset)
+        forwardness = forward.dot(unit_offset)
+    
+        vel = self.ship.body.linear_velocity.length
+        direct_travel_time = 0.0 if vel == 0.0 else distance / vel
+        f = interval_comparison (forwardness,  -0.707, 0.707)
+        p = interval_comparison (parallelness, -0.707, 0.707)
 
-        directTravelTime = distance / self.speed
-        f = Util.intervalComparison (forwardness,  -0.707, 0.707)
-        p = Util.intervalComparison (parallelness, -0.707, 0.707)
-
-        timeFactor = 0.0 # to be filled in below
+        time_factor = 0.0 # to be filled in below
 
         # Break the pursuit into nine cases, the cross product of the
         # quarry being [ahead, aside, or behind] us and heading
         # [parallel, perpendicular, or anti-parallel] to us.
-        switch (f)
-        {
-        case 1:
-            switch (p)
-            {
-            case 1:          # ahead, parallel
-                timeFactor = 4.0
-            case 0:           # ahead, perpendicular
-                timeFactor = 1.8
-            case -1:          # ahead, anti-parallel
-                timeFactor = 0.85
-            }
-        case 0:
-            switch (p)
-            {
-            case 1:          # aside, parallel
-                timeFactor = 1.0
-            case 0:           # aside, perpendicular
-                timeFactor = 0.8
-            case -1:          # aside, anti-parallel
-                timeFactor = 4.0
-            }
-        case -1:
-            switch (p)
-            {
-            case 1:          # behind, parallel
-                timeFactor = 0.5
-            case 0:           # behind, perpendicular
-                timeFactor = 2.0
-            case -1:          # behind, anti-parallel
-                timeFactor = 2.0
-            }
-        }
+        if f == 1:
+            if p == 1:              # ahead, parallel
+                time_factor = 4.0
+            elif p == 0:            # ahead, perpendicular
+                time_factor = 1.8
+            elif p == -1:           # ahead, anti-parallel
+                time_factor = 0.85
+        elif f == 0:
+            if p == 1:              # aside, parallel
+                time_factor = 1.0
+            elif p == 0:            # aside, perpendicular
+                time_factor = 0.8
+            elif p == -1:           # aside, anti-parallel
+                time_factor = 4.0
+        elif f == -1:
+            if p == 1:              # behind, parallel
+                time_factor = 0.5
+            elif p == 0:            # behind, perpendicular
+                time_factor = 2.0
+            elif p == -1:           # behind, anti-parallel
+                time_factor = 2.0
 
         # estimated time until intercept of quarry
-        et = directTravelTime * timeFactor
+        et = direct_travel_time * time_factor
 
         # xxx experiment, if kept, self limit should be an argument
-        etl = if (et > maxPredictionTime) maxPredictionTime else et
+        etl = max_preditcion_time if et > max_preditcion_time else et
 
         # estimated position of quarry at intercept
-        target = quarry.predictFuturePosition(etl)
-        return target 
-    
+        return quarry.body.position + quarry.body.linear_velocity * et  
+
+    '''
 
     # ------------------------------------------------------------------------
     # evasion of another vehicle
-    def steerForEvasion (menace:State,  maxPredictionTime:Float):
+    def steerForEvasion (menace:State,  max_preditcion_time:Float):
 
         # offset from self to menace, that distance, unit vector toward menace
         offset = menace.pos.minus(self.position)
         distance = offset.length()
 
         roughTime = distance / menace.speed
-        predictionTime = if (roughTime > maxPredictionTime) maxPredictionTime else roughTime
-        target = menace.predictFuturePosition (predictionTime)
+        predictionTime = if (roughTime > max_preditcion_time) max_preditcion_time else roughTime
+        target = menace.predict_future_position (predictionTime)
 
         return steerForFlee (target)
     
@@ -305,3 +306,12 @@ class Steer(object):
     m_wanderSide : Float
     m_wanderUp : Float
     '''
+    
+## classify a value relative to the interval between two bounds:
+##     returns -1 when below the lower bound
+##     returns  0 when between the bounds (inside the interval)
+##     returns +1 when above the upper bound
+def interval_comparison(x, lower_bound, upper_bound):
+    if x < lower_bound: return -1
+    if x > upper_bound: return 1
+    return 0

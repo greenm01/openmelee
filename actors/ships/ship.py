@@ -85,8 +85,7 @@ class Ship(Actor):
     ##
 
     def thrust(self):
-        a = vforangle(self.body.angle)
-        f = rotate(self.engineForce, a)
+        f = self.forward()
         self.body.apply_impulse(Vec2(f[0], f[1]), self.body.world_center)
 
     def turn_straight(self):
@@ -94,12 +93,12 @@ class Ship(Actor):
 
     def turn_left(self):
         self.body.angular_velocity = 0
-        t = cross(self.leftTurnPoint, self.turnForce)
+        t = cross(self.left_turn_point, self.turn_force)
         self.body.apply_torque(t)
 
     def turn_right(self):
         self.body.angular_velocity = 0
-        t = cross(self.rightTurnPoint, self.turnForce)
+        t = cross(self.right_turn_point, self.turn_force)
         self.body.apply_torque(t)
 
     def fire(self):
@@ -107,11 +106,19 @@ class Ship(Actor):
 
     def special(self):
         pass
+        
+    def forward(self):
+        a = vforangle(self.body.angle)
+        return rotate(self.engine_force, a)
 
     ##
     ## MAINLOOP INTERFACE
     ##
 
+    def update_ai(self):
+        if self.ai:
+            self.ai.update()
+            
     def update_state(self):
         buttons = self.buttons
         buttons_delta = self.buttons_prev ^ buttons

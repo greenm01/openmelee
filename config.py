@@ -33,9 +33,9 @@ KEYS = [
 ##
 from players.kbd import KeyboardPlayer, update_ship
 from players.net import NetConn, NetPlayer
-from players.ai import AIPlayer
+from players.cpu import CPU
 
-PLAYERS = [KeyboardPlayer, KeyboardPlayer]
+PLAYERS = [KeyboardPlayer, CPU]
 
 ##
 ## SHIP SELECTION
@@ -44,7 +44,7 @@ from actors.ships.kzerZa import KzerZa
 from actors.ships.nemesis import Nemesis
 
 SHIP_CLASSES = KzerZa, Nemesis
-SHIP_CHOICES = 0,1
+SHIP_CHOICES = 0, 1
 
 ##
 ##
