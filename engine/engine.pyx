@@ -27,6 +27,7 @@ from gl cimport *
 cdef extern from 'math.h':
     double cos(double)
     double sin(double)
+    double sqrt(double)
 
 SEGMENTS = 25
 INCREMENT = 2.0 * PI / SEGMENTS
@@ -162,6 +163,13 @@ def draw_solid_polygon(vertices, fill, outline):
         glVertex2f(v[0], v[1])
     glEnd()
 
+def draw_line(x1, y1, x2, y2):
+    glColor3ub(255, 255, 0)
+    glBegin(GL_LINES)
+    glVertex2f(x1, y1)
+    glVertex2f(x2, y2)
+    glEnd()
+
 ##
 ## Game engine / main loop / UI
 ##
@@ -169,18 +177,11 @@ from glfw cimport *
 
 import sys
 
-cdef extern from 'math.h':
-    double cos(double)
-    double sin(double)
-    double sqrt(double)
-
-
 # Keyboard callback wrapper
 kbd_callback_method = None
 
 cdef extern void __stdcall kbd_callback(int id, int state):
     kbd_callback_method(id, state)
-
 
 cdef class Game:
 

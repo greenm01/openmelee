@@ -51,9 +51,9 @@ class Nemesis(Ship):
     sEnergy = 6
 
     # Recharge rates
-    pDelay = 0.075
+    pDelay = 0.15
     sDelay = 0.5
-    bDelay = 0.1
+    bDelay = 0.25
     
     # Debug draw colors 
     fill = 42, 38, 127

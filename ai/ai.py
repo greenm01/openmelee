@@ -18,6 +18,7 @@
 #
 from math import atan2, pi
 from steer import Steer
+from engine import draw_line
 
 class AI(object):
 
@@ -34,7 +35,7 @@ class AI(object):
         #self.update() 
         st = None #self.steer.collision_threat(2.0)
             
-        range = (self.ship.body.position - self.enemy.body.position).length
+        self.range = (self.ship.body.position - self.enemy.body.position).length
         range2 = (self.ship.body.position - self.planet.body.position).length
         margin =  self.planet.radius + self.ship.radius * 2.0
 
@@ -46,25 +47,24 @@ class AI(object):
         #    self.avoid()
 			
     def chase(self):
-
         st = self.steer.target(self.enemy, self.max_prediction_time)
+        #p1 = self.ship.body.position
+        #draw_line(p1.x, p1.y, st.x, st.y)
         st = self.ship.body.get_local_point(st)
-        # Because ship's heading is 90 off rigid body's heading
-        #st = st.rotateLeft90();
-        angle = atan2(st.x, st.y)
-        angle2 = abs(angle)
+        # Ship's heading is 180 off rigid body's heading => add pi
+        angle = atan2(st.x, st.y) + pi
 
-        if range < 50 and angle2 < pi/8.0:
+        if self.range < 50 and (angle < 0.05 or angle > 6.233):
             self.ship.fire()
 
-        if angle2 > 0.05:
-            if angle >= 0.0:
+        if angle > 0.05 and angle < 6.233:
+            if angle >= 0.05 and angle < pi:
                 self.ship.turn_right()
             else:
                 self.ship.turn_left()
         else:
             self.ship.body.angular_velocity = 0.0
-            if range > 5.0:
+            if self.range > 5.0:
                 self.ship.thrust()
         
     def avoid(self):

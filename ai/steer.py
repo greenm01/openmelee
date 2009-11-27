@@ -17,7 +17,8 @@
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
 from physics import Vec2
-    
+from sys import maxint
+
 class Threat(object):
 
     target = None
@@ -196,7 +197,8 @@ class Steer(object):
         forwardness = forward.dot(unit_offset)
     
         vel = self.ship.body.linear_velocity.length
-        direct_travel_time = 0.0 if vel == 0.0 else distance / vel
+        
+        direct_travel_time = maxint if vel == 0.0 else distance / vel
         f = interval_comparison (forwardness,  -0.707, 0.707)
         p = interval_comparison (parallelness, -0.707, 0.707)
 
@@ -229,12 +231,12 @@ class Steer(object):
 
         # estimated time until intercept of quarry
         et = direct_travel_time * time_factor
-
+        
         # xxx experiment, if kept, self limit should be an argument
         etl = max_preditcion_time if et > max_preditcion_time else et
 
         # estimated position of quarry at intercept
-        return quarry.body.position + quarry.body.linear_velocity * et  
+        return quarry.body.position + quarry.body.linear_velocity * etl  
 
     '''
 

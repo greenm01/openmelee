@@ -52,7 +52,7 @@ class KzerZa(Ship):
     
     pDelay = 0.1    # Primary delay
     sDelay = 0.5    # Secondary delay
-    bDelay = 0.05   # Batter recharge rate
+    bDelay = 0.25   # Batter recharge rate
     
     # Debug draw colors 
     fill = 0, 255, 0
@@ -60,6 +60,9 @@ class KzerZa(Ship):
     
     def __init__(self, melee):
         Ship.__init__(self, melee)
+    
+    def apply_gravity(self):
+        pass
         
     def fire(self):
         
@@ -77,7 +80,8 @@ class KzerZa(Ship):
         shell = self.melee.world.append_body(bodydef)
         angle = vforangle(self.body.angle)
         velocity = rotate(angle, (0.0, -100.0))
-        shell.linear_velocity = Vec2(velocity[0], velocity[1])
+        vb = self.body.linear_velocity
+        shell.linear_velocity = Vec2(velocity[0]+vb.x, velocity[1]+vb.y)
         
         polydef = Polygon()
         verts = [Vec2(0.5, 0.8), Vec2(-0.5, 0.8), Vec2(-0.5, -0.8), Vec2(0.5, -0.8)]
