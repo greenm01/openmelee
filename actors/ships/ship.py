@@ -17,6 +17,7 @@
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
 from random import randrange
+from math import pi
 
 from engine import vforangle, rotate
 from physics import Vec2, Body, Polygon, BoundPolygon
@@ -49,7 +50,11 @@ class Ship(Actor):
 
     def __init__(self, melee):
         Actor.__init__(self, melee)
-               
+        
+        # Set max linear and angular velocity
+        self.max_linear_velocity = 50
+        self.max_angular_velocity = pi
+        
         # Physics (based on SVG shapes)
         self.translate = calc_center(self.lines[self.parts.index(self.center_part)])
         self.svg.init(self.translate, self.scale)
@@ -175,8 +180,7 @@ class Ship(Actor):
 			self.bTime = self.time
 			self.battery += 1
 
-    def destroy(self):
-        print "boom!"
+    def on_destroy(self):
         # Create explosion
         for s in self.body.shapes:
             bodydef = Body()
@@ -184,20 +188,23 @@ class Ship(Actor):
             debris = self.melee.world.append_body(bodydef)
             debris.linear_velocity = Vec2(randrange(-100.0, 100.0), 
                                         randrange(-100.0, 100.0))
+            junk = Debris(self.melee, debris)
             if isinstance(s, BoundPolygon):
                 # Polygon
                 debris.position = self.body.position + s.centroid
                 polydef = Polygon()
                 polydef.density = 10
                 polydef.vertices = s.vertices
-                debris.append_shape(polydef)
+                shape = debris.append_shape(polydef)
+                # Register shapes for collision callbacks
+                self.melee.contact_register[hash(shape)] = junk
             else:
                 # Circle
                 debris.position = self.body.position + s.local_position
                 circdef = Circle()
                 circdef.density = 10
                 circle.radis = s.radius
-                debris.append_shape(circdef)
+                shape = debris.append_shape(circdef)
+                self.melee.contact_register[hash(shape)] = junk
                 
             debris.set_mass_from_shapes()
-            Debris(self.melee, debris)

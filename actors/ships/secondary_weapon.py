@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
+from sys import float_info
+
 from actors.actor import Actor
 
 class SecondaryWeapon(Actor):
@@ -24,6 +26,8 @@ class SecondaryWeapon(Actor):
     fill = 255, 0, 0
     outline = 255, 0, 0
     group = 0
+    
+    health = float_info.max
     
     def __init__(self, mother_ship, melee, body, svg = None):
         self.body = body

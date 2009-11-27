@@ -55,7 +55,7 @@ class Asteroid(Actor):
         
         # Create shape
         self.radius = 1.0
-        density = 2.0
+        density = 10.0
         
         c1 = Circle()
         c1.radius = self.radius 

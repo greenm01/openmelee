@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
-from math import pi as PI
+from math import pi
 
 from physics import Vec2, Circle, Body, Polygon
 from ship import *
@@ -59,7 +59,7 @@ class Nemesis(Ship):
     fill = 42, 38, 127
     outline = 42, 38, 127
     
-    turret_angle = -PI * 0.5
+    turret_angle = -pi * 0.5
     
     def __init__(self, melee):
         Ship.__init__(self, melee)
@@ -115,7 +115,7 @@ class Nemesis(Ship):
         # Create body and shape
         bodydef = Body()
         bodydef.ccd = True
-        bodydef.angle = self.body.angle + (PI * 0.5) + self.turret_angle
+        bodydef.angle = self.body.angle + (pi * 0.5) + self.turret_angle
         bodydef.position = self.turret.get_world_point(Vec2(0, -3))
         shell = self.melee.world.append_body(bodydef)
         angle = vforangle(bodydef.angle)
@@ -150,11 +150,11 @@ class Nemesis(Ship):
         # Adjust turret angle
         if(self.buttons & SPECIAL):
             if(self.buttons & LEFT):
-                self.turret_angle += PI / 32
+                self.turret_angle += pi / 32
             if(self.buttons & RIGHT):
-                self.turret_angle -= PI / 32
+                self.turret_angle -= pi / 32
                 
-        self.turret.angle = self.body.angle + (PI * 0.5) + self.turret_angle
+        self.turret.angle = self.body.angle + (pi * 0.5) + self.turret_angle
         
     def debug_draw(self):
         pos = self.body.position

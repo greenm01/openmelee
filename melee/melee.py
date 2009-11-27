@@ -141,6 +141,7 @@ class Melee(Game):
         # Update states
         for a in self.actors:
             if a.check_death(): continue
+            a.limit_velocity()
             a.update_ai()
             a.update_state()
             a.apply_gravity()
@@ -215,11 +216,11 @@ class Melee(Game):
             p1 = self.me.body.position
             p2 = self.enemy.body.position
         else:
-            p1 = Vec2(250, 250)
-            p2 = Vec2(-250, -250)
+            p1 = Vec2(125, 125)
+            p2 = Vec2(-125, -125)
             
         range = Vec2(p1.x - p2.x, p1.y - p2.y)
-        zoom = clamp(1000/range.length, 4, 60)   
+        zoom = clamp(1000/range.length, 2, 75)   
         # Calculate view center
         vcx = p1.x - range.x * 0.5
         vcy = p1.y - range.y * 0.5
@@ -257,11 +258,9 @@ class Melee(Game):
     def collision_callback(self, shape1, shape2):
         key1 = hash(shape1)
         key2 = hash(shape2)
-        
-        try:
-            actor1 = self.contact_register[key1]
-            actor2 = self.contact_register[key2]
-            actor1.apply_damage(actor2.damage)
-            actor2.apply_damage(actor1.damage)
-        except:
-            print "oops, shape not registered for callbacks!"  
+
+        actor1 = self.contact_register[key1]
+        actor2 = self.contact_register[key2]
+        actor1.apply_damage(actor2.damage)
+        actor2.apply_damage(actor1.damage)
+  

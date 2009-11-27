@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
+from sys import float_info
 
 from actors.actor import Actor
 
@@ -26,13 +27,11 @@ class Debris(Actor):
     outline = 0, 0, 255
     group = 3
     
+    health = float_info.max
+    
     def __init__(self, melee, body):
         self.body = body
         Actor.__init__(self, melee)
-        
-        # Register shapes for collision callbacks
-        for s in self.body.shapes:
-            melee.contact_register[hash(s)] = self
             
     def apply_gravity(self):
         pass

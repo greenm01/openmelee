@@ -23,6 +23,7 @@ import time
 from engine import calc_planet_gravity, vforangle, rotate
 from engine import draw_solid_circle, draw_solid_polygon, draw_circle
 from physics import Vec2, BoundPolygon, BoundCircle
+from utils import clamp
 from utils.geo import calc_center
 
 # Maximum range planet gravity has an effect
@@ -32,6 +33,9 @@ class Actor:
     
     ai = None
     radius = 0
+    
+    max_linear_velocity = float_info.max
+    max_angular_velocity = float_info.max
     
     def __init__(self, melee):
         self.melee = melee
@@ -54,6 +58,16 @@ class Actor:
             file = "data/ships/%s.svg" % self.name
             self.svg = squirtle.SVG(file)
             self.lines = list(self.svg.shapes[part] for part in self.parts)
+    
+    def limit_velocity(self):
+        linvel = self.body.linear_velocity
+        angvel = self.body.angular_velocity
+        maxlinvel = self.max_linear_velocity
+        maxangvel = self.max_angular_velocity
+        vx = clamp(linvel.x, -maxlinvel, maxlinvel)
+        vy = clamp(linvel.y, -maxlinvel, maxlinvel)
+        self.body.linear_velocity = Vec2(vx, vy)
+        self.body.angular_velocity = clamp(angvel, -maxangvel, maxangvel)
             
     def check_death(self):
         age = time.time() - self.birthday
@@ -72,7 +86,6 @@ class Actor:
     def apply_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
-            print "I'm dead!"
             self.dead = True
     
     def update_ai(self):
@@ -82,11 +95,11 @@ class Actor:
         pass
  
     def kill(self):
-        self.destroy()
+        self.on_destroy()
         self.melee.actors.remove(self)
         self.melee.world.remove_body(self.body)
 
-    def destroy(self):
+    def on_destroy(self):
         pass
     
     def calc_radius(self):

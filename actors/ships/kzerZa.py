@@ -60,7 +60,7 @@ class KzerZa(Ship):
     
     def __init__(self, melee):
         Ship.__init__(self, melee)
-       
+   
     def fire(self):
         
         if not self.primary_time() or self.battery <= self.pEnergy:
