@@ -17,7 +17,7 @@
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
 import math
-import sys
+from sys import float_info
 import time
 
 from engine import calc_planet_gravity, vforangle, rotate
@@ -35,7 +35,7 @@ class Actor:
         
         # TODO 'permanent' objects should not have a lifetime... only bullets etc.
         try:
-            self.lifetime = sys.float_info.max
+            self.lifetime = float_info.max
         except AttributeError:
             self.lifetime = 1e308
 
@@ -84,7 +84,19 @@ class Actor:
 
     def destroy(self):
         pass
-        
+    
+    def calc_radius(self):
+        max = 0
+        for shape in self.body.shapes:
+            if isinstance(shape, BoundPolygon):
+                for v in shape.vertices:
+                    l = v.length
+                    if l > max:
+                        max = l
+            else:
+                max = shape.radius        
+        self.radius = max
+            
     def draw(self):
         pass
     

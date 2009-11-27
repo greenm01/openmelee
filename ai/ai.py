@@ -31,20 +31,20 @@ class AI(object):
 
     # Elementary steering AI 
     def update(self):
-        pass              
-        #self.update() 
-        st = None #self.steer.collision_threat(2.0)
+                    
+        st = self.steer.collision_threat(2.0)
             
         self.range = (self.ship.body.position - self.enemy.body.position).length
         range2 = (self.ship.body.position - self.planet.body.position).length
         margin =  self.planet.radius + self.ship.radius * 2.0
 
-        if st == None and range2 > margin:
+        if st is None and range2 > margin:
             self.chase()
             return
         
-        #if st != None:
-        #    self.avoid()
+        if st:
+            print "avoid"
+            self.avoid(st)
 			
     def chase(self):
         st = self.steer.target(self.enemy, self.max_prediction_time)
@@ -67,16 +67,12 @@ class AI(object):
             if self.range > 5.0:
                 self.ship.thrust()
         
-    def avoid(self):
-        pass
-        '''
-        k = self/ship.body.localPoint(st)
-        #k.rotateLeft90()
-        angle = atan2(k.x, k.y)
-        t = self.ship.linear_velocity.cross(st)
+    def avoid(self, st):
+        k = self.ship.body.get_local_point(st)
+        angle = atan2(k.x, k.y) + pi
+        t = self.ship.body.linear_velocity.cross(st)
 
-        angle = abs(angle)
-        if range < 50 and angle < pi/8.0:
+        if self.range < 50 and (angle < 0.05 or angle > 6.233):
             self.ship.fire()
 
         if t >= 0:
@@ -84,5 +80,4 @@ class AI(object):
         else:
             self.ship.turn_left()
 
-        ship.thrust()
-        '''
+        self.ship.thrust()

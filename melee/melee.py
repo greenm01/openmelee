@@ -122,6 +122,10 @@ class Melee(Game):
                     print "Network handshake failed or timed out"
                     return
         
+        # Calculate radius
+        for a in self.actors:
+            a.calc_radius()
+            
         self.main_loop()
         
     ##

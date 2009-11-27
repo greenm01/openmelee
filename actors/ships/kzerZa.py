@@ -60,9 +60,6 @@ class KzerZa(Ship):
     
     def __init__(self, melee):
         Ship.__init__(self, melee)
-    
-    def apply_gravity(self):
-        pass
         
     def fire(self):
         

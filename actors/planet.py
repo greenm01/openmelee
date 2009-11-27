@@ -27,7 +27,8 @@ class Planet(Actor):
     # Debug draw colors 
     fill = 50, 100, 200
     outline = 255, 0, 0
-        
+    group = 1
+    
     def __init__(self, melee):
         Actor.__init__(self, melee)
         

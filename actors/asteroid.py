@@ -27,7 +27,8 @@ class Asteroid(Actor):
     # Debug draw colors 
     fill = 255, 0, 0
     outline = 255, 0, 0
-        
+    group = 2
+    
     ##
     ## INITIALIZATION
     ##

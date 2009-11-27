@@ -16,16 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenMelee.  If not, see <http://www.gnu.org/licenses/>.
 #
+from sys import float_info
+
+from utils import clamp
 from physics import Vec2
-from sys import maxint
 
 class Threat(object):
 
     target = None
     steering  = None
     distance = 0.0
-    collision_time = 1e308
-    min_separation = 1e308
+    collision_time = float_info.max
+    min_separation = float_info.max
     relative_position = None
     relative_velocity = None
     
@@ -69,48 +71,52 @@ class Steer(object):
         # 1. Find the target closest to collision
         
         radius = self.ship.radius
-        shortest_time = 1e99
-    
+        shortest_time = float_info.max
+        threat = Threat()
+        
         # Loop through each target
-        for target in actors:
+        for target in self.actors:
             
-            if target.body is self.body or target.body is None or self.group is target.group:
+            if target.body is self.body or target.body is None or self.ship.group is target.group:
                 continue
             
             # Calculate the time to collision
-            relative_position = target.body.position - self.body.position
+            pos = target.body.position
+            relative_position =  pos - self.body.position
             relative_velocity = self.body.linear_velocity - target.body.linear_velocity
-            relative_speed = relative_vel.length()
+            relative_speed = relative_velocity.length
+            
+            if relative_speed == 0: continue
             
             # Time to closest point of approach
-            time_cpa = relative_pos.dot(relative_velocity) / (relative_speed * relative_speed)
+            time_cpa = relative_position.dot(relative_velocity) / (relative_speed * relative_speed)
                                     
             # Threat is separating 
             if (time_cpa < 0):
                 continue
-            
-            distance = relative_position.length()
+           
+            distance = relative_position.length
             # Clamp look ahead time
             time_cpa = clamp(time_cpa, 0, max_look_ahead)
             
             # Calculate closest point of approach
             cpa = self.body.position + self.body.linear_velocity * time_cpa
-            ecpa = position + target.body.linear_velocity * time_cpa
+            ecpa = pos + target.body.linear_velocity * time_cpa
             relative_pos = ecpa - cpa
-            dcpa = relative_position.length()
+            dcpa = relative_position.length
             
             # No collision
-            if (dcpa > radius + obstacle.radius):
+            if (dcpa > radius + target.radius):
                 continue
             
             # Check if it's the closest collision threat
-            if time_cpa < shortest_time and dcpa < self.threat.min_separation:
+            if time_cpa < shortest_time and dcpa < threat.min_separation:
                 shortest_time = time_cpa
-                self.threat.target = obstacle
-                self.threat.distance = distance
-                self.threat.relative_position = relative_position
-                self.threat.relative_velocity = relative_velocity
-                self.threat.min_separation = dcpa
+                threat.target = target
+                threat.distance = distance
+                threat.relative_position = relative_position
+                threat.relative_velocity = relative_velocity
+                threat.min_separation = dcpa
            
 
         # 2. Calculate the steering
@@ -198,7 +204,7 @@ class Steer(object):
     
         vel = self.ship.body.linear_velocity.length
         
-        direct_travel_time = maxint if vel == 0.0 else distance / vel
+        direct_travel_time = float_info.max if vel == 0.0 else distance / vel
         f = interval_comparison (forwardness,  -0.707, 0.707)
         p = interval_comparison (parallelness, -0.707, 0.707)
 

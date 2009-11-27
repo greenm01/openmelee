@@ -23,11 +23,13 @@ class SecondaryWeapon(Actor):
     # Debug draw colors 
     fill = 255, 0, 0
     outline = 255, 0, 0
+    group = 0
     
     def __init__(self, mother_ship, melee, body, svg = None):
         self.body = body
         Actor.__init__(self, melee)
         self.mother_ship = mother_ship
+        self.group = mother_ship.group
         self.svg = svg
         
         # Register shapes for collision callbacks

@@ -24,6 +24,7 @@ class Debris(Actor):
     # Debug draw colors 
     fill = 205, 201, 201
     outline = 0, 0, 255
+    group = 3
     
     def __init__(self, melee, body):
         self.body = body
