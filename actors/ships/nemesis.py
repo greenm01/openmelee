@@ -39,7 +39,7 @@ class Nemesis(Ship):
 
     # Physics properties
     initial_position = Vec2(-10, -10)
-    initial_velocity = Vec2(-10, 15)
+    initial_velocity = Vec2(-45, -20)
     initial_ang_vel = 0.75
     density = 5
     

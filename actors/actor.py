@@ -25,8 +25,11 @@ from engine import draw_solid_circle, draw_solid_polygon, draw_circle
 from physics import Vec2, BoundPolygon, BoundCircle
 from utils.geo import calc_center
 
+# Maximum range planet gravity has an effect
+GRAVITY_RANGE = 75
+    
 class Actor:
-
+    
     ai = None
     radius = 0
     
@@ -62,8 +65,9 @@ class Actor:
     # Apply planet gravity
     def apply_gravity(self):
         p = self.body.position
-        fx, fy = calc_planet_gravity(p.x, p.y)
-        self.body.apply_force(Vec2(fx, fy), self.body.world_center)
+        if (p - self.melee.planet.body.position).length < GRAVITY_RANGE:
+            fx, fy = calc_planet_gravity(p.x, p.y)
+            self.body.apply_force(Vec2(fx, fy), self.body.world_center)
     
     def apply_damage(self, damage):
         self.health -= damage

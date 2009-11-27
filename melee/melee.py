@@ -219,7 +219,7 @@ class Melee(Game):
             p2 = Vec2(-250, -250)
             
         range = Vec2(p1.x - p2.x, p1.y - p2.y)
-        zoom = clamp(1000/range.length, 5, 60)   
+        zoom = clamp(1000/range.length, 4, 60)   
         # Calculate view center
         vcx = p1.x - range.x * 0.5
         vcy = p1.y - range.y * 0.5

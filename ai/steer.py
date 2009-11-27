@@ -102,7 +102,7 @@ class Steer(object):
             # Calculate closest point of approach
             cpa = self.body.position + self.body.linear_velocity * time_cpa
             ecpa = pos + target.body.linear_velocity * time_cpa
-            relative_pos = ecpa - cpa
+            relative_position = ecpa - cpa
             dcpa = relative_position.length
             
             # No collision

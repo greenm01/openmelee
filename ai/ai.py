@@ -21,7 +21,7 @@ from steer import Steer
 from engine import draw_line
 
 class AI(object):
-
+    
     def __init__(self, ship, enemy, actors):
         self.ship = ship
         self.steer = Steer(ship, actors)
@@ -32,7 +32,7 @@ class AI(object):
     # Elementary steering AI 
     def update(self):
                     
-        st = self.steer.collision_threat(2.0)
+        st = self.steer.collision_threat(2.5)
             
         self.range = (self.ship.body.position - self.enemy.body.position).length
         range2 = (self.ship.body.position - self.planet.body.position).length
@@ -43,7 +43,6 @@ class AI(object):
             return
         
         if st:
-            print "avoid"
             self.avoid(st)
 			
     def chase(self):
