@@ -5,3 +5,5 @@ poly_line = [[0,0],[5,5],[-5,0],[5,-5]]
 polygons = []
 
 decompose_poly(poly_line, polygons)
+
+print polygons

@@ -12,7 +12,7 @@ cpdef list decompose_poly(list poly, list polys):
             #reflexVertices.append(poly[i])
             upperDist = lowerDist = float_info.max
             for j in range(len(poly)):
-                if left(at(poly, i - 1), at(poly, i), at(poly, j) and rightOn(at(poly, i - 1), at(poly, i), at(poly, j - 1))):
+                if left(at(poly, i - 1), at(poly, i), at(poly, j)) and rightOn(at(poly, i - 1), at(poly, i), at(poly, j - 1)):
                     # if line intersects with an edge
                     # find the point of intersection
                     p = intersection(at(poly, i - 1), at(poly, i), at(poly, j), at(poly, j - 1)) 
@@ -112,13 +112,7 @@ cdef bool eq(float a, float b):
     return abs(a - b) <= 1e-8
 
 cdef list at(list v, int i):
-    print i
-    print len(v)
-    print wrap(i, len(v))
-    return v[wrap(i, len(v))]
-    
-cdef int wrap(int a, int b):
-    return (a % b + b) if a < 0 else a % b
+    return v[i%len(v)]
     
 cdef float area(list a, list b, list c):
     return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1])))
