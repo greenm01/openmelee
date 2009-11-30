@@ -1,16 +1,18 @@
-def decompose_poly(Polygon poly):
+from sys import float_info
 
-    Point upperInt, lowerInt, p, closestVert
-    Scalar upperDist, lowerDist, d, closestDist
-    int upper_index, lower_index, closest_index
-    Polygon lower_poly, upper_poly
+cpdef list decompose_poly(list poly, list polys):
+
+    cdef list upperInt = [], lowerInt = [], p = [], closestVert = []
+    cdef float upperDist, lowerDist, d, closestDist
+    cdef int upper_index, lower_index, closest_index
+    cdef list lower_poly = [], upper_poly = []
 
     for i in range(len(poly)):
-        if isReflex(poly, i):
-            reflexVertices.append(poly[i])
-            upperDist = lowerDist = numeric_limits<Scalar>::max()
+        if is_reflex(poly, i):
+            #reflexVertices.append(poly[i])
+            upperDist = lowerDist = float_info.max
             for j in range(len(poly)):
-                if left(at(poly, i - 1), at(poly, i), at(poly, j) and rightOn(at(poly, i - 1), at(poly, i), at(poly, j - 1)):
+                if left(at(poly, i - 1), at(poly, i), at(poly, j) and rightOn(at(poly, i - 1), at(poly, i), at(poly, j - 1))):
                     # if line intersects with an edge
                     # find the point of intersection
                     p = intersection(at(poly, i - 1), at(poly, i), at(poly, j), at(poly, j - 1)) 
@@ -22,7 +24,7 @@ def decompose_poly(Polygon poly):
                             lowerDist = d
                             lowerInt = p
                             lower_index = j
-                if left(at(poly, i + 1), at(poly, i), at(poly, j + 1) and rightOn(at(poly, i + 1), at(poly, i), at(poly, j)):
+                if left(at(poly, i + 1), at(poly, i), at(poly, j + 1)) and rightOn(at(poly, i + 1), at(poly, i), at(poly, j)):
                     p = intersection(at(poly, i + 1), at(poly, i), at(poly, j), at(poly, j + 1))
                     if left(at(poly, i - 1), at(poly, i), p):
                         d = sqdist(poly[i], p)
@@ -33,22 +35,24 @@ def decompose_poly(Polygon poly):
 
             # if there are no vertices to connect to, choose a point in the middle
             if lower_index == (upper_index + 1) % len(poly):
-                p.x = (lowerInt.x + upperInt.x) / 2
-                p.y = (lowerInt.y + upperInt.y) / 2
-                steinerPoints.append(p)
+                p[0] = (lowerInt[0] + upperInt[0]) / 2
+                p[1] = (lowerInt[1] + upperInt[1]) / 2
+                #steinerPoints.append(p)
 
                 if i < upper_index:
-                    lower_poly.insert(lower_poly[-1], poly[0] + i, poly[0] + upper_index + 1)
+                    lower_poly.extend(poly[i:upper_index+1])
                     lower_poly.append(p)
                     upper_poly.append(p)
-                    if (lower_index != 0) upper_poly.insert(upper_poly[-1], poly[0] + lower_index, poly[-1])
-                    upper_poly.insert(upper_poly[-1], poly[0], poly[0] + i + 1)
+                    if lower_index != 0:
+                        upper_poly.extend(poly[lower_index:])
+                    upper_poly.extend(poly[:i+1])
                 else:
-                    if (i != 0) lower_poly.insert(lower_poly[-1], poly[0] + i, poly[-1])
-                    lower_poly.insert(lower_poly[-1], poly[0], poly[0] + upper_index + 1)
+                    if i != 0: 
+                        lower_poly.extend(poly[i:])
+                    lower_poly.extend(poly[:upper_index+1])
                     lower_poly.append(p)
                     upper_poly.append(p)
-                    upper_poly.insert(upper_poly[-1], poly[0] + lower_index, poly[0] + i + 1)
+                    upper_poly.extend(poly[lower_index:i+1])
             else:
             
                 # connect to the closest point within the triangle
@@ -56,9 +60,9 @@ def decompose_poly(Polygon poly):
                 if lower_index > upper_index:
                     upper_index += len(poly)
                 
-                closestDist = numeric_limits<Scalar>::max()
-                for (int j = lower_index j <= upper_index ++j:
-                    if leftOn(at(poly, i - 1), at(poly, i), at(poly, j) and rightOn(at(poly, i + 1), at(poly, i), at(poly, j)):
+                closestDist = float_info.max
+                for j from lower_index <= j <= upper_index:
+                    if leftOn(at(poly, i - 1), at(poly, i), at(poly, j)) and rightOn(at(poly, i + 1), at(poly, i), at(poly, j)):
                         d = sqdist(at(poly, i), at(poly, j))
                         if d < closestDist:
                             closestDist = d
@@ -66,30 +70,75 @@ def decompose_poly(Polygon poly):
                             closest_index = j % len(poly)
 
                 if i < closest_index:
-                    lower_poly.insert(lower_poly[-1], poly[0] + i, poly[0] + closest_index + 1)
+                    lower_poly.extend(poly[i:closest_index+1])
                     if closest_index != 0: 
-                        upper_poly.insert(upper_poly[-1], poly[0] + closest_index, poly[-1])
-                    upper_poly.insert(upper_poly[-1], poly[0], poly[0] + i + 1)
+                        upper_poly.extend(poly[closest_index:])
+                    upper_poly.extend(poly[:i+1])
                 else:
                     if i != 0:
-                        lower_poly.insert(lower_poly[-1], poly[0] + i, poly[-1])
-                    lower_poly.insert(lower_poly[-1], poly[0], poly[0] + closest_index + 1)
-                    upper_poly.insert(upper_poly[-1], poly[0] + closest_index, poly[0] + i + 1)
+                        lower_poly.extend(poly[i:])
+                    lower_poly.extend(poly[:closest_index+1])
+                    upper_poly.extend(poly[closest_index:i+1])
   
             # solve smallest poly first
             if len(lower_poly) < len(upper_poly):
-                decompose_poly(lower_poly)
-                decompose_poly(upper_poly)
+                decompose_poly(lower_poly, polys)
+                decompose_poly(upper_poly, polys)
             else:
-                decompose_poly(upper_poly)
-                decompose_poly(lower_poly)
+                decompose_poly(upper_poly, polys)
+                decompose_poly(lower_poly, polys)
             
             return
 
     polys.append(poly)
-
-cdef at(vector<T> v, int i):
-    return v[wrap(i, v.size())]
     
-cdef wrap(int a, int b):
+cdef list intersection(list p1, list p2, list q1, list q2):
+    cdef list i = []
+    cdef float a1, b1, c1, a2, b2, c2, det
+    a1 = p2[1] - p1[1]
+    b1 = p1[0] - p2[0]
+    c1 = a1 * p1[0] + b1 * p1[1]
+    a2 = q2[1] - q1[1]
+    b2 = q1[0] - q2[0]
+    c2 = a2 * q1[0] + b2 * q1[1]
+    det = a1 * b2 - a2 * b1
+    if not eq(det, 0): 
+        # lines are not parallel
+        i.append((b2 * c1 - b1 * c2) / det)
+        i.append((a1 * c2 - a2 * c1) / det)
+    return i
+
+cdef bool eq(float a, float b):
+    return abs(a - b) <= 1e-8
+
+cdef list at(list v, int i):
+    print i
+    print len(v)
+    print wrap(i, len(v))
+    return v[wrap(i, len(v))]
+    
+cdef int wrap(int a, int b):
     return (a % b + b) if a < 0 else a % b
+    
+cdef float area(list a, list b, list c):
+    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1])))
+
+cdef bool left(list a, list b, list c):
+    return area(a, b, c) > 0
+
+cdef bool leftOn(list a, list b, list c):
+    return area(a, b, c) >= 0
+
+cdef bool right(list a, list b, list c):
+    return area(a, b, c) < 0
+
+cdef bool rightOn(list a, list b, list c):
+    return area(a, b, c) <= 0
+
+cdef float sqdist(list a, list b):
+    cdef float dx = b[0] - a[0]
+    cdef float dy = b[1] - a[1]
+    return dx * dx + dy * dy
+    
+cdef bool is_reflex(list poly, int i):
+    return right(at(poly, i - 1), at(poly, i), at(poly, i + 1))
