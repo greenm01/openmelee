@@ -1,5 +1,15 @@
 from sys import float_info
 
+def makeCCW(list poly):
+    cdef int br = 0
+    # find bottom right point
+    for i from 1 <= i < len(poly):
+        if poly[i][1] < poly[br][1] or (poly[i][1] == poly[br][1] and poly[i][0] > poly[br][0]):
+            br = i
+    # reverse poly if clockwise
+    if not left(at(poly, br - 1), at(poly, br), at(poly, br + 1)):
+        poly.reverse()
+
 cpdef list decompose_poly(list poly, list polys):
 
     cdef list upperInt = [], lowerInt = [], p = [], closestVert = []
@@ -7,11 +17,10 @@ cpdef list decompose_poly(list poly, list polys):
     cdef int upper_index, lower_index, closest_index
     cdef list lower_poly = [], upper_poly = []
 
-    for i in range(len(poly)):
+    for i from 0 <= i < len(poly):
         if is_reflex(poly, i):
-            #reflexVertices.append(poly[i])
             upperDist = lowerDist = float_info.max
-            for j in range(len(poly)):
+            for j from 0 <= j < len(poly):
                 if left(at(poly, i - 1), at(poly, i), at(poly, j)) and rightOn(at(poly, i - 1), at(poly, i), at(poly, j - 1)):
                     # if line intersects with an edge
                     # find the point of intersection
@@ -37,7 +46,6 @@ cpdef list decompose_poly(list poly, list polys):
             if lower_index == (upper_index + 1) % len(poly):
                 p[0] = (lowerInt[0] + upperInt[0]) / 2
                 p[1] = (lowerInt[1] + upperInt[1]) / 2
-                #steinerPoints.append(p)
 
                 if i < upper_index:
                     lower_poly.extend(poly[i:upper_index+1])
