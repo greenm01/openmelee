@@ -4,7 +4,7 @@
 ##
 from sys import float_info
 
-def makeCCW(list poly):
+def make_ccw(list poly):
     cdef int br = 0
     # find bottom right point
     for i from 1 <= i < len(poly):

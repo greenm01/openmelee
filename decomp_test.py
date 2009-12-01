@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.6
 import time
 
-from engine import decompose_poly, makeCCW
+from engine import decompose_poly, make_ccw
 
 # Need to ensure points are counter-clockwise
 poly_line = [[0,0],[5,5],[-5,0],[5,-5]]
@@ -20,7 +20,7 @@ dude = [[174.50415,494.59368],[215.21844,478.87939],[207.36129,458.87939],[203.0
         [192.89701,377.80796],[177.18272,402.27225],[172.36129,413.87939],[169.14701,430.48653],[168.61129,458.52225],
         [168.61129,492.80796]]
 
-makeCCW(dude)
+make_ccw(dude)
         
 polygons = []
 dude_poly = []
