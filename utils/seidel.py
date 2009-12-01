@@ -39,7 +39,7 @@ from math import atan2
 ##
 
 # Shear transform. May effect numerical robustness
-SHEAR = 1e-4
+SHEAR = 1e-6
 
 class Point(object):
     
@@ -104,10 +104,10 @@ class Edge(object):
     ##
     
     def is_above(self, point):
-        return (round(point.y, 2) < round(self.slope * point.x + self.b, 2))
+        return (round(point.y, 4) < round(self.slope * point.x + self.b, 4))
         
     def is_below(self, point):
-        return (round(point.y, 2) > round(self.slope * point.x + self.b, 2))
+        return (round(point.y, 4) > round(self.slope * point.x + self.b, 4))
         
 class Trapezoid(object):
         

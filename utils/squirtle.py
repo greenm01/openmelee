@@ -9,6 +9,7 @@ import sys
 
 from engine import render_display_list, render_list, make_ccw, decompose_poly
 from physics import Vec2
+#from utils.seidel import Triangulator
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -571,12 +572,13 @@ class SVG(object):
         
     def decomp(self, looplist):
         loop = looplist[:]
+        plist = []
         for l in loop:
             bx = round(l[0][0], 2)
             by = round(l[0][1], 2)
             tx = round(l[-1][0], 2)
             ty = round(l[-1][1], 2)
-            if bx ==  tx and by == ty:
+            if bx == tx and by == ty:
                 l.pop()
             make_ccw(l)
             poly_list = []
@@ -584,9 +586,16 @@ class SVG(object):
             for p in l:
                 x = round(p[0], 0)
                 y = round(p[1], 0)
-                clean.append([x,y])
+                if clean.count([x,y]) == 0:
+                    clean.append([x,y])
             decompose_poly(clean, poly_list)
-            return self.flatten(poly_list)
+            plist.extend(self.flatten(poly_list))
+            '''
+            seidel = Triangulator(l)
+            triangles = seidel.triangles()
+            plist.extend(triangles)    
+            '''
+        return plist
     
     def flatten(self, seq):
         return [x for subseq in seq for x in subseq]
