@@ -1,3 +1,7 @@
+##
+## Ported from PolyDeomp by Mark Bayazit 
+## http://mnbayazit.com/406/credit
+##
 from sys import float_info
 
 def makeCCW(list poly):
