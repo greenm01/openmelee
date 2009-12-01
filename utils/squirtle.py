@@ -7,9 +7,8 @@ import re
 import math
 import sys
 
-from engine import render_display_list, render_list
+from engine import render_display_list, render_list, make_ccw, decompose_poly
 from physics import Vec2
-from utils import Triangulator
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -80,11 +79,6 @@ class Matrix(object):
         u, v, w, x, y, z = other.values
         return Matrix([a*u + c*v, b*u + d*v, a*w + c*x, b*w + d*x, a*y + c*z + e, b*y + d*z + f])
                                
-class TriangulationError(Exception):
-    """Exception raised when triangulation of a filled area fails. For internal use only.
-"""
-    pass
- 
 class GradientContainer(dict):
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
@@ -563,7 +557,7 @@ class SVG(object):
                 for i in loop:
                     verts.append((i[0], i[1]))
             self.paths.append((path if self.stroke else None, self.stroke,
-                               self.triangulate(path) if self.fill else None, self.fill,
+                               self.decomp(path) if self.fill else None, self.fill,
                                self.transform))
             self.shapes[self.id] = verts
         self.path = []
@@ -575,7 +569,7 @@ class SVG(object):
         else:
             return l
         
-    def triangulate(self, looplist):
+    def decomp(self, looplist):
         loop = looplist[:]
         for l in loop:
             bx = round(l[0][0], 2)
@@ -584,10 +578,19 @@ class SVG(object):
             ty = round(l[-1][1], 2)
             if bx ==  tx and by == ty:
                 l.pop()
-            seidel = Triangulator(l)
-            tlist = seidel.triangles()
-            return tlist
- 
+            make_ccw(l)
+            poly_list = []
+            clean = []
+            for p in l:
+                x = round(p[0], 0)
+                y = round(p[1], 0)
+                clean.append([x,y])
+            decompose_poly(clean, poly_list)
+            return self.flatten(poly_list)
+    
+    def flatten(self, seq):
+        return [x for subseq in seq for x in subseq]
+        
     def angle(self, a, b, c):
         v1 = Vec2(a[0], a[1])
         v2 = Vec2(b[0], b[1])
