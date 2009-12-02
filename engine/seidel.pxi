@@ -30,7 +30,6 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 from random import shuffle
-from math import atan2
 
 ##
 ## Based on Raimund Seidel'e paper "A simple and fast incremental randomized
@@ -41,6 +40,12 @@ from math import atan2
 # Shear transform. May effect numerical robustness
 SHEAR = 1e-6
 
+cdef extern from 'math.h':
+    double atan2(double, double)
+    
+cdef extern from 'predicates.h':
+    double orient2d(double *pa, double *pb, double *pc)
+    
 class Point(object):
     
     def __init__(self, x, y):
@@ -99,15 +104,17 @@ class Edge(object):
         self.mpoints.append(p)
         self.mpoints.append(q)
     
-    ##
-    ## NOTE Rounding accuracy significantly effects numerical robustness!!!
-    ##
-    
     def is_above(self, point):
-        return (round(point.y, 4) < round(self.slope * point.x + self.b, 4))
+        cdef double *a = [self.p.x, self.p.y]
+        cdef double *b = [self.q.x, self.q.y]
+        cdef double *c = [point.x, point.y]
+        return orient2d(a, b, c) < 0
         
     def is_below(self, point):
-        return (round(point.y, 4) > round(self.slope * point.x + self.b, 4))
+        cdef double *a = [self.p.x, self.p.y]
+        cdef double *b = [self.q.x, self.q.y]
+        cdef double *c = [point.x, point.y]
+        return orient2d(a, b, c) > 0
         
 class Trapezoid(object):
         
@@ -193,11 +200,13 @@ class Triangulator(object):
         self.process()        
   
     def triangles(self):
-        verts = []
+        triangles = []
         for p in self.polygons:
+            verts = []
             for v in p:
                 verts.append([v.x, v.y])
-        return verts
+            triangles.append(verts)
+        return triangles
             
     def trapezoid_map(self): 
         return self.trapezoidal_map.map
@@ -466,9 +475,9 @@ class YNode(Node):
     def locate(self, edge):
         if self.edge.is_above(edge.p): 
             return self.rchild.locate(edge)
-        if self.edge.is_below(edge.p): 
+        elif self.edge.is_below(edge.p): 
             return self.lchild.locate(edge)
-        if edge.slope < self.edge.slope: 
+        elif self.edge.is_above(edge.q): 
             return self.rchild.locate(edge)
         return self.lchild.locate(edge)
             

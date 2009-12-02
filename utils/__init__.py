@@ -17,7 +17,6 @@
 import math
 
 # Utility functons. Some of these may eventally be moved
-from seidel import *
 
 def rotate(v, angle):
     """ Angle is radians """
