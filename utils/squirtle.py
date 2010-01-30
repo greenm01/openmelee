@@ -7,8 +7,9 @@ import re
 import math
 import sys
 
-from engine import render_display_list, render_list, make_ccw, decompose_poly, Triangulator
+from engine import render_display_list, render_list, make_ccw
 from physics import Vec2
+from p2t import CDT, Point, Triangle
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -566,16 +567,22 @@ class SVG(object):
         loop = looplist[:]
         plist = []
         for l in loop:
-            if l[0] == l[-1]: l.pop()
-            make_ccw(l)
-            poly_list = []
-            decompose_poly(l, poly_list)
-            plist.extend(self.flatten(poly_list))
-            '''
-            seidel = Triangulator(l)
-            triangles = seidel.triangles()
-            plist.extend(self.flatten(triangles)) 
-            '''
+            # Ensure we don't have repeat points
+            points = []
+            for p in l:
+              points.append((round(p[0],4),round(p[1],4))) 
+            points = f7(points)
+            # Triangulate
+            polyline = []  
+            for p in points:
+                polyline.append(Point(p[0],p[1]))
+            cdt = CDT(polyline)
+            cdt.triangulate()
+            triangles = cdt.triangles
+            tri_list = []
+            for t in triangles:
+              tri_list.append([[t.a.x,t.a.y],[t.b.x,t.b.y],[t.c.x,t.c.y]])
+            plist.extend(self.flatten(tri_list))            
         return plist
     
     def flatten(self, seq):
@@ -591,3 +598,9 @@ class SVG(object):
         
     def warn(self, message):
         print "Warning: SVG Parser (%s) - %s" % (self.filename, message)
+        
+# uniqify a list and preserve order
+# see: http://www.peterbe.com/plog/uniqifiers-benchmark 
+def f7(seq):
+    seen = set()
+    return [ x for x in seq if x not in seen and not seen.add(x)]

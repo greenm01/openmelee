@@ -29,6 +29,8 @@ Currently (Nov. 11, 2009) our branch of Cython-Box2D, which adds some utility fu
 
 Move the resulting physics.so (or .dll) file to the OpenMelee folder.
 
+Install the p2y.pyd module from poly2tri project, and place it in the utils dir:
+http://code.google.com/p/poly2tri/
 
 Building OpenMelee
 ------------------

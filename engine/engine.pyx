@@ -288,7 +288,7 @@ def render_display_list(paths, gradients, translate, scale):
                 fills = [g.interp(x) for x in tris]
             else:
                 fills = [fill for x in tris]
-            glBegin(GL_POLYGON)
+            glBegin(GL_TRIANGLES)
             for vtx, clr in zip(tris, fills):
                 vtx = transform(vtx)
                 r, g, b, a = clr
