@@ -1118,3 +1118,10 @@ cdef extern from "GL/gl.h":
     cdef void glEndList()
     cdef void glCallList(GLuint)
     cdef void glRotatef(GLfloat, GLfloat, GLfloat, GLfloat)
+    cdef void glColor4f( GLfloat, GLfloat, GLfloat, GLfloat)
+    
+    # Stenciling
+    cdef void glStencilFunc(GLenum, GLint, GLuint)
+    cdef void glStencilMask(GLuint)
+    cdef void glStencilOp(GLenum, GLenum, GLenum)
+    cdef void glClearStencil(GLint)

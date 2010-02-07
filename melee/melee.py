@@ -127,8 +127,8 @@ class Melee(Game):
             a.calc_radius()
         
         #from utils import squirtle
-        #self.svg = squirtle.SVG("data/ships/kzer-za2.svg")
-        #self.svg.init((0,0), 0.0075)
+        #self.svg = squirtle.SVG("data/butterfly.svg")
+        #self.svg.init((0,0), 1)
         
         self.main_loop()
         
@@ -175,7 +175,7 @@ class Melee(Game):
         for a in self.actors:
             a.debug_draw()
             
-        #self.svg.render(0, 0, angle = 0)
+        #self.svg.render(0, 10, angle = 0)
         
     ##
     ## NETWORK

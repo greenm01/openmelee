@@ -36,10 +36,12 @@ INCREMENT = 2.0 * PI / SEGMENTS
     
 def init_gl(width, height):
     #glEnable(GL_LINE_SMOOTH)
-    glEnable(GL_BLEND)
+    #glEnable(GL_POLYGON_SMOOTH)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glEnable(GL_BLEND)
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glHint (GL_LINE_SMOOTH_HINT, GL_NICEST)
+    glEnable(GL_MULTISAMPLE)
     
 def reset_zoom(zoom, center, size):
 
@@ -64,6 +66,8 @@ def reset_zoom(zoom, center, size):
     glClear(GL_COLOR_BUFFER_BIT)
     
 def draw_polygon(verts, color):
+    glPointSize(1.1)
+    glLineWidth(1.1)
     r, g, b = color
     glColor3f(r, g, b)
     glBegin(GL_LINE_LOOP)
@@ -143,7 +147,7 @@ def draw_solid_circle(center, radius, fill, outline):
     glEnd()
 
 def draw_solid_polygon(vertices, fill, outline):
-
+    
     r, g, b = fill
     r *= 0.5
     g *= 0.5
@@ -274,6 +278,100 @@ def calc_planet_gravity(float px, float py):
         ratio = 1.0
     
     return (rx * ratio * strength, ry * ratio * strength)
+
+def render_fast(paths, gradients, translate, scale):
+    disp_list = glGenLists(1)
+    glNewList(disp_list, GL_COMPILE)
+    cdef int n_lines = 0
+    for path, stroke, fill, transform in paths:
+        for loop in path:
+              '''
+              n_lines += len(loop) - 1
+              if stroke:
+                  loop_plus = []
+                  for i in xrange(len(loop) - 1):
+                      loop_plus += [loop[i], loop[i+1]]
+                  if isinstance(stroke, str):
+                      g = gradients[stroke]
+                      clrs = [g.interp(x) for x in loop_plus]
+                  else:
+                      clrs = [stroke for x in loop_plus]
+              else:
+                  if isinstance(fill, str):
+                      g = gradients[fill]
+                      clrs = [g.interp(x) for x in loop]
+                  else:
+                      clrs = [fill for x in loop]
+              '''  
+              '''
+              glBegin(GL_LINES)
+              for vtx, clr in zip(loop_plus, strokes):
+                  vtx = transform(vtx)
+                  r, g, b, a = clr
+                  glColor4ub(r, g, b, a)
+                  x = (vtx[0] - translate[0]) * scale
+                  y = (vtx[1] - translate[1]) * scale
+                  glVertex2f(x, y)
+              glEnd()
+              '''
+              strokes = []
+              #Draw to stencil
+              glDisable (GL_BLEND)
+              glEnable (GL_STENCIL_TEST)
+              glStencilMask (0x01)
+              glStencilOp (GL_KEEP, GL_KEEP, GL_INVERT)
+              glStencilFunc (GL_ALWAYS, 0, ~0)
+              glColorMask (GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
+
+              glBegin (GL_TRIANGLE_FAN)
+              for vtx in loop:
+                  vtx = transform(vtx)
+                  #r, g, b, a = clr
+                  #glColor4ub(r, g, b, a)
+                  x = (vtx[0] - translate[0]) * scale
+                  y = (vtx[1] - translate[1]) * scale
+                  glVertex2f(x, y)
+              glEnd ();
+              
+              # Draw aliased off-pixels to real
+              glColorMask (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+              glEnable (GL_BLEND)
+              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+              glStencilFunc (GL_EQUAL, 0x00, 0x01)
+              glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP)
+              
+              glEnable(GL_LINE_SMOOTH)
+              glBegin (GL_LINE_LOOP)
+              for vtx in loop:
+                  vtx = transform(vtx)
+                  #r, g, b, a = clr
+                  #glColor4ub(r, g, b, a)
+                  glColor4f(1.0, 0.0, 0.0, 0.5)
+                  x = (vtx[0] - translate[0]) * scale
+                  y = (vtx[1] - translate[1]) * scale
+                  glVertex2f(x, y)
+              glEnd ()
+              glDisable (GL_LINE_SMOOTH)
+
+              # Draw fill
+              glStencilFunc (GL_EQUAL, 0x01, 0x01)
+              glStencilOp (GL_ZERO, GL_ZERO, GL_ZERO)
+
+              glBegin (GL_POLYGON)
+              for vtx in loop:
+                  vtx = transform(vtx)
+                  #r, g, b, a = clr
+                  #glColor4ub(r, g, b, a)
+                  x = (vtx[0] - translate[0]) * scale
+                  y = (vtx[1] - translate[1]) * scale
+                  glVertex2f(x, y)
+              glEnd ()
+
+              glDisable (GL_STENCIL_TEST)
+    
+    glEndList()
+    return disp_list
     
 def render_display_list(paths, gradients, translate, scale):
     disp_list = glGenLists(1)

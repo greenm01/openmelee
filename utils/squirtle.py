@@ -7,9 +7,9 @@ import re
 import math
 import sys
 
-from engine import render_display_list, render_list, make_ccw
+from engine import render_display_list, render_list, make_ccw, render_fast
 from physics import Vec2
-from p2t import CDT, Point, Triangle
+#from p2t import CDT, Point, Triangle
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -213,7 +213,7 @@ class SVG(object):
         self.anchor_y = anchor_y
     
     def init(self, translate, scale):
-        self.disp_list = render_display_list(self.paths, self.gradients, translate, scale)
+        self.disp_list = render_fast(self.paths, self.gradients, translate, scale)
         
     def _set_anchor_x(self, anchor_x):
         self._anchor_x = anchor_x
@@ -557,13 +557,17 @@ class SVG(object):
                 path.append(loop)
                 for i in loop:
                     verts.append((i[0], i[1]))
+            '''
             self.paths.append((path if self.stroke else None, self.stroke,
                                self.decomp(path) if self.fill else None, self.fill,
                                self.transform))
+            '''
+            self.paths.append((path, self.stroke, self.fill, self.transform))
             self.shapes[self.id] = verts
         self.path = []
         
     def decomp(self, looplist):
+        pass
         loop = looplist[:]
         plist = []
         for l in loop:
